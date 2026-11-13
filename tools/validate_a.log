@@ -1,0 +1,26 @@
+indeks 4162 fragmentów 4.0 s
+0 289 3 s
+25 289 70 s
+50 289 137 s
+75 289 202 s
+100 289 269 s
+125 289 331 s
+150 289 392 s
+175 289 466 s
+200 289 537 s
+225 289 612 s
+250 289 692 s
+275 289 750 s
+{
+ "n": 289,
+ "s_per_q": 2.7,
+ "gate_agree": 0.931,
+ "pass_old": 0.913,
+ "pass_new": 0.996,
+ "traps_refused_old": "60/60",
+ "traps_refused_new": "59/60",
+ "hit5_old": 0.83,
+ "hit5_new": 0.939,
+ "hit5_among_pass_new": 0.939,
+ "hit5_among_pass_old": 0.89
+}

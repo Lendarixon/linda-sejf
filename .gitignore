@@ -1,0 +1,9 @@
+models/
+state/
+build/
+dist/
+__pycache__/
+*.pyc
+*.part
+tools/validate_*.json
+tools/validate_*.log
