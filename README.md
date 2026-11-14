@@ -42,8 +42,14 @@ Szybkość (te same 3 pytania): karta graficzna Radeon RX 9070 XT ok. 4,5 s na o
 Krótkie dokumenty idą do modelu w całości (do 24 fragmentów); dłuższe (do ok. 140 fragmentów, np. skrypt albo krótka ustawa)
 — w częściach, a wynik każdej części ma odwołania do jej fragmentów; z bardzo długich Sejf bierze 8 fragmentów pasujących
 do tematu. Każde zdanie wyniku przechodzi przez ten sam weryfikator co odpowiedzi; niepotwierdzone są oznaczone.
-Na karcie graficznej 2–7 s na wynik.
-STUDIO_WYNIKI
+Na karcie graficznej 3–8 s na wynik; dokument w 2 częściach ok. 20 s.
+
+Jakość (16 zadań: notatki z wykładu, dokumenty firmy, Kodeks pracy, ustawa w częściach; skrypty w `sejf/final_check/studio2`):
+Gemini 4 Hydrogen ocenił 159 wierszy wersji wstępnej: 149 poprawnych, 4 częściowo, 0 błędnych, 6 z prawdziwą treścią,
+ale złym numerem fragmentu — weryfikator oznaczył wszystkie 6. Dlatego w 1.4.0 Sejf sam szuka fragmentu, który potwierdza
+takie zdanie, i poprawia numer (oznaczone w wyniku): na tych samych zadaniach 14 poprawionych numerów, ręcznie sprawdzone
+14/14 trafnie; weryfikator potwierdza 139 ze 149 wierszy (93%). Najsłabsze jest „wyjaśnij prościej”: przeredagowane zdania
+weryfikator częściej uznaje za niepotwierdzone, choć według oceny są poprawne — interfejs o tym uprzedza.
 
 **Dziennik audytu**: ostatnie pytania (z zamaskowanymi PESEL/NIP/REGON/IBAN) i sprawdzenie łańcucha SHA-256.
 Na start w folderze dokumentów są trzy fikcyjne dokumenty firmy „Przykład sp. z o.o.” i 11 polskich ustaw.
