@@ -1,0 +1,778 @@
+[
+ {
+  "question": "Terminy, kwoty i obowiązki",
+  "status": "answered",
+  "text": "Egzamin obejmuje wykłady 1–6 [6, 9]. Konsultacje odbywają się we wtorki o 12:00 w sali 214 [6, 9]. Przykład z wykładu: przy cenie 4 zł za kilogram jabłek nabywcy chcą kupić 100 ton, a sadownicy chcą sprzedać 100 ton [6]. Przy cenie 6 zł popyt spada do 70 ton, a podaż rośnie do 130 ton [6]. Cena maksymalna ustalona przez państwo poniżej ceny równowagi prowadzi do niedoboru i kolejek [6, 7]. Cena minimalna ustalona powyżej ceny równowagi prowadzi do nadwyżki [6, 7]. Popyt jest zwykle mniej elastyczny na dobra pierwszej potrzeby, dobra bez bliskich substytutów i dobra, na które wydajemy niewielką część dochodu (np. sól) [8]. Popyt jest bardziej elastyczny na dobra luksusowe i na dobra z wieloma substytutami [8]. Jeżeli współczynnik elastyczności jest większy od 1, popyt jest elastyczny [7]. Jeżeli współczynnik elastyczności jest mniejszy od 1, popyt jest nieelastyczny [7, 8]. Jeżeli współczynnik elastyczności jest równy 1, popyt ma elastyczność jednostkową [7, 8]. W przypadku nadwyżki (nadmiaru podaży), cena ma tendencję do spadku [6]. W przypadku niedoboru (nadmiaru popytu), cena ma tendencję do wzrostu [6]. Wzrost ceny dobra powoduje spadek wielkości popytu, a spadek ceny — jej wzrost [2]. Przy innych czynnikach niezmienionych wzrost ceny powoduje wzrost wielkości podaży [4]. Postęp technologiczny obniża koszty i przesuwa krzywą podaży w prawo [5]. Wzrost podatku akcyzowego przesuwa krzywą podaży w lewo [5]. Dobra substytucyjne zaspokajają tę samą potrzebę, np. masło i margaryna [3]. Dobra komplementarne używa się razem, np. drukarka i tusz [3]. Dla większości dóbr wzrost dochodów zwiększa popyt — są to dobra normalne [3, 4].",
+  "sentences": [
+   {
+    "text": "Egzamin obejmuje wykłady 1–6 [6, 9].",
+    "cited": [
+     6,
+     9
+    ],
+    "support": 0.9929077625274658,
+    "status": "supported",
+    "best_source": 9
+   },
+   {
+    "text": "Konsultacje odbywają się we wtorki o 12:00 w sali 214 [6, 9].",
+    "cited": [
+     6,
+     9
+    ],
+    "support": 0.9962912797927856,
+    "status": "supported",
+    "best_source": 9
+   },
+   {
+    "text": "Przykład z wykładu: przy cenie 4 zł za kilogram jabłek nabywcy chcą kupić 100 ton, a sadownicy chcą sprzedać 100 ton [6].",
+    "cited": [
+     6
+    ],
+    "support": 0.9958274960517883,
+    "status": "supported",
+    "best_source": 6
+   },
+   {
+    "text": "Przy cenie 6 zł popyt spada do 70 ton, a podaż rośnie do 130 ton [6].",
+    "cited": [
+     6
+    ],
+    "support": 0.9928129315376282,
+    "status": "supported",
+    "best_source": 6
+   },
+   {
+    "text": "Cena maksymalna ustalona przez państwo poniżej ceny równowagi prowadzi do niedoboru i kolejek [6, 7].",
+    "cited": [
+     6,
+     7
+    ],
+    "support": 0.9868490695953369,
+    "status": "supported",
+    "best_source": 6
+   },
+   {
+    "text": "Cena minimalna ustalona powyżej ceny równowagi prowadzi do nadwyżki [6, 7].",
+    "cited": [
+     6,
+     7
+    ],
+    "support": 0.9806795120239258,
+    "status": "supported",
+    "best_source": 7
+   },
+   {
+    "text": "Popyt jest zwykle mniej elastyczny na dobra pierwszej potrzeby, dobra bez bliskich substytutów i dobra, na które wydajemy niewielką część dochodu (np. sól) [8].",
+    "cited": [
+     8
+    ],
+    "support": 0.9931556582450867,
+    "status": "supported",
+    "best_source": 8
+   },
+   {
+    "text": "Popyt jest bardziej elastyczny na dobra luksusowe i na dobra z wieloma substytutami [8].",
+    "cited": [
+     8
+    ],
+    "support": 0.9930256605148315,
+    "status": "supported",
+    "best_source": 8
+   },
+   {
+    "text": "Jeżeli współczynnik elastyczności jest większy od 1, popyt jest elastyczny [7].",
+    "cited": [
+     7
+    ],
+    "support": 0.9779250621795654,
+    "status": "supported",
+    "best_source": 7
+   },
+   {
+    "text": "Jeżeli współczynnik elastyczności jest mniejszy od 1, popyt jest nieelastyczny [7, 8].",
+    "cited": [
+     7,
+     8
+    ],
+    "support": 0.7485589385032654,
+    "status": "unsupported",
+    "best_source": 7
+   },
+   {
+    "text": "Jeżeli współczynnik elastyczności jest równy 1, popyt ma elastyczność jednostkową [7, 8].",
+    "cited": [
+     7,
+     8
+    ],
+    "support": 0.967518150806427,
+    "status": "supported",
+    "best_source": 7
+   },
+   {
+    "text": "W przypadku nadwyżki (nadmiaru podaży), cena ma tendencję do spadku [6].",
+    "cited": [
+     6
+    ],
+    "support": 0.9858558773994446,
+    "status": "supported",
+    "best_source": 6
+   },
+   {
+    "text": "W przypadku niedoboru (nadmiaru popytu), cena ma tendencję do wzrostu [6].",
+    "cited": [
+     6
+    ],
+    "support": 0.9931820034980774,
+    "status": "supported",
+    "best_source": 6
+   },
+   {
+    "text": "Wzrost ceny dobra powoduje spadek wielkości popytu, a spadek ceny — jej wzrost [2].",
+    "cited": [
+     2
+    ],
+    "support": 0.9961917400360107,
+    "status": "supported",
+    "best_source": 2
+   },
+   {
+    "text": "Przy innych czynnikach niezmienionych wzrost ceny powoduje wzrost wielkości podaży [4].",
+    "cited": [
+     4
+    ],
+    "support": 0.9777528643608093,
+    "status": "supported",
+    "best_source": 4
+   },
+   {
+    "text": "Postęp technologiczny obniża koszty i przesuwa krzywą podaży w prawo [5].",
+    "cited": [
+     5
+    ],
+    "support": 0.9939382076263428,
+    "status": "supported",
+    "best_source": 5
+   },
+   {
+    "text": "Wzrost podatku akcyzowego przesuwa krzywą podaży w lewo [5].",
+    "cited": [
+     5
+    ],
+    "support": 0.6629812717437744,
+    "status": "unsupported",
+    "best_source": 5
+   },
+   {
+    "text": "Dobra substytucyjne zaspokajają tę samą potrzebę, np. masło i margaryna [3].",
+    "cited": [
+     3
+    ],
+    "support": 0.9961934089660645,
+    "status": "supported",
+    "best_source": 3
+   },
+   {
+    "text": "Dobra komplementarne używa się razem, np. drukarka i tusz [3].",
+    "cited": [
+     3
+    ],
+    "support": 0.9960293769836426,
+    "status": "supported",
+    "best_source": 3
+   },
+   {
+    "text": "Dla większości dóbr wzrost dochodów zwiększa popyt — są to dobra normalne [3, 4].",
+    "cited": [
+     3,
+     4
+    ],
+    "support": 0.9922429919242859,
+    "status": "supported",
+    "best_source": 3
+   }
+  ],
+  "sources": [
+   {
+    "n": 1,
+    "text": "# Podstawy ekonomii — wykład 3: popyt, podaż i równowaga rynkowa\n\nMateriał przykładowy do Linda Sejf: notatki studenta z wykładu wprowadzającego (dokument przygotowany na potrzeby demonstracji).\n\n## 1. Rynek i jego uczestnicy\n\nRynek to miejsce albo mechanizm, w którym kupujący i sprzedający wymieniają dobra i usługi. Kupujący tworzą stronę popytową rynku, a sprzedający — stronę podażową. Na rynku doskonale konkurencyjnym działa wielu kupujących i wielu sprzedających, oferowane dobro jest jednorodne, a żaden pojedynczy uczestnik nie ma wpływu na cenę.\n\nCena pełni na rynku trzy funkcje: informacyjną (mówi o rzadkości dobra), motywacyjną (zachęca producentów do zwiększania produkcji, gdy cena rośnie) i alokacyjną (decyduje, kto otrzyma dobro).",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\nauka\\Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy).md",
+    "locator": "lines 1-9",
+    "label": "Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy)",
+    "score": 0.0,
+    "sha256": "205bf04fb0979d088541bbb4f78120002e2dfbcba6ff55feb011a277e1b1ee07",
+    "rerank": null
+   },
+   {
+    "n": 2,
+    "text": "\nCena pełni na rynku trzy funkcje: informacyjną (mówi o rzadkości dobra), motywacyjną (zachęca producentów do zwiększania produkcji, gdy cena rośnie) i alokacyjną (decyduje, kto otrzyma dobro).\n\n## 2. Popyt\n\nPopyt to ilość dobra, jaką nabywcy chcą i mogą kupić przy różnych poziomach ceny w określonym czasie. Samo pragnienie posiadania dobra nie jest popytem — potrzebna jest także zdolność do zapłaty.\n\nPrawo popytu mówi, że przy innych czynnikach niezmienionych wzrost ceny dobra powoduje spadek wielkości popytu, a spadek ceny — jej wzrost. Dlatego krzywa popytu na wykresie ma nachylenie ujemne: opada od lewej do prawej.\n\nZmiana ceny samego dobra powoduje ruch wzdłuż krzywej popytu. Zmiana innych czynników przesuwa całą krzywą. Do czynników przesuwających krzywą popytu należą:",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\nauka\\Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy).md",
+    "locator": "lines 8-17",
+    "label": "Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy)",
+    "score": 0.0,
+    "sha256": "d542f18ca189632f4db7b7c85bbe576a06bbc76c1c350850b842eba16613889d",
+    "rerank": null
+   },
+   {
+    "n": 3,
+    "text": "\nZmiana ceny samego dobra powoduje ruch wzdłuż krzywej popytu. Zmiana innych czynników przesuwa całą krzywą. Do czynników przesuwających krzywą popytu należą:\n- dochody nabywców,\n- ceny dóbr substytucyjnych i komplementarnych,\n- gusty i preferencje,\n- oczekiwania co do przyszłych cen,\n- liczba nabywców na rynku.\n\nDobra substytucyjne zaspokajają tę samą potrzebę, np. masło i margaryna: wzrost ceny masła zwiększa popyt na margarynę. Dobra komplementarne używa się razem, np. drukarka i tusz: wzrost ceny drukarek zmniejsza popyt na tusz.\n\nDla większości dóbr wzrost dochodów zwiększa popyt — są to dobra normalne. Dobra, na które popyt spada, gdy dochody rosną, nazywamy dobrami niższego rzędu (np. najtańsze produkty spożywcze zastępowane droższymi).",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\nauka\\Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy).md",
+    "locator": "lines 16-26",
+    "label": "Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy)",
+    "score": 0.0,
+    "sha256": "dea089324d8e3773a53fc377f4d189e598da930120c549754045754047510513",
+    "rerank": null
+   },
+   {
+    "n": 4,
+    "text": "\nDla większości dóbr wzrost dochodów zwiększa popyt — są to dobra normalne. Dobra, na które popyt spada, gdy dochody rosną, nazywamy dobrami niższego rzędu (np. najtańsze produkty spożywcze zastępowane droższymi).\n\n## 3. Podaż\n\nPodaż to ilość dobra, jaką producenci chcą i mogą sprzedać przy różnych poziomach ceny w określonym czasie.\n\nPrawo podaży mówi, że przy innych czynnikach niezmienionych wzrost ceny powoduje wzrost wielkości podaży. Krzywa podaży ma więc nachylenie dodatnie: rośnie od lewej do prawej.\n\nKrzywą podaży przesuwają między innymi: koszty produkcji (np. ceny surowców i płace), technologia, podatki i dotacje, liczba producentów oraz oczekiwania producentów. Postęp technologiczny obniża koszty i przesuwa krzywą podaży w prawo, a wzrost podatku akcyzowego — w lewo.",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\nauka\\Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy).md",
+    "locator": "lines 25-34",
+    "label": "Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy)",
+    "score": 0.0,
+    "sha256": "ff7293c3da3b15d6951fc3caa5fd1b028ab5091a6f32762c833fc871f5e00d3e",
+    "rerank": null
+   },
+   {
+    "n": 5,
+    "text": "\nKrzywą podaży przesuwają między innymi: koszty produkcji (np. ceny surowców i płace), technologia, podatki i dotacje, liczba producentów oraz oczekiwania producentów. Postęp technologiczny obniża koszty i przesuwa krzywą podaży w prawo, a wzrost podatku akcyzowego — w lewo.\n\n## 4. Równowaga rynkowa\n\nRównowaga rynkowa występuje przy cenie, przy której wielkość popytu jest równa wielkości podaży. Tę cenę nazywamy ceną równowagi, a odpowiadającą jej ilość — ilością równowagi. Na wykresie jest to punkt przecięcia krzywej popytu i krzywej podaży.\n\nGdy cena jest wyższa od ceny równowagi, powstaje nadwyżka (nadmiar podaży): producenci nie mogą sprzedać wszystkiego, więc cena ma tendencję do spadku. Gdy cena jest niższa od ceny równowagi, powstaje niedobór (nadmiar popytu): kupujący konkurują o t\nowar, więc cena ma tendencję do wzrostu.",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\nauka\\Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy).md",
+    "locator": "lines 33-40",
+    "label": "Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy)",
+    "score": 0.0,
+    "sha256": "340736ea5243c9d035f94c1fc7a4649c8f63e040cad547095bf799a572587826",
+    "rerank": null
+   },
+   {
+    "n": 6,
+    "text": "\nGdy cena jest wyższa od ceny równowagi, powstaje nadwyżka (nadmiar podaży): producenci nie mogą sprzedać wszystkiego, więc cena ma tendencję do spadku. Gdy cena jest niższa od ceny równowagi, powstaje niedobór (nadmiar popytu): kupujący konkurują o towar, więc cena ma tendencję do wzrostu.\n\nPrzykład z wykładu: przy cenie 4 zł za kilogram jabłek nabywcy chcą kupić 100 ton, a sadownicy chcą sprzedać 100 ton — cena 4 zł jest ceną równowagi. Przy cenie 6 zł popyt spada do 70 ton, a podaż rośnie do 130 ton, więc powstaje nadwyżka 60 ton.\n\nCena maksymalna ustalona przez państwo poniżej ceny równowagi prowadzi do niedoboru i kolejek. Cena minimalna ustalona powyżej ceny równowagi prowadzi do nadwyżki.",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\nauka\\Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy).md",
+    "locator": "lines 39-44",
+    "label": "Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy)",
+    "score": 0.0,
+    "sha256": "f999efdca55ea2bbbe5c2e5bf1e82048f19bf70489c244542d0e378bc3e182fa",
+    "rerank": null
+   },
+   {
+    "n": 7,
+    "text": "\nCena maksymalna ustalona przez państwo poniżej ceny równowagi prowadzi do niedoboru i kolejek. Cena minimalna ustalona powyżej ceny równowagi prowadzi do nadwyżki.\n\n## 5. Elastyczność cenowa popytu\n\nElastyczność cenowa popytu pokazuje, o ile procent zmieni się wielkość popytu, gdy cena zmieni się o 1%. Oblicza się ją jako stosunek procentowej zmiany wielkości popytu do procentowej zmiany ceny i podaje zwykle w wartości bezwzględnej.\n\n- Jeżeli współczynnik elastyczności jest większy od 1, popyt jest elastyczny: konsumenci silnie reagują na zmianę ceny.\n- Jeżeli jest mniejszy od 1, popyt jest nieelastyczny: reakcja jest słaba.\n- Jeżeli jest równy 1, popyt ma elastyczność jednostkową.",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\nauka\\Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy).md",
+    "locator": "lines 43-52",
+    "label": "Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy)",
+    "score": 0.0,
+    "sha256": "14df2a86b2070720ebcdc29ba34e65074ff2e8c9130ea1994b5b21397e05ef85",
+    "rerank": null
+   },
+   {
+    "n": 8,
+    "text": "- Jeżeli jest mniejszy od 1, popyt jest nieelastyczny: reakcja jest słaba.\n- Jeżeli jest równy 1, popyt ma elastyczność jednostkową.\n\nPopyt jest zwykle mniej elastyczny na dobra pierwszej potrzeby, dobra bez bliskich substytutów i dobra, na które wydajemy niewielką część dochodu (np. sól). Popyt jest bardziej elastyczny na dobra luksusowe i na dobra z wieloma substytutami.\n\nPrzy popycie nieelastycznym podwyżka ceny zwiększa przychód sprzedawcy, a przy popycie elastycznym — zmniejsza go.\n\n## 6. Na egzamin (uwagi prowadzącego)\n\nEgzamin obejmuje wykłady 1–6. Trzeba umieć narysować krzywe popytu i podaży, wskazać punkt równowagi oraz pokazać, jak przesuwa się krzywa po zmianie dochodów albo kosztów produkcji. Zadanie rachunkowe z elastyczności cenowej popytu pojawia się na każdym egzaminie. Ko\nnsultacje odbywają się we wtorki o 12:00 w sali 214.",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\nauka\\Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy).md",
+    "locator": "lines 51-60",
+    "label": "Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy)",
+    "score": 0.0,
+    "sha256": "8c1a57f149643f666ffa37dae859a3b62da78cffd0f2451ec205997c9e38831e",
+    "rerank": null
+   },
+   {
+    "n": 9,
+    "text": "\nEgzamin obejmuje wykłady 1–6. Trzeba umieć narysować krzywe popytu i podaży, wskazać punkt równowagi oraz pokazać, jak przesuwa się krzywa po zmianie dochodów albo kosztów produkcji. Zadanie rachunkowe z elastyczności cenowej popytu pojawia się na każdym egzaminie. Konsultacje odbywają się we wtorki o 12:00 w sali 214.",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\nauka\\Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy).md",
+    "locator": "lines 59-60",
+    "label": "Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy)",
+    "score": 0.0,
+    "sha256": "04e076a169c00aeab14429f2f5b48ea39ea075314c327aabfc695e4fdb63e11e",
+    "rerank": null
+   }
+  ],
+  "timings": {
+   "retrieval_s": 0.0011763000002247281,
+   "generation_s": 5.589650999998412,
+   "verify_s": 1.1434964000000036
+  },
+  "raw": "- Egzamin obejmuje wykłady 1–6 [6, 9].\n- Konsultacje odbywają się we wtorki o 12:00 w sali 214 [6, 9].\n- Przykład z wykładu: przy cenie 4 zł za kilogram jabłek nabywcy chcą kupić 100 ton, a sadownicy chcą sprzedać 100 ton [6].\n- Przy cenie 6 zł popyt spada do 70 ton, a podaż rośnie do 130 ton [6].\n- Cena maksymalna ustalona przez państwo poniżej ceny równowagi prowadzi do niedoboru i kolejek [6, 7].\n- Cena minimalna ustalona powyżej ceny równowagi prowadzi do nadwyżki [6, 7].\n- Popyt jest zwykle mniej elastyczny na dobra pierwszej potrzeby, dobra bez bliskich substytutów i dobra, na które wydajemy niewielką część dochodu (np. sól) [8].\n- Popyt jest bardziej elastyczny na dobra luksusowe i na dobra z wieloma substytutami [8].\n- Jeżeli współczynnik elastyczności jest większy od 1, popyt jest elastyczny [7].\n- Jeżeli współczynnik elastyczności jest mniejszy od 1, popyt jest nieelastyczny [7, 8].\n- Jeżeli współczynnik elastyczności jest równy 1, popyt ma elastyczność jednostkową [7, 8].\n- W przypadku nadwyżki (nadmiaru podaży), cena ma tendencję do spadku [6].\n- W przypadku niedoboru (nadmiaru popytu), cena ma tendencję do wzrostu [6].\n- Wzrost ceny dobra powoduje spadek wielkości popytu, a spadek ceny — jej wzrost [2].\n- Przy innych czynnikach niezmienionych wzrost ceny powoduje wzrost wielkości podaży [4].\n- Postęp technologiczny obniża koszty i przesuwa krzywą podaży w prawo [5].\n- Wzrost podatku akcyzowego przesuwa krzywą podaży w lewo [5].\n- Dobra substytucyjne zaspokajają tę samą potrzebę, np. masło i margaryna [3].\n- Dobra komplementarne używa się razem, np. drukarka i tusz [3].\n- Dla większości dóbr wzrost dochodów zwiększa popyt — są to dobra normalne [3, 4].",
+  "removed": 0,
+  "tool": "facts",
+  "kind": "lines",
+  "scope": "cały dokument",
+  "opts": {},
+  "parts": 1,
+  "seconds": 6.7,
+  "_case": {
+   "tool": "facts",
+   "docs": [
+    "nauka/Notatki z wykładu — Podstawy ekonomii, popyt i podaż (materiał przykładowy).md"
+   ],
+   "topic": "",
+   "opts": {},
+   "wall_s": 6.8
+  }
+ },
+ {
+  "question": "Terminy, kwoty i obowiązki",
+  "status": "answered",
+  "text": "Podróż służbową zatwierdza bezpośredni przełożony we wniosku w systemie kadrowym najpóźniej 3 dni robocze przed wyjazdem [1]. Wyjazd zagraniczny zatwierdza dodatkowo członek zarządu [1]. W podróżach krajowych do 300 km w jedną stronę podstawowym środkiem transportu jest pociąg w klasie 2 [1, 2]. W podróżach krajowych powyżej 300 km podstawowym środkiem transportu jest pociąg w klasie 1 albo samolot w klasie ekonomicznej [1, 2]. Samochód prywatny można wykorzystać tylko za zgodą przełożonego [2]. Zwrot kosztów za samochód prywatny wynosi 1,15 zł za kilometr dla samochodu o pojemności silnika powyżej 900 cm³ [2]. Taksówkę rozlicza się wyłącznie na dojazd do i z dworca lub lotniska oraz po godzinie 22:00 [2]. Limit kosztu noclegu w kraju wynosi 450 zł za dobę w Warszawie [2]. Limit kosztu noclegu w kraju wynosi 350 zł za dobę w pozostałych miastach [2]. Rezerwacji dokonuje dział administracji [2, 3]. Samodzielna rezerwacja wymaga zgody przełożonego [2, 3]. Pracownikowi przysługuje dieta w wysokości określonej w przepisach o podróżach służbowych pracowników sfery budżetowej [3]. Dietę zmniejsza się o 25% za śniadanie, jeżeli spółka zapewnia posiłek [3]. Dietę zmniejsza się o 50% za obiad, jeżeli spółka zapewnia posiłek [3]. Dietę zmniejsza się o 25% za kolację, jeżeli spółka zapewnia posiłek [3]. Rozliczenie podróży składa się w systemie kadrowym w ciągu 14 dni od zakończenia podróży, ze zdjęciami lub skanami wszystkich rachunków [3]. Zaliczkę niewykorzystaną zwraca się w tym samym terminie przelewem na rachunek spółki [3, 4]. Koszty nieudokumentowane rachunkiem nie podlegają zwrotowi, z wyjątkiem diet i ryczałtów [3, 4].",
+  "sentences": [
+   {
+    "text": "Podróż służbową zatwierdza bezpośredni przełożony we wniosku w systemie kadrowym najpóźniej 3 dni robocze przed wyjazdem [1].",
+    "cited": [
+     1
+    ],
+    "support": 0.9960224628448486,
+    "status": "supported",
+    "best_source": 1
+   },
+   {
+    "text": "Wyjazd zagraniczny zatwierdza dodatkowo członek zarządu [1].",
+    "cited": [
+     1
+    ],
+    "support": 0.9945353269577026,
+    "status": "supported",
+    "best_source": 1
+   },
+   {
+    "text": "W podróżach krajowych do 300 km w jedną stronę podstawowym środkiem transportu jest pociąg w klasie 2 [1, 2].",
+    "cited": [
+     1,
+     2
+    ],
+    "support": 0.9932778477668762,
+    "status": "supported",
+    "best_source": 2
+   },
+   {
+    "text": "W podróżach krajowych powyżej 300 km podstawowym środkiem transportu jest pociąg w klasie 1 albo samolot w klasie ekonomicznej [1, 2].",
+    "cited": [
+     1,
+     2
+    ],
+    "support": 0.9960450530052185,
+    "status": "supported",
+    "best_source": 1
+   },
+   {
+    "text": "Samochód prywatny można wykorzystać tylko za zgodą przełożonego [2].",
+    "cited": [
+     2
+    ],
+    "support": 0.9887908697128296,
+    "status": "supported",
+    "best_source": 2
+   },
+   {
+    "text": "Zwrot kosztów za samochód prywatny wynosi 1,15 zł za kilometr dla samochodu o pojemności silnika powyżej 900 cm³ [2].",
+    "cited": [
+     2
+    ],
+    "support": 0.9892281293869019,
+    "status": "supported",
+    "best_source": 2
+   },
+   {
+    "text": "Taksówkę rozlicza się wyłącznie na dojazd do i z dworca lub lotniska oraz po godzinie 22:00 [2].",
+    "cited": [
+     2
+    ],
+    "support": 0.9951310157775879,
+    "status": "supported",
+    "best_source": 2
+   },
+   {
+    "text": "Limit kosztu noclegu w kraju wynosi 450 zł za dobę w Warszawie [2].",
+    "cited": [
+     2
+    ],
+    "support": 0.989862322807312,
+    "status": "supported",
+    "best_source": 2
+   },
+   {
+    "text": "Limit kosztu noclegu w kraju wynosi 350 zł za dobę w pozostałych miastach [2].",
+    "cited": [
+     2
+    ],
+    "support": 0.9839694499969482,
+    "status": "supported",
+    "best_source": 2
+   },
+   {
+    "text": "Rezerwacji dokonuje dział administracji [2, 3].",
+    "cited": [
+     2,
+     3
+    ],
+    "support": 0.9911832809448242,
+    "status": "supported",
+    "best_source": 2
+   },
+   {
+    "text": "Samodzielna rezerwacja wymaga zgody przełożonego [2, 3].",
+    "cited": [
+     2,
+     3
+    ],
+    "support": 0.992345929145813,
+    "status": "supported",
+    "best_source": 2
+   },
+   {
+    "text": "Pracownikowi przysługuje dieta w wysokości określonej w przepisach o podróżach służbowych pracowników sfery budżetowej [3].",
+    "cited": [
+     3
+    ],
+    "support": 0.9952213168144226,
+    "status": "supported",
+    "best_source": 3
+   },
+   {
+    "text": "Dietę zmniejsza się o 25% za śniadanie, jeżeli spółka zapewnia posiłek [3].",
+    "cited": [
+     3
+    ],
+    "support": 0.9789702296257019,
+    "status": "supported",
+    "best_source": 3
+   },
+   {
+    "text": "Dietę zmniejsza się o 50% za obiad, jeżeli spółka zapewnia posiłek [3].",
+    "cited": [
+     3
+    ],
+    "support": 0.7747242450714111,
+    "status": "unsupported",
+    "best_source": 3
+   },
+   {
+    "text": "Dietę zmniejsza się o 25% za kolację, jeżeli spółka zapewnia posiłek [3].",
+    "cited": [
+     3
+    ],
+    "support": 0.9754157066345215,
+    "status": "supported",
+    "best_source": 3
+   },
+   {
+    "text": "Rozliczenie podróży składa się w systemie kadrowym w ciągu 14 dni od zakończenia podróży, ze zdjęciami lub skanami wszystkich rachunków [3].",
+    "cited": [
+     3
+    ],
+    "support": 0.9970149993896484,
+    "status": "supported",
+    "best_source": 3
+   },
+   {
+    "text": "Zaliczkę niewykorzystaną zwraca się w tym samym terminie przelewem na rachunek spółki [3, 4].",
+    "cited": [
+     3,
+     4
+    ],
+    "support": 0.9892590641975403,
+    "status": "supported",
+    "best_source": 3
+   },
+   {
+    "text": "Koszty nieudokumentowane rachunkiem nie podlegają zwrotowi, z wyjątkiem diet i ryczałtów [3, 4].",
+    "cited": [
+     3,
+     4
+    ],
+    "support": 0.9845038652420044,
+    "status": "supported",
+    "best_source": 4
+   }
+  ],
+  "sources": [
+   {
+    "n": 1,
+    "text": "ZASADY PODRÓŻY SŁUŻBOWYCH I ROZLICZANIA KOSZTÓW\nPrzykład sp. z o.o.\n(dokument fikcyjny, przygotowany do demonstracji Linda Sejf)\n\n§ 1. Zgoda na wyjazd\n1. Podróż służbową zatwierdza bezpośredni przełożony we wniosku w systemie kadrowym najpóźniej 3 dni robocze przed wyjazdem.\n2. Wyjazd zagraniczny zatwierdza dodatkowo członek zarządu.\n\n§ 2. Środki transportu\n1. W podróżach krajowych do 300 km w jedną stronę podstawowym środkiem transportu jest pociąg w klasie 2; powyżej 300 km — pociąg w klasie 1 albo samolot w klasie ekonomicznej.\n2. Samochód prywatny można wykorzystać tylko za zgodą przełożonego; zwrot kosztów wynosi 1,15 zł za kilometr dla samochodu o pojemności silnika powyżej 900 cm³.",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\firma\\Zasady podróży służbowych — Przykład sp. z o.o. (dokument fikcyjny).txt",
+    "locator": "lines 1-11",
+    "label": "Zasady podróży służbowych — Przykład sp. z o.o. (dokument fikcyjny)",
+    "score": 0.0,
+    "sha256": "be63f4d263c757cd43d4a3556782cb2207165c46ace8ea572c2998764a92475a",
+    "rerank": null
+   },
+   {
+    "n": 2,
+    "text": "1. W podróżach krajowych do 300 km w jedną stronę podstawowym środkiem transportu jest pociąg w klasie 2; powyżej 300 km — pociąg w klasie 1 albo samolot w klasie ekonomicznej.\n2. Samochód prywatny można wykorzystać tylko za zgodą przełożonego; zwrot kosztów wynosi 1,15 zł za kilometr dla samochodu o pojemności silnika powyżej 900 cm³.\n3. Taksówkę rozlicza się wyłącznie na dojazd do i z dworca lub lotniska oraz po godzinie 22:00.\n\n§ 3. Noclegi\n1. Limit kosztu noclegu w kraju wynosi 450 zł za dobę w Warszawie i 350 zł za dobę w pozostałych miastach.\n2. Rezerwacji dokonuje dział administracji; samodzielna rezerwacja wymaga zgody przełożonego.\n",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\firma\\Zasady podróży służbowych — Przykład sp. z o.o. (dokument fikcyjny).txt",
+    "locator": "lines 10-17",
+    "label": "Zasady podróży służbowych — Przykład sp. z o.o. (dokument fikcyjny)",
+    "score": 0.0,
+    "sha256": "9c0509ce8365c26bb8f7cf9e42fbeff62327df9a6ab9d47a44e19fdb1e38f68e",
+    "rerank": null
+   },
+   {
+    "n": 3,
+    "text": "2. Rezerwacji dokonuje dział administracji; samodzielna rezerwacja wymaga zgody przełożonego.\n\n§ 4. Diety\nPracownikowi przysługuje dieta w wysokości określonej w przepisach o podróżach służbowych pracowników sfery budżetowej. Jeżeli spółka zapewnia posiłek, dietę zmniejsza się o 25% za śniadanie, 50% za obiad i 25% za kolację.\n\n§ 5. Rozliczenie\n1. Rozliczenie podróży składa się w systemie kadrowym w ciągu 14 dni od zakończenia podróży, ze zdjęciami lub skanami wszystkich rachunków.\n2. Zaliczkę niewykorzystaną zwraca się w tym samym terminie przelewem na rachunek spółki.\n3. Koszty nieudokumentowane rachunkiem nie podlegają zwrotowi, z wyjątkiem diet i ryczałtów.",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\firma\\Zasady podróży służbowych — Przykład sp. z o.o. (dokument fikcyjny).txt",
+    "locator": "lines 16-24",
+    "label": "Zasady podróży służbowych — Przykład sp. z o.o. (dokument fikcyjny)",
+    "score": 0.0,
+    "sha256": "c6aa6fceb0727514bd5291ea21dcbc04ebcbb201a1aee97edfc67d87d880b6bb",
+    "rerank": null
+   },
+   {
+    "n": 4,
+    "text": "2. Zaliczkę niewykorzystaną zwraca się w tym samym terminie przelewem na rachunek spółki.\n3. Koszty nieudokumentowane rachunkiem nie podlegają zwrotowi, z wyjątkiem diet i ryczałtów.",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\firma\\Zasady podróży służbowych — Przykład sp. z o.o. (dokument fikcyjny).txt",
+    "locator": "lines 23-24",
+    "label": "Zasady podróży służbowych — Przykład sp. z o.o. (dokument fikcyjny)",
+    "score": 0.0,
+    "sha256": "01122f196d04482f5ab33fe4b08a72a01bebfe2d7f13cec387d76413099cb208",
+    "rerank": null
+   }
+  ],
+  "timings": {
+   "retrieval_s": 0.0010820000024978071,
+   "generation_s": 5.163875199999893,
+   "verify_s": 0.7071103999987827
+  },
+  "raw": "- Podróż służbową zatwierdza bezpośredni przełożony we wniosku w systemie kadrowym najpóźniej 3 dni robocze przed wyjazdem [1].\n- Wyjazd zagraniczny zatwierdza dodatkowo członek zarządu [1].\n- W podróżach krajowych do 300 km w jedną stronę podstawowym środkiem transportu jest pociąg w klasie 2 [1, 2].\n- W podróżach krajowych powyżej 300 km podstawowym środkiem transportu jest pociąg w klasie 1 albo samolot w klasie ekonomicznej [1, 2].\n- Samochód prywatny można wykorzystać tylko za zgodą przełożonego [2].\n- Zwrot kosztów za samochód prywatny wynosi 1,15 zł za kilometr dla samochodu o pojemności silnika powyżej 900 cm³ [2].\n- Taksówkę rozlicza się wyłącznie na dojazd do i z dworca lub lotniska oraz po godzinie 22:00 [2].\n- Limit kosztu noclegu w kraju wynosi 450 zł za dobę w Warszawie [2].\n- Limit kosztu noclegu w kraju wynosi 350 zł za dobę w pozostałych miastach [2].\n- Rezerwacji dokonuje dział administracji [2, 3].\n- Samodzielna rezerwacja wymaga zgody przełożonego [2, 3].\n- Pracownikowi przysługuje dieta w wysokości określonej w przepisach o podróżach służbowych pracowników sfery budżetowej [3].\n- Dietę zmniejsza się o 25% za śniadanie, jeżeli spółka zapewnia posiłek [3].\n- Dietę zmniejsza się o 50% za obiad, jeżeli spółka zapewnia posiłek [3].\n- Dietę zmniejsza się o 25% za kolację, jeżeli spółka zapewnia posiłek [3].\n- Rozliczenie podróży składa się w systemie kadrowym w ciągu 14 dni od zakończenia podróży, ze zdjęciami lub skanami wszystkich rachunków [3].\n- Zaliczkę niewykorzystaną zwraca się w tym samym terminie przelewem na rachunek spółki [3, 4].\n- Koszty nieudokumentowane rachunkiem nie podlegają zwrotowi, z wyjątkiem diet i ryczałtów [3, 4].",
+  "removed": 0,
+  "tool": "facts",
+  "kind": "lines",
+  "scope": "cały dokument",
+  "opts": {},
+  "parts": 1,
+  "seconds": 5.9,
+  "_case": {
+   "tool": "facts",
+   "docs": [
+    "firma/Zasady podróży służbowych — Przykład sp. z o.o. (dokument fikcyjny).txt"
+   ],
+   "topic": "",
+   "opts": {},
+   "wall_s": 5.9
+  }
+ },
+ {
+  "question": "Terminy, kwoty i obowiązki",
+  "status": "answered",
+  "text": "Pracownik, który zauważył możliwe naruszenie ochrony danych, zgłasza je IOD niezwłocznie, nie później niż w ciągu 2 godzin od jego stwierdzenia [3]. IOD ocenia naruszenie w ciągu 24 godzin i rekomenduje zarządowi, czy zgłosić je do Prezesa UODO [3]. Zgłoszenia do Prezesa UODO dokonuje się w terminie 72 godzin od stwierdzenia naruszenia [3]. Nagrania z monitoringu wejścia do biura przechowuje się 30 dni, a następnie automatycznie nadpisuje [3, 4]. Dokumenty rekrutacyjne kandydatów niezatrudnionych usuwa się po 3 miesiącach od zakończenia rekrutacji, chyba że kandydat zgodził się na udział w przyszłych rekrutacjach — wtedy po 12 miesiącach [4]. Korespondencję z klientami w sprawie reklamacji przechowuje się 3 lata od zakończenia sprawy [4]. Każdy nowy pracownik przechodzi szkolenie z ochrony danych w ciągu 7 dni od rozpoczęcia pracy [4, 5]. Szkolenie przypominające odbywa się raz w roku [4, 5]. Rejestr czynności przetwarzania jest aktualizowany co najmniej raz na kwartał [2]. Dokumenty zawierające dane osobowe drukuje się wyłącznie na drukarkach z funkcją wydruku po zalogowaniu kartą [1, 2]. Wydruki niepotrzebne niszczy się w niszczarkach oznaczonych naklejką „P-4”; zabrania się wyrzucania ich do zwykłych koszy [2]. Danych osobowych nie wolno przesyłać przez prywatną pocztę ani prywatne komunikatory [2]. Pliki z danymi klientów wysyła się na zewnątrz wyłącznie w archiwum zaszyfrowanym hasłem, a hasło przekazuje się innym kanałem (SMS lub telefon) [2]. Komputer zostawiony bez nadzoru blokuje się skrótem Windows+L [2]. Ekran blokuje się automatycznie po 5 minutach bezczynności [2]. Inspektorem ochrony danych (IOD) w spółce jest Anna Nowak [2].",
+  "sentences": [
+   {
+    "text": "Pracownik, który zauważył możliwe naruszenie ochrony danych, zgłasza je IOD niezwłocznie, nie później niż w ciągu 2 godzin od jego stwierdzenia [3].",
+    "cited": [
+     3
+    ],
+    "support": 0.9934163093566895,
+    "status": "supported",
+    "best_source": 3
+   },
+   {
+    "text": "IOD ocenia naruszenie w ciągu 24 godzin i rekomenduje zarządowi, czy zgłosić je do Prezesa UODO [3].",
+    "cited": [
+     3
+    ],
+    "support": 0.9949086308479309,
+    "status": "supported",
+    "best_source": 3
+   },
+   {
+    "text": "Zgłoszenia do Prezesa UODO dokonuje się w terminie 72 godzin od stwierdzenia naruszenia [3].",
+    "cited": [
+     3
+    ],
+    "support": 0.9966172575950623,
+    "status": "supported",
+    "best_source": 3
+   },
+   {
+    "text": "Nagrania z monitoringu wejścia do biura przechowuje się 30 dni, a następnie automatycznie nadpisuje [3, 4].",
+    "cited": [
+     3,
+     4
+    ],
+    "support": 0.9965164661407471,
+    "status": "supported",
+    "best_source": 4
+   },
+   {
+    "text": "Dokumenty rekrutacyjne kandydatów niezatrudnionych usuwa się po 3 miesiącach od zakończenia rekrutacji, chyba że kandydat zgodził się na udział w przyszłych rekrutacjach — wtedy po 12 miesiącach [4].",
+    "cited": [
+     4
+    ],
+    "support": 0.9843690395355225,
+    "status": "supported",
+    "best_source": 4
+   },
+   {
+    "text": "Korespondencję z klientami w sprawie reklamacji przechowuje się 3 lata od zakończenia sprawy [4].",
+    "cited": [
+     4
+    ],
+    "support": 0.9769958853721619,
+    "status": "supported",
+    "best_source": 4
+   },
+   {
+    "text": "Każdy nowy pracownik przechodzi szkolenie z ochrony danych w ciągu 7 dni od rozpoczęcia pracy [4, 5].",
+    "cited": [
+     4,
+     5
+    ],
+    "support": 0.9936267137527466,
+    "status": "supported",
+    "best_source": 5
+   },
+   {
+    "text": "Szkolenie przypominające odbywa się raz w roku [4, 5].",
+    "cited": [
+     4,
+     5
+    ],
+    "support": 0.9877404570579529,
+    "status": "supported",
+    "best_source": 5
+   },
+   {
+    "text": "Rejestr czynności przetwarzania jest aktualizowany co najmniej raz na kwartał [2].",
+    "cited": [
+     2
+    ],
+    "support": 0.002701100194826722,
+    "status": "unsupported",
+    "best_source": 2
+   },
+   {
+    "text": "Dokumenty zawierające dane osobowe drukuje się wyłącznie na drukarkach z funkcją wydruku po zalogowaniu kartą [1, 2].",
+    "cited": [
+     1,
+     2
+    ],
+    "support": 0.9943600296974182,
+    "status": "supported",
+    "best_source": 1
+   },
+   {
+    "text": "Wydruki niepotrzebne niszczy się w niszczarkach oznaczonych naklejką „P-4”; zabrania się wyrzucania ich do zwykłych koszy [2].",
+    "cited": [
+     2
+    ],
+    "support": 0.9942892789840698,
+    "status": "supported",
+    "best_source": 2
+   },
+   {
+    "text": "Danych osobowych nie wolno przesyłać przez prywatną pocztę ani prywatne komunikatory [2].",
+    "cited": [
+     2
+    ],
+    "support": 0.9948443174362183,
+    "status": "supported",
+    "best_source": 2
+   },
+   {
+    "text": "Pliki z danymi klientów wysyła się na zewnątrz wyłącznie w archiwum zaszyfrowanym hasłem, a hasło przekazuje się innym kanałem (SMS lub telefon) [2].",
+    "cited": [
+     2
+    ],
+    "support": 0.9965512752532959,
+    "status": "supported",
+    "best_source": 2
+   },
+   {
+    "text": "Komputer zostawiony bez nadzoru blokuje się skrótem Windows+L [2].",
+    "cited": [
+     2
+    ],
+    "support": 0.9940280914306641,
+    "status": "supported",
+    "best_source": 2
+   },
+   {
+    "text": "Ekran blokuje się automatycznie po 5 minutach bezczynności [2].",
+    "cited": [
+     2
+    ],
+    "support": 0.9925036430358887,
+    "status": "supported",
+    "best_source": 2
+   },
+   {
+    "text": "Inspektorem ochrony danych (IOD) w spółce jest Anna Nowak [2].",
+    "cited": [
+     2
+    ],
+    "support": 0.029959913343191147,
+    "status": "unsupported",
+    "best_source": 2
+   }
+  ],
+  "sources": [
+   {
+    "n": 1,
+    "text": "PROCEDURA OCHRONY DANYCH OSOBOWYCH I ZGŁASZANIA NARUSZEŃ\nPrzykład sp. z o.o.\n(dokument fikcyjny, przygotowany do demonstracji Linda Sejf)\n\n§ 1. Cel\nProcedura określa zasady przetwarzania danych osobowych klientów i pracowników oraz postępowanie w razie naruszenia ochrony danych.\n\n§ 2. Role\n1. Inspektorem ochrony danych (IOD) w spółce jest Anna Nowak, kontakt: iod@przyklad.example, tel. wewnętrzny 214.\n2. Za rejestr czynności przetwarzania odpowiada dział prawny; rejestr jest aktualizowany co najmniej raz na kwartał.\n\n§ 3. Zasady codzienne\n1. Dokumenty zawierające dane osobowe drukuje się wyłącznie na drukarkach z funkcją wydruku po zalogowaniu kartą.",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\firma\\Procedura ochrony danych osobowych — Przykład sp. z o.o. (dokument fikcyjny).txt",
+    "locator": "lines 1-13",
+    "label": "Procedura ochrony danych osobowych — Przykład sp. z o.o. (dokument fikcyjny)",
+    "score": 0.0,
+    "sha256": "3f4a078474a4b54619f78f7667a5e80dcf038148a0122eba9a7e8790117a4177",
+    "rerank": null
+   },
+   {
+    "n": 2,
+    "text": "§ 3. Zasady codzienne\n1. Dokumenty zawierające dane osobowe drukuje się wyłącznie na drukarkach z funkcją wydruku po zalogowaniu kartą.\n2. Wydruki niepotrzebne niszczy się w niszczarkach oznaczonych naklejką „P-4”; zabrania się wyrzucania ich do zwykłych koszy.\n3. Danych osobowych nie wolno przesyłać przez prywatną pocztę ani prywatne komunikatory. Pliki z danymi klientów wysyła się na zewnątrz wyłącznie w archiwum zaszyfrowanym hasłem, a hasło przekazuje się innym kanałem (SMS lub telefon).\n4. Komputer zostawiony bez nadzoru blokuje się skrótem Windows+L; ekran blokuje się automatycznie po 5 minutach bezczynności.\n\n§ 4. Zgłaszanie naruszeń\n1. Pracownik, który zauważył możliwe naruszenie ochrony danych (np. zgubienie laptopa, wysłanie e-maila do złego adresata, nieuprawniony dostęp), zgłas\nza je IOD niezwłocznie, nie później niż w ciągu 2 godzin od jego stwierdzenia, przez formularz w intranecie albo telefonicznie.",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\firma\\Procedura ochrony danych osobowych — Przykład sp. z o.o. (dokument fikcyjny).txt",
+    "locator": "lines 12-19",
+    "label": "Procedura ochrony danych osobowych — Przykład sp. z o.o. (dokument fikcyjny)",
+    "score": 0.0,
+    "sha256": "f6cd220606492e9abc17cc1dbdaebee99dd3e22ea2f0a417e8c02e1d8a4e296f",
+    "rerank": null
+   },
+   {
+    "n": 3,
+    "text": "§ 4. Zgłaszanie naruszeń\n1. Pracownik, który zauważył możliwe naruszenie ochrony danych (np. zgubienie laptopa, wysłanie e-maila do złego adresata, nieuprawniony dostęp), zgłasza je IOD niezwłocznie, nie później niż w ciągu 2 godzin od jego stwierdzenia, przez formularz w intranecie albo telefonicznie.\n2. IOD ocenia naruszenie w ciągu 24 godzin i rekomenduje zarządowi, czy zgłosić je do Prezesa UODO. Zgłoszenia do Prezesa UODO dokonuje się w terminie 72 godzin od stwierdzenia naruszenia.\n3. Każde naruszenie, także niezgłoszone do UODO, wpisuje się do wewnętrznego rejestru naruszeń.\n\n§ 5. Okresy przechowywania\n1. Nagrania z monitoringu wejścia do biura przechowuje się 30 dni, a następnie automatycznie nadpisuje.",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\firma\\Procedura ochrony danych osobowych — Przykład sp. z o.o. (dokument fikcyjny).txt",
+    "locator": "lines 18-24",
+    "label": "Procedura ochrony danych osobowych — Przykład sp. z o.o. (dokument fikcyjny)",
+    "score": 0.0,
+    "sha256": "2a04b693b920c81d963dccfee0a99655b80a1e2bf40dc15db5439bac2c102afe",
+    "rerank": null
+   },
+   {
+    "n": 4,
+    "text": "§ 5. Okresy przechowywania\n1. Nagrania z monitoringu wejścia do biura przechowuje się 30 dni, a następnie automatycznie nadpisuje.\n2. Dokumenty rekrutacyjne kandydatów niezatrudnionych usuwa się po 3 miesiącach od zakończenia rekrutacji, chyba że kandydat zgodził się na udział w przyszłych rekrutacjach — wtedy po 12 miesiącach.\n3. Korespondencję z klientami w sprawie reklamacji przechowuje się 3 lata od zakończenia sprawy.\n\n§ 6. Szkolenia\nKażdy nowy pracownik przechodzi szkolenie z ochrony danych w ciągu 7 dni od rozpoczęcia pracy; szkolenie przypominające odbywa się raz w roku.",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\firma\\Procedura ochrony danych osobowych — Przykład sp. z o.o. (dokument fikcyjny).txt",
+    "locator": "lines 23-29",
+    "label": "Procedura ochrony danych osobowych — Przykład sp. z o.o. (dokument fikcyjny)",
+    "score": 0.0,
+    "sha256": "10846d510aa4914af9d18372216d43ebf28f4c9aa05a50cf2cfe5f8cbf18d11b",
+    "rerank": null
+   },
+   {
+    "n": 5,
+    "text": "§ 6. Szkolenia\nKażdy nowy pracownik przechodzi szkolenie z ochrony danych w ciągu 7 dni od rozpoczęcia pracy; szkolenie przypominające odbywa się raz w roku.",
+    "file": "C:\\Users\\ninja\\Desktop\\Bielik_2026\\linda-sejf\\corpus\\firma\\Procedura ochrony danych osobowych — Przykład sp. z o.o. (dokument fikcyjny).txt",
+    "locator": "lines 28-29",
+    "label": "Procedura ochrony danych osobowych — Przykład sp. z o.o. (dokument fikcyjny)",
+    "score": 0.0,
+    "sha256": "c50722ab56428aa1e5a0eed6ea37a86148e669480a38da2c28101c2e651203b4",
+    "rerank": null
+   }
+  ],
+  "timings": {
+   "retrieval_s": 0.001337400000920752,
+   "generation_s": 5.115768299998308,
+   "verify_s": 0.9062059999996563
+  },
+  "raw": "- Pracownik, który zauważył możliwe naruszenie ochrony danych, zgłasza je IOD niezwłocznie, nie później niż w ciągu 2 godzin od jego stwierdzenia [3].\n- IOD ocenia naruszenie w ciągu 24 godzin i rekomenduje zarządowi, czy zgłosić je do Prezesa UODO [3].\n- Zgłoszenia do Prezesa UODO dokonuje się w terminie 72 godzin od stwierdzenia naruszenia [3].\n- Nagrania z monitoringu wejścia do biura przechowuje się 30 dni, a następnie automatycznie nadpisuje [3, 4].\n- Dokumenty rekrutacyjne kandydatów niezatrudnionych usuwa się po 3 miesiącach od zakończenia rekrutacji, chyba że kandydat zgodził się na udział w przyszłych rekrutacjach — wtedy po 12 miesiącach [4].\n- Korespondencję z klientami w sprawie reklamacji przechowuje się 3 lata od zakończenia sprawy [4].\n- Każdy nowy pracownik przechodzi szkolenie z ochrony danych w ciągu 7 dni od rozpoczęcia pracy [4, 5].\n- Szkolenie przypominające odbywa się raz w roku [4, 5].\n- Rejestr czynności przetwarzania jest aktualizowany co najmniej raz na kwartał [2].\n- Dokumenty zawierające dane osobowe drukuje się wyłącznie na drukarkach z funkcją wydruku po zalogowaniu kartą [1, 2].\n- Wydruki niepotrzebne niszczy się w niszczarkach oznaczonych naklejką „P-4”; zabrania się wyrzucania ich do zwykłych koszy [2].\n- Danych osobowych nie wolno przesyłać przez prywatną pocztę ani prywatne komunikatory [2].\n- Pliki z danymi klientów wysyła się na zewnątrz wyłącznie w archiwum zaszyfrowanym hasłem, a hasło przekazuje się innym kanałem (SMS lub telefon) [2].\n- Komputer zostawiony bez nadzoru blokuje się skrótem Windows+L [2].\n- Ekran blokuje się automatycznie po 5 minutach bezczynności [2].\n- Inspektorem ochrony danych (IOD) w spółce jest Anna Nowak [2].",
+  "removed": 0,
+  "tool": "facts",
+  "kind": "lines",
+  "scope": "cały dokument",
+  "opts": {},
+  "parts": 1,
+  "seconds": 6.0,
+  "_case": {
+   "tool": "facts",
+   "docs": [
+    "firma/Procedura ochrony danych osobowych — Przykład sp. z o.o. (dokument fikcyjny).txt"
+   ],
+   "topic": "",
+   "opts": {},
+   "wall_s": 6.0
+  }
+ }
+]

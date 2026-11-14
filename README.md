@@ -44,7 +44,7 @@ Krótkie dokumenty idą do modelu w całości (do 24 fragmentów); dłuższe (do
 do tematu. Każde zdanie wyniku przechodzi przez ten sam weryfikator co odpowiedzi; niepotwierdzone są oznaczone.
 Na karcie graficznej 3–8 s na wynik; dokument w 2 częściach ok. 20 s.
 
-Jakość (16 zadań: notatki z wykładu, dokumenty firmy, Kodeks pracy, ustawa w częściach; skrypty w `sejf/final_check/studio2`):
+Jakość (16 zadań: notatki z wykładu, dokumenty firmy, Kodeks pracy, ustawa w częściach; skrypty, wyniki i ocena w `tools/studio_eval`):
 Gemini 4 Hydrogen ocenił 159 wierszy wersji wstępnej: 149 poprawnych, 4 częściowo, 0 błędnych, 6 z prawdziwą treścią,
 ale złym numerem fragmentu — weryfikator oznaczył wszystkie 6. Dlatego w 1.4.0 Sejf sam szuka fragmentu, który potwierdza
 takie zdanie, i poprawia numer (oznaczone w wyniku): na tych samych zadaniach 14 poprawionych numerów, ręcznie sprawdzone
