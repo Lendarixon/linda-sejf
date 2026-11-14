@@ -34,16 +34,16 @@ Name: "polish"; MessagesFile: "compiler:Languages\Polish.isl"
 Source: "{#Payload}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\Linda Sejf"; Filename: "{app}\runtime\python.exe"; Parameters: """{app}\launcher.py"""; WorkingDir: "{app}"; IconFilename: "{app}\ui\linda.ico"
+Name: "{group}\Linda Sejf"; Filename: "{app}\runtime\pythonw.exe"; Parameters: """{app}\launcher.py"""; WorkingDir: "{app}"; IconFilename: "{app}\ui\linda.ico"
 Name: "{group}\Folder dokumentów Linda Sejf"; Filename: "{app}\corpus"
 Name: "{group}\Odinstaluj Linda Sejf"; Filename: "{uninstallexe}"
-Name: "{userdesktop}\Linda Sejf"; Filename: "{app}\runtime\python.exe"; Parameters: """{app}\launcher.py"""; WorkingDir: "{app}"; IconFilename: "{app}\ui\linda.ico"; Tasks: desktopicon
+Name: "{userdesktop}\Linda Sejf"; Filename: "{app}\runtime\pythonw.exe"; Parameters: """{app}\launcher.py"""; WorkingDir: "{app}"; IconFilename: "{app}\ui\linda.ico"; Tasks: desktopicon
 
 [Tasks]
 Name: "desktopicon"; Description: "Skrót na pulpicie"; GroupDescription: "Skróty:"
 
 [Run]
-Filename: "{app}\runtime\python.exe"; Parameters: """{app}\launcher.py"""; WorkingDir: "{app}"; Description: "Uruchom Linda Sejf teraz (pierwszy start pobiera modele, ok. 8,2 GB)"; Flags: postinstall nowait skipifsilent
+Filename: "{app}\runtime\pythonw.exe"; Parameters: """{app}\launcher.py"""; WorkingDir: "{app}"; Description: "Uruchom Linda Sejf teraz (pierwsze uruchomienie pobiera modele, ok. 8,2 GB)"; Flags: postinstall nowait skipifsilent
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\models"

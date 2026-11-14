@@ -41,7 +41,7 @@ def sha256(p: Path) -> str:
     return h.hexdigest()
 
 
-def fetch(url: str, dst: Path):
+def fetch(url: str, dst: Path, progress=None):
     part = dst.with_name(dst.name + ".part")
     have = part.stat().st_size if part.exists() else 0
     req = urllib.request.Request(url, headers={"User-Agent": "linda-sejf-installer", **({"Range": f"bytes={have}-"} if have else {})})
@@ -60,31 +60,36 @@ def fetch(url: str, dst: Path):
                 pct = int(done * 100 / total) if total else 0
                 if pct != last:
                     print(f"\r  {dst.name}: {pct}% ({done >> 20} / {total >> 20} MB)", end="", flush=True)
+                    if progress:
+                        progress(f"Pobieram {dst.name}: {pct}% ({done >> 20} z {total >> 20} MB)")
                     last = pct
     print()
     part.replace(dst)
 
 
-def main():
-    root = Path(sys.argv[1] if len(sys.argv) > 1 else Path(__file__).resolve().parents[1] / "models")
+def main(root=None, progress=None):
+    """Pobiera brakujące modele; progress(tekst) — opcjonalny raport postępu (okno programu)."""
+    root = Path(root or (sys.argv[1] if len(sys.argv) > 1 else Path(__file__).resolve().parents[1] / "models"))
     for url, rel, sha in FILES:
         dst = root / rel
         dst.parent.mkdir(parents=True, exist_ok=True)
+        if progress:
+            progress(f"Sprawdzam {rel}…")
         if dst.exists() and (sha is None or sha256(dst) == sha):
             print("  jest:", rel)
             continue
         print("Pobieram", rel)
         for attempt in range(3):
             try:
-                fetch(url, dst)
+                fetch(url, dst, progress)
                 break
             except Exception as e:
                 print(f"\n  przerwane ({e}); ponawiam {attempt + 1}/3")
         else:
-            sys.exit(f"Nie udało się pobrać {rel}. Sprawdź internet i uruchom ponownie.")
+            raise RuntimeError(f"Nie udało się pobrać {rel}. Sprawdź internet i uruchom program ponownie.")
         if sha and sha256(dst) != sha:
             dst.unlink()
-            sys.exit(f"Suma kontrolna {rel} się nie zgadza — plik usunięty, uruchom ponownie.")
+            raise RuntimeError(f"Suma kontrolna {rel} się nie zgadza — plik usunięty, uruchom program ponownie.")
     print("Modele gotowe w", root)
 
 

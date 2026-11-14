@@ -33,9 +33,15 @@ def set_scope(index: Index, ids):
     index.only_files = files or None
 
 
+_BAD = set('<>:"/\\|?*') | {chr(i) for i in range(32)}
+_RESERVED = {"CON", "PRN", "AUX", "NUL", *(f"COM{i}" for i in range(1, 10)), *(f"LPT{i}" for i in range(1, 10))}
+
+
 def safe_upload_name(name: str):
-    """Tylko nazwa pliku (bez katalogów), dozwolone rozszerzenia; None gdy nie wolno."""
-    base = Path(str(name).replace("\\", "/")).name.strip()
+    """Tylko nazwa pliku (bez katalogów), dozwolone rozszerzenia, nazwa poprawna w Windows; None gdy nie wolno."""
+    base = Path(str(name).replace("\\", "/")).name.strip().rstrip(". ")
     if not base or base.startswith(".") or Path(base).suffix.lower() not in UPLOAD_EXT:
+        return None
+    if any(c in _BAD for c in base) or Path(base).stem.upper() in _RESERVED or len(base) > 180:
         return None
     return base

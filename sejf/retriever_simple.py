@@ -152,7 +152,7 @@ _WORD = re.compile(r"\w+", re.U)
 
 class Index:
     def __init__(self, folder, models_dir, state_dir, threads: int = 4, rerank_n: int = 30, depth: int = 60,
-                 passages: bool = False, passage_top: int = 15):
+                 passages: bool = False, passage_top: int = 15, progress=None):
         self.passages, self.passage_top = passages, passage_top
         self.only_files = None  # zbiór pełnych ścieżek plików, do których zawęża się wyszukiwanie (wybór źródeł w UI)
         self.folder = Path(folder)
@@ -162,11 +162,11 @@ class Index:
         self.rerank_n, self.depth = rerank_n, depth
         self.emb = Embedder(self.models / "e5", threads)
         self.rr = Reranker(self.models / "reranker", threads)
-        self._build()
+        self._build(progress)
 
     def _files(self):
         exts = TEXT_EXT | {".pdf", ".docx"}
-        return sorted(p for p in self.folder.rglob("*") if p.is_file() and p.suffix.lower() in exts)
+        return sorted(p for p in self.folder.rglob("*") if p.is_file() and p.suffix.lower() in exts and not p.name.startswith(("~$", ".")))
 
     def _file_part(self, p: Path):
         """Fragmenty i wektory jednego pliku; pamięć podręczna per plik (ścieżka + rozmiar + data zmiany)."""
@@ -186,17 +186,33 @@ class Index:
         np.savez_compressed(cache, v=vec, meta=np.array(json.dumps(meta, ensure_ascii=False)))
         return meta, vec
 
-    def _build(self):
-        self.meta, vecs = [], []
-        for p in self._files():
-            m, v = self._file_part(p)
-            self.meta += m
+    def _build(self, progress=None, folder=None):
+        """Buduje indeks folderu (pliki znane z pamięci podręcznej są wczytywane, nowe — liczone).
+        Gotowy indeks (razem z folderem) podmieniany jest naraz, więc w trakcie przebudowy działa stary."""
+        folder = Path(folder) if folder is not None else self.folder
+        exts = TEXT_EXT | {".pdf", ".docx"}
+        files = sorted(p for p in folder.rglob("*") if p.is_file() and p.suffix.lower() in exts
+                       and not p.name.startswith(("~$", ".")))
+        meta, vecs = [], []
+        for k, p in enumerate(files, 1):
+            try:
+                m, v = self._file_part(p)
+            except Exception:  # plik nieczytelny / zablokowany — pomijamy, nie przerywamy całości
+                m, v = [], np.zeros((0, 384), np.float32)
+            meta += m
             vecs.append(v)
-        self.vec = np.vstack(vecs) if vecs else np.zeros((0, 384), np.float32)
-        self.db = sqlite3.connect(":memory:", check_same_thread=False)
-        self.db.execute("CREATE VIRTUAL TABLE docs USING fts5(text, tokenize='unicode61')")
-        self.db.executemany("INSERT INTO docs(rowid, text) VALUES (?, ?)",
-                            ((i, m["text"].lower()) for i, m in enumerate(self.meta)))
+            if progress:
+                progress(k, len(files), p.name)
+        vec = np.vstack(vecs) if vecs else np.zeros((0, 384), np.float32)
+        db = sqlite3.connect(":memory:", check_same_thread=False)
+        db.execute("CREATE VIRTUAL TABLE docs USING fts5(text, tokenize='unicode61')")
+        db.executemany("INSERT INTO docs(rowid, text) VALUES (?, ?)", ((i, m["text"].lower()) for i, m in enumerate(meta)))
+        self.meta, self.vec, self.db, self.folder = meta, vec, db, folder
+        self.only_files = None
+
+    def reload(self, folder=None, progress=None):
+        """Zmiana folderu dokumentów albo odświeżenie (nowe, zmienione i usunięte pliki)."""
+        self._build(progress, folder)
 
     def add_file(self, p) -> int:
         """Dodaje nowy plik do działającego indeksu (bez przebudowy całości). Zwraca liczbę fragmentów."""

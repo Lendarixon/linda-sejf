@@ -21,11 +21,15 @@ Strona projektu: https://lindasejf.denmarkeast.cloudapp.azure.com/projekt/ · de
    sprawdzane sumy SHA-256) i buduje indeks dokumentów (kilka minut). Potem w przeglądarce otwiera się aplikacja
    `http://127.0.0.1:8765/`. Zamknięcie okna konsoli zatrzymuje aplikację.
 
-W aplikacji: po lewej **źródła** (dokumenty z folderu; można zaznaczyć, w których szukać, i dodać plik przyciskiem
-„+ dodaj plik”), na środku rozmowa, po prawej podgląd dokumentu z podświetlonym cytowanym fragmentem.
+Program otwiera się we własnym oknie (WebView2 wbudowany w Windows 10/11; bez niego — w przeglądarce).
+Po lewej **źródła** (dokumenty z folderu; można zaznaczyć, w których szukać, dodać plik przyciskiem „+ dodaj plik”
+albo przeciągnąć go myszą, „odśwież” wczytuje nowe pliki), na środku rozmowa („kopiuj odpowiedź ze źródłami”,
+„nowa rozmowa”), po prawej podgląd dokumentu z podświetlonym cytowanym fragmentem.
+**Ustawienia**: folder dokumentów (okno wyboru folderu), tryb zwykły / ostrożny, wątki procesora.
+**Dziennik audytu**: ostatnie pytania (z zamaskowanymi PESEL/NIP/REGON/IBAN) i sprawdzenie łańcucha SHA-256.
 Na start w folderze dokumentów są trzy fikcyjne dokumenty firmy „Przykład sp. z o.o.” i 11 polskich ustaw.
 Obsługiwane pliki: `.txt`, `.md`, `.pdf` (z warstwą tekstu), `.docx`. Wymagania: 16 GB RAM, ok. 9 GB na dysku.
-Ustawienia: `%LOCALAPPDATA%\LindaSejf\config.json` (`documents`, `gguf`, `threads`, `min_rerank`, `passages`).
+Ustawienia zapisują się w `%LOCALAPPDATA%\LindaSejf\config.json` (także `gguf`, `min_rerank`, `passages` do ręcznej edycji).
 
 ## Uruchomienie ze źródeł (Windows / Linux)
 
@@ -82,7 +86,7 @@ Właściwy artykuł w top 5 źródeł: 88% pytań (Linda Probe: 71%). Przy n = 1
 Dlaczego 0,7, a nie 0,9: ocena rerankera mocno zależy od sformułowania pytania („Do której godziny muszę zgłosić, że jestem
 chory?” 0,78, a „…zgłosić przełożonemu, że jestem chory?” 0,98 — w regulaminie jest „nieobecność”, nie „choroba”). Próg 0,9
 odrzucał więc wiele zwykłych pytań; przy 0,7 bramka zatrzymuje pytania wyraźnie spoza dokumentów, a resztę odmów robi model.
-Ostrożniejszy tryb: `"min_rerank": 0.95` w `config.json`.
+Ostrożniejszy tryb: Ustawienia → „ostrożny” (próg 0,95).
 
 Ograniczenia: sędziowie to modele, nie ludzie; ewaluacja na ustawach — dokumenty firmowe w demo są fikcyjne i służą
 tylko do demonstracji; pytania wymagające wnioskowania („limit hotelu w Krakowie”, gdy dokument mówi o „pozostałych

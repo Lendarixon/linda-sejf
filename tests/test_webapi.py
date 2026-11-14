@@ -19,3 +19,11 @@ def test_windows_cover_all_lines():
         covered |= set(x["text"].split("\n"))
     assert covered == set(text.split("\n"))
     assert all(len(x["text"]) <= 380 + 130 for x in w)
+
+
+def test_upload_name_windows_rules():
+    assert safe_upload_name("CON.txt") is None
+    assert safe_upload_name("a<b.pdf") is None
+    assert safe_upload_name("x.docx.") == "x.docx"
+    assert safe_upload_name("Umowa ąę.txt") == "Umowa ąę.txt"
+    assert safe_upload_name(r"..\..\x.pdf") == "x.pdf"

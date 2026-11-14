@@ -68,6 +68,27 @@ textarea{flex:1;resize:none;height:56px;background:var(--s1);color:var(--fg);bor
 .go{background:var(--acc);color:#fff;padding:0 22px;font-weight:600}.go:disabled{background:var(--s2);color:var(--dim);cursor:wait}
 .opts{max-width:860px;margin:8px auto 0;display:flex;gap:16px;flex-wrap:wrap;color:var(--dim);font-size:12px}
 .opts label{display:flex;gap:6px;align-items:center}
+/* panele: ustawienia, dziennik */
+.tb{background:none;color:var(--mut);font-size:13px;padding:4px 2px;margin-left:14px}.tb:hover{color:#fff}
+.ov{position:fixed;inset:0;background:rgba(5,6,10,.72);display:none;z-index:20;align-items:flex-start;justify-content:center;padding:48px 16px;overflow:auto}
+.ov.on{display:flex}.ovp{background:var(--s1);border:1px solid var(--line);width:min(880px,100%);padding:26px 30px 30px}
+.ovh{display:flex;align-items:center;gap:12px;margin-bottom:6px}.ovh h2{font:300 40px/1 var(--disp);margin:0;flex:1;text-transform:lowercase;letter-spacing:-.01em}
+.ovh button{background:none;color:var(--mut);font-size:26px}
+.set{border-top:1px solid var(--line);padding:16px 0}.set h3{margin:0 0 6px;font-size:15px;font-weight:600}.set p{margin:0 0 10px;color:var(--mut);font-size:13px}
+.path{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.path code{background:var(--bg);border:1px solid var(--line);padding:7px 10px;font-size:13px;flex:1;min-width:200px;overflow-wrap:anywhere}
+.path input{flex:1;min-width:200px;background:var(--bg);border:1px solid var(--line);color:var(--fg);padding:7px 10px;font:13px var(--font)}
+.btn2{background:var(--s2);color:#fff;padding:8px 12px;border:0;border-left:3px solid var(--acc)}.btn2:hover{background:#2a2f3b}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mode{background:var(--s2);color:#fff;text-align:left;padding:14px;border-left:4px solid transparent}
+.mode b{display:block;font:300 22px/1.1 var(--disp);margin-bottom:6px;text-transform:lowercase}.mode span{color:var(--mut);font-size:13px}
+.mode.on{border-left-color:var(--teal);background:#232836}
+.job{color:var(--link);font-size:13px;margin-top:8px;min-height:18px}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:4px 12px;font-size:13px;color:var(--mut)}.kv b{color:#fff;font-weight:400;overflow-wrap:anywhere}
+.chain{padding:14px 16px;color:#fff;margin:8px 0 14px}.chain b{font:300 26px/1.1 var(--disp);display:block}
+.aud{width:100%;border-collapse:collapse;font-size:13px}.aud td,.aud th{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.aud th{color:var(--dim);font-weight:400}.st-ok{color:#5fd38a}.st-no{color:var(--mark)}
+.side.drop{outline:3px dashed var(--teal);outline-offset:-8px}
+.ref{background:none;color:var(--dim);font-size:12px;padding:0 0 0 8px}.ref:hover{color:#fff}
+.copy{background:none;color:var(--dim);font-size:12px;padding:0;margin-left:10px}.copy:hover{color:#fff}
 /* podgląd */
 .view{background:var(--s1);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0;overflow:hidden}
 .vh{display:flex;align-items:flex-start;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
@@ -85,7 +106,7 @@ mark{background:var(--mark);color:#0d0f15;padding:1px 0}
   <aside class="side" aria-label="Źródła">
     <div class="brand"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAHyElEQVR4nO3dzYocVRiH8fOe+uhO90yciaDRKCoEIii4ESXgQvACvATBO/AG1IXo2kuYtWsXLsSNK0UEFT/AhQ7BGI1m4sxkpuvjHKmqSRMSjT0LT8/0//kxiwkEKtU5T/rUpOstu7C17QBVftl/AGCZCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADSCADS8pQHK7yZpTwgTp8YXR3iqgVgzkXndmahiXH4HrjLsDBys2lhyRZJogCGkzmTW3+awH9I9k9kigAKbzdmYb20d17YuLRR1MEVXHrgHsPC+GGnfuvznd0qbo58gr1QigAyc1Ubzdkrj515Yi3pVQdOncfW8rc/36namJmr///DpViO0Tnfb3yu7rePTrIqxHL4NXCHYWFc3W+7n07aal0DHB3Mu9xb6L4hANxtWBh52u1x6g3JcBXM8se9lrIwuBqFNAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKAtKRzgZoQq/4r5UFxWlT9wmjSLo8UAZhzw0mdn+SlN+Yi4h8NC+P8pFuTISYakpUigDa6Muu++fTq4fXDogndjETgLsPC+P5GNxK3zLplk4Bd2Np2qTARFItIuQlKNx06RnezCm1IcECcYpl3692ztBLtghJdA8S+6XOjbBh7zXBc3GtYGKF/RlhcpWuAuZQPPwMWwdUopBEApBEApBEApBEApBEApBEApBEApBEApBEApBEApBEApBEApCX9NKjmp6CP+wlYGz47LiyarWgApthAiMdowGL0Ufqmoehs1QKIzmX9DT7XbrVV6O+PcatvfpoPjv00t0XucPWh3TvzwM70rO9WgcSrdCdzrvVuXFfndq/7GFrL+runTn8AmblZG0tvrz41OTfKQozdHW+rbn6an/02+3m3mRT329r0d4zawWh66crXz25/22Su9aa2FwreT2bh2sbmFxcvz/LRqJkF86sQQOHtj8Pw4NjefH7j2XOlE/P6J9e/vF6tl3nb3ej3zyzGYP7mdPPlbz56b+vdvTPusHSZ2Faozt1Df7pPnnvmtTc+3B+tTWd7VT5atWsAUfF4v9X6LZBpvQG44XwTbHuWEMCw8nerUPeT4RRmY81Psw6Llm8xVPnor2mxN3KHZZ6Fximp83L9oNobr6fMIOk7QO6t8F3nhUAA89McBmEsxnwMRVMXuWvbqBaAMyuaOm+TnjX/EQZpBABpBABpBABpBABpBABpBABpBABpBABpBABpBABpBABpBABpBABpBABpBABpBABpBABpBABpBABpBABpBABpBABpSecCNSHW/dfqTwXq5mEdnWaIi8/E7gYk1nlRZ67O8iA2Sa/OijqPTZZ2VlWawwyTodZLX/SzsZyA+WkWvpt8u4hovmxmZ/frrHWjptabDVqPD93a4e4wJD3NQZPWJjbt+A52vN8a7ehLSuzPN9nSH9iFre3/+xj+9nj0y+dHjEe/z3j0WTG++Mt3jEf/4uLlKivTjEdPEcD8ARm/H/CAjPvhARntSj4gw/oLQefcw5NM7F29E6Jb5PEw/RMisunh7vrBTScsOgveBzvOTOFTdA0geBVwrFOOZoGfTSeUNoCUBzu1Uj4iDvxHGKQRAKQRAKQRAKQRAKQRAKQRAKQRAKQRAKQRAKQRAKQRAKQRAKQl/TRo4Y8+5c3HHZdl/uLXIbaJ7z6UDSD2d0XG6P6cta3Yjd4n1iS3cW7DjUrKEt0RNtwO/0DJjuukiPHoNj1xKQIovN2YtWdL/+6Lm09vFk1wOSEsyfzFf/+r3Q9+3H9o4qPytI40AWTmqrb75qVHxk+uJ73qwL95fO3WbMFblVdaumsA59yvt5pHp1kVuhEpCY6Le9UhDhO79urIX0LqnwLl3oalTwDLYrdH1iUaunDisRmHNAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKANAKAtNRz2uLtLywFL/4yA2iCa0JsQuR9Z1maEIehfIHZ6CmnQw+DiB+ZZoW3YTIZlmL+4q8VzEZPFUAbXZlZdO7jKweXNoo6uIK3gGVPh/5ptxnn3V+KOLuwtZ3sYAykPznMeDxMwmuA7hkZzh00sYndHpR/eJZl/uJPchtl7IJSBTC86Bsjb+z/T4aGZ4Sl/ylQzR7oJLFl/wFOAq5GIY0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0AII0A4JT9DbaRI/clhsyfAAAAAElFTkSuQmCC" alt=""><b>linda sejf</b></div>
     <h2>źródła</h2>
-    <div class="cnt" id="cnt">…</div>
+    <div class="cnt"><span id="cnt">…</span><button class="ref" id="refb" hidden title="Wczytaj nowe i zmienione pliki z folderu">odśwież</button></div>
     <button class="addbtn" id="add" hidden>+ dodaj plik</button>
     <input type="file" id="file" accept=".txt,.md,.pdf,.docx" hidden>
     <label class="allrow"><input type="checkbox" id="all" checked> wszystkie dokumenty</label>
@@ -95,7 +116,8 @@ mark{background:var(--mark);color:#0d0f15;padding:1px 0}
   <main class="main">
     <div class="top"><span class="pill" id="pill">lokalnie · nic nie wychodzi z komputera</span><span class="sp"></span>
       <a href="https://github.com/Lendarixon/linda-sejf" target="_blank" rel="noopener">kod</a>
-      <a href="https://lindasejf.denmarkeast.cloudapp.azure.com/projekt/" target="_blank" rel="noopener">o projekcie</a></div>
+      <a href="https://lindasejf.denmarkeast.cloudapp.azure.com/projekt/" target="_blank" rel="noopener">o projekcie</a>
+      <button class="tb" id="newb">nowa rozmowa</button><button class="tb" id="audb" hidden>dziennik</button><button class="tb" id="setb" hidden>ustawienia</button></div>
     <div class="thread" id="thread"><div class="wrapc" id="msgs">
       <div class="empty" id="empty">
         <h1>zapytaj swoje dokumenty</h1>
@@ -110,6 +132,8 @@ mark{background:var(--mark);color:#0d0f15;padding:1px 0}
         <label><input type="checkbox" id="strict"> tylko potwierdzone zdania</label><span>Ctrl+Enter wysyła</span></div>
     </div>
   </main>
+  <div class="ov" id="ov" role="dialog" aria-modal="true" aria-labelledby="ovt"><div class="ovp">
+    <div class="ovh"><h2 id="ovt"></h2><button id="ovx" aria-label="Zamknij">×</button></div><div id="ovb"></div></div></div>
   <section class="view" id="view" aria-label="Podgląd dokumentu">
     <div class="vh"><b id="vt"></b><button id="vx" aria-label="Zamknij podgląd">×</button></div>
     <div class="vb" id="vb"></div>
@@ -117,7 +141,8 @@ mark{background:var(--mark);color:#0d0f15;padding:1px 0}
 </div>
 <script>
 const $=id=>document.getElementById(id);
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pl=(n,a,b,c)=>n+" "+(n===1?a:(n%10>=2&&n%10<=4&&(n%100<12||n%100>14))?b:c);
 const SUP="⁰¹²³⁴⁵⁶⁷⁸⁹";const sup=t=>t.replace(/(\d[a-z]?)\[(\d{1,2})\]/g,(m,a,b)=>a+[...b].map(d=>SUP[d]).join(""));
 const COLORS=["var(--teal)","var(--blue)","var(--purple)","var(--rasp)","var(--amber)","var(--green)"];
 let DOCS=[],HEALTH={},busy=false;
@@ -126,13 +151,14 @@ const EX_FIRMA=["Do której godziny muszę zgłosić przełożonemu, że jestem 
 function exTiles(list){$("ex").innerHTML="";list.forEach((t,i)=>{const b=document.createElement("button");b.className="tile";b.style.background=COLORS[i%COLORS.length];
   b.innerHTML=esc(t)+"<small>"+(/budżet|premia|Wi-Fi|psa/.test(t)?"tego nie ma w dokumentach":"zapytaj")+"</small>";b.onclick=()=>{$("q").value=t;ask()};$("ex").append(b)})}
 function selectedIds(){if($("all").checked)return null;return [...document.querySelectorAll(".doc input:checked")].map(x=>x.value)}
-function updScope(){const s=selectedIds();$("scope").textContent=s===null?"szukam we wszystkich dokumentach ("+DOCS.length+")":s.length?"szukam w wybranych: "+s.length:"zaznacz co najmniej jeden dokument"}
+function updScope(){const s=selectedIds();$("scope").textContent=s===null?"szukam we wszystkich dokumentach ("+DOCS.length+")":s.length?"szukam w "+(s.length===1?"1 wybranym dokumencie":s.length+" wybranych dokumentach"):"zaznacz co najmniej jeden dokument"}
 function grpName(id){const i=id.lastIndexOf("/");return i<0?"dokumenty":id.slice(0,i)}
-function renderDocs(){const g={};DOCS.forEach(d=>(g[grpName(d.id)]=g[grpName(d.id)]||[]).push(d));
+function renderDocs(){const keep=selectedIds();const g={};DOCS.forEach(d=>(g[grpName(d.id)]=g[grpName(d.id)]||[]).push(d));
   const keys=Object.keys(g).sort((a,b)=>a==="dokumenty"?1:b==="dokumenty"?-1:a.localeCompare(b));let h="";
   for(const k of keys){h+='<div class="grp">'+esc(k==="firma"?"firma (dokumenty fikcyjne)":k)+'</div>';
-    for(const d of g[k])h+='<div class="doc on"><input type="checkbox" value="'+esc(d.id)+'" checked aria-label="Użyj: '+esc(d.name)+'"><button data-id="'+esc(d.id)+'" title="'+esc(d.name)+'">'+esc(d.name.replace(/\s*\(dokument fikcyjny\)/,"").replace(/ — Przykład sp\. z o\.o\./,""))+'</button><small>'+d.chunks+'</small></div>'}
-  $("docs").innerHTML=h;$("cnt").textContent=DOCS.length+" dokumentów · "+DOCS.reduce((a,d)=>a+d.chunks,0)+" fragmentów";
+    for(const d of g[k]){const on=!keep||keep.includes(d.id);h+='<div class="doc'+(on?" on":"")+'"><input type="checkbox" value="'+esc(d.id)+'"'+(on?" checked":"")+' aria-label="Użyj: '+esc(d.name)+'"><button data-id="'+esc(d.id)+'" title="'+esc(d.name)+'">'+esc(d.name.replace(/\s*\(dokument fikcyjny\)/,"").replace(/ — Przykład sp\. z o\.o\./,""))+'</button><small title="fragmentów w indeksie">'+d.chunks+'</small></div>'}}
+  $("docs").innerHTML=h||'<p style="color:var(--dim);font-size:13px;margin:12px 8px">Folder jest pusty. Dodaj pliki .txt, .md, .pdf albo .docx przyciskiem powyżej, przeciągnij je tutaj albo wskaż inny folder w ustawieniach.</p>';
+  if(keep)$("all").checked=[...document.querySelectorAll(".doc input")].every(y=>y.checked);$("cnt").textContent=pl(DOCS.length,"dokument","dokumenty","dokumentów")+" · "+pl(DOCS.reduce((a,d)=>a+d.chunks,0),"fragment","fragmenty","fragmentów");
   document.querySelectorAll(".doc input").forEach(x=>x.onchange=()=>{x.parentElement.classList.toggle("on",x.checked);$("all").checked=[...document.querySelectorAll(".doc input")].every(y=>y.checked);updScope()});
   document.querySelectorAll(".doc button").forEach(b=>b.onclick=()=>openDoc(b.dataset.id,null));updScope()}
 $("all").onchange=()=>{document.querySelectorAll(".doc input").forEach(x=>{x.checked=$("all").checked;x.parentElement.classList.toggle("on",x.checked)});updScope()};
@@ -156,7 +182,7 @@ async function ask(){const q=$("q").value.trim();if(!q||busy)return;const ids=se
   const tick=setInterval(()=>{const el=w.querySelector(".t");if(el)el.textContent=Math.round((Date.now()-t0)/1000)},500);
   try{const r=await fetch("/api/ask",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:q,mode:$("strict").checked?"strict":"flag",documents:ids})});
     const a=await r.json();if(!r.ok)throw new Error(a.error||("HTTP "+r.status));w.innerHTML=renderAnswer(a);bind(w,a)}
-  catch(e){w.innerHTML='<div class="err">'+esc(e.message||e)+'</div>'}
+  catch(e){w.innerHTML='<div class="err">'+esc(e.message||e)+'</div>';if(!$("q").value)$("q").value=q}
   finally{clearInterval(tick);busy=false;$("go").disabled=false;$("thread").scrollTop=$("thread").scrollHeight}}
 function renderAnswer(a){let h='<div class="a">';
   if(a.status!=="answered"){h+='<div class="refuse">nie znaleziono odpowiedzi w dokumentach</div><div class="why">'+(a.status==="no_sources"?"Żaden fragment nie pasuje wystarczająco do pytania, więc model nie zgaduje. Najbliższe fragmenty są niżej — możesz je sprawdzić.":"Model nie znalazł odpowiedzi w przekazanych fragmentach.")+'</div>'}
@@ -165,20 +191,70 @@ function renderAnswer(a){let h='<div class="a">';
       h+='<span class="s '+s.status+'" title="'+tip+'">'+esc(s.text.replace(/\s*\[\d{1,2}(?:\s*,\s*\d{1,2})*\]/g,""))+'</span>';
       for(const n of s.cited)h+='<button class="cite" data-n="'+n+'" aria-label="Pokaż źródło '+n+'">'+n+'</button>';h+=' '}
     h+='</div>';const bad=a.sentences.filter(s=>s.status==="unsupported").length;
-    h+=a.removed?'<div class="note warn">Usunięto niepotwierdzone zdania: '+a.removed+'</div>':bad?'<div class="note warn">Zdania podkreślone na czerwono nie mają potwierdzenia w cytowanym fragmencie ('+bad+').</div>':'<div class="note">Każde zdanie potwierdzone w cytowanym fragmencie. Kliknij numer, żeby zobaczyć miejsce w dokumencie.</div>'}
+    h+=a.removed?'<div class="note warn">Usunięto niepotwierdzone zdania: '+a.removed+'</div>':bad?'<div class="note warn">'+(bad===1?"Zdanie podkreślone na czerwono nie ma":"Zdania podkreślone na czerwono ("+bad+") nie mają")+' potwierdzenia w cytowanym fragmencie.</div>':'<div class="note">Każde zdanie potwierdzone w cytowanym fragmencie. Kliknij numer, żeby zobaczyć miejsce w dokumencie.</div>'}
   if(a.sources&&a.sources.length){h+='<div class="srcs">';for(const s of a.sources)h+='<button data-n="'+s.n+'">['+s.n+'] '+esc(s.label||s.file)+'</button>';h+='</div>'}
-  const t=a.timings||{};h+='<div class="meta">'+a.seconds+' s · wyszukiwanie '+(t.retrieval_s||0).toFixed(1)+' s · model '+(t.generation_s||0).toFixed(1)+' s · weryfikacja '+(t.verify_s||0).toFixed(1)+' s</div></div>';return h}
-function bind(w,a){w.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{const s=(a.sources||[]).find(x=>x.n==b.dataset.n);if(s)openDoc(idForFile(s.file),s.text)})}
+  const t=a.timings||{};h+='<div class="meta">'+a.seconds+' s · wyszukiwanie '+(t.retrieval_s||0).toFixed(1)+' s · model '+(t.generation_s||0).toFixed(1)+' s · weryfikacja '+(t.verify_s||0).toFixed(1)+' s'+(a.status==="answered"?'<button class="copy" data-copy="1">kopiuj odpowiedź ze źródłami</button>':'')+'</div></div>';return h}
+function bind(w,a){w.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{const s=(a.sources||[]).find(x=>x.n==b.dataset.n);if(s)openDoc(idForFile(s.file),s.text)});
+  const c=w.querySelector("[data-copy]");if(c)c.onclick=async()=>{const txt=a.question+"\n\n"+a.sentences.map(s=>s.text).join(" ")+"\n\nŹródła:\n"+(a.sources||[]).map(s=>"["+s.n+"] "+(s.label||s.file)).join("\n");
+    try{await navigator.clipboard.writeText(txt);c.textContent="skopiowano"}catch(e){c.textContent="nie udało się skopiować"}setTimeout(()=>c.textContent="kopiuj odpowiedź ze źródłami",1800)}}
 $("go").onclick=ask;$("q").addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();ask()}});
 $("add").onclick=()=>$("file").click();
-$("file").onchange=async()=>{const f=$("file").files[0];if(!f)return;$("add").textContent="dodaję: "+f.name+"…";$("add").disabled=true;
+async function upload(f){$("add").textContent="dodaję: "+f.name+"…";$("add").disabled=true;
   try{const r=await fetch("/api/upload",{method:"POST",headers:{"X-Filename":encodeURIComponent(f.name),"Content-Type":"application/octet-stream"},body:f});const d=await r.json();
-    if(!r.ok)throw new Error(d.error||r.status);await loadDocs();$("foot").textContent=d.warning||("Dodano: "+f.name+" ("+d.chunks+" fragmentów).")}
-  catch(e){$("foot").textContent="Nie dodano pliku: "+(e.message||e)}finally{$("add").textContent="+ dodaj plik";$("add").disabled=false;$("file").value=""}};
-fetch("/api/health").then(r=>r.json()).then(h=>{HEALTH=h;$("add").hidden=!h.upload;
+    if(!r.ok)throw new Error(d.error||r.status);await loadDocs();$("foot").textContent=d.warning||("Dodano: "+f.name+" ("+pl(d.chunks,"fragment","fragmenty","fragmentów")+").")}
+  catch(e){$("foot").textContent="Nie dodano pliku: "+(e.message||e)}finally{$("add").textContent="+ dodaj plik";$("add").disabled=false;$("file").value=""}}
+$("file").onchange=()=>{const f=$("file").files[0];if(f)upload(f)};
+const side=document.querySelector(".side");
+let dragN=0;
+side.addEventListener("dragenter",e=>{if(!HEALTH.upload)return;e.preventDefault();dragN++;side.classList.add("drop")});
+side.addEventListener("dragover",e=>{if(HEALTH.upload)e.preventDefault()});
+side.addEventListener("dragleave",()=>{if(--dragN<=0){dragN=0;side.classList.remove("drop")}});
+side.addEventListener("drop",async e=>{dragN=0;side.classList.remove("drop");if(!HEALTH.upload)return;e.preventDefault();for(const f of e.dataTransfer.files)await upload(f)});
+/* panele: ustawienia i dziennik */
+let jobTimer=null;
+function openOv(title,html){$("ovt").textContent=title;$("ovb").innerHTML=html;$("ov").classList.add("on");$("ovx").focus()}
+function closeOv(){$("ov").classList.remove("on")}
+$("ovx").onclick=closeOv;$("ov").onclick=e=>{if(e.target===$("ov"))closeOv()};document.addEventListener("keydown",e=>{if(e.key==="Escape")closeOv()});
+const API=()=>window.pywebview&&window.pywebview.api;
+async function post(url,body){const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body||{})});const d=await r.json();if(!r.ok)throw new Error(d.error||r.status);return d}
+function watchJob(){clearInterval(jobTimer);jobTimer=setInterval(async()=>{let s;try{s=await (await fetch("/api/settings")).json()}catch(e){return}const j=$("job");if(j)j.textContent=s.job.text||"";
+  $("foot").textContent=s.job.busy?(s.job.text||"Indeksuję…"):"Folder dokumentów: "+s.documents+". Nic nie jest wysyłane do internetu.";
+  if(!s.job.busy){clearInterval(jobTimer);await loadDocs();const c=$("curdir");if(c)c.textContent=s.documents}},800)}
+async function showSettings(){let s;try{const r=await fetch("/api/settings");s=await r.json();if(!r.ok)throw new Error(s.error)}catch(e){openOv("ustawienia",'<div class="err">Nie udało się wczytać ustawień: '+esc(e.message||e)+'</div>');return}const nat=!!API();
+  const thr=[...new Set([2,4,6,8,12,16,s.threads].filter(x=>x<=Math.max(s.cpu||8,s.threads)))].sort((a,b)=>a-b);
+  openOv("ustawienia",
+  '<div class="set"><h3>Folder dokumentów</h3><p>Sejf przeszukuje ten folder razem z podfolderami (.txt, .md, .pdf, .docx). Pliki nie są nigdzie wysyłane.</p>'+
+  '<div class="path"><code id="curdir">'+esc(s.documents)+'</code>'+(nat?'<button class="btn2" id="pick">zmień folder…</button><button class="btn2" id="opendir">otwórz w Eksploratorze</button>':'<input id="dirin" placeholder="np. C:\\Dokumenty\\Firma" aria-label="Nowy folder dokumentów"><button class="btn2" id="setdir">zmień</button>')+
+  '<button class="btn2" id="reidx">odśwież</button></div><div class="job" id="job">'+esc(s.job.text||"")+'</div></div>'+
+  '<div class="set"><h3>Tryb odpowiedzi</h3><p>Jak chętnie Sejf odpowiada, gdy dopasowanie fragmentu do pytania jest słabe. Liczby z testu na 124 pytaniach z praktyki biurowej i 31 pytaniach-pułapkach.</p><div class="modes">'+
+  '<button class="mode'+(s.mode==="normal"?" on":"")+'" data-mode="normal"><b>zwykły</b><span>odpowiada na ok. 81% pytań, 6–9% błędnych</span></button>'+
+  '<button class="mode'+(s.mode==="careful"?" on":"")+'" data-mode="careful"><b>ostrożny</b><span>odpowiada na ok. 60% pytań, 4–6% błędnych</span></button></div></div>'+
+  '<div class="set"><h3>Wydajność</h3><p>Wątki procesora dla modelu i wyszukiwarki (zmiana działa od następnego uruchomienia).</p><select id="thr" class="btn2" aria-label="Wątki procesora">'+thr.map(t=>'<option'+(t===s.threads?' selected':'')+'>'+t+'</option>').join("")+'</select></div>'+
+  '<div class="set"><h3>Informacje</h3><div class="kv"><span>model</span><b>'+esc(s.model)+'</b><span>weryfikator</span><b>'+esc(s.verifier||"")+'</b><span>próg odmowy</span><b>'+s.min_rerank+'</b><span>wersja</span><b>'+esc(s.version)+'</b><span>dane programu</span><b>'+esc(s.data)+(nat?' <button class="ref" id="opendata">otwórz</button>':'')+'</b></div></div>');
+  const msg=t=>{$("job").textContent=t};
+  const setDir=async p=>{try{await post("/api/settings",{documents:p});$("curdir").textContent=p;msg("Indeksuję nowy folder…");watchJob()}catch(e){msg(e.message)}};
+  if(nat){$("pick").onclick=async()=>{const p=await API().pick_folder();if(p)setDir(p)};
+    $("opendir").onclick=()=>API().open_folder("docs");$("opendata").onclick=()=>API().open_folder("data")}
+  else $("setdir").onclick=()=>{const p=$("dirin").value.trim();if(p)setDir(p)};
+  $("reidx").onclick=async()=>{try{await post("/api/reindex");msg("Sprawdzam pliki…");watchJob()}catch(e){msg(e.message)}};
+  document.querySelectorAll(".mode").forEach(b=>b.onclick=async()=>{try{await post("/api/settings",{mode:b.dataset.mode});document.querySelectorAll(".mode").forEach(x=>x.classList.toggle("on",x===b));msg("Zapisano tryb.")}catch(e){msg(e.message)}});
+  $("thr").onchange=async()=>{try{const d=await post("/api/settings",{threads:+$("thr").value});msg(d.message)}catch(e){msg(e.message)}};
+  if(s.job.busy)watchJob()}
+async function showAudit(){let a;try{const r=await fetch("/api/audit");a=await r.json();if(!r.ok)throw new Error(a.error)}catch(e){openOv("dziennik audytu",'<div class="err">Nie udało się wczytać dziennika: '+esc(e.message||e)+'</div>');return}
+  let h='<p style="color:var(--mut);margin:0">Każde pytanie trafia do dziennika na tym komputerze: jego treść z zamaskowanymi numerami PESEL, NIP, REGON i IBAN, wynik, źródła i weryfikacja zdań. Każdy wpis zawiera skrót SHA-256 poprzedniego, więc zmiana albo usunięcie wpisu jest wykrywane.</p>';
+  h+='<div class="chain" style="background:'+(a.ok?"var(--green)":"var(--red)")+'"><b>'+(a.ok?"łańcuch nienaruszony":"łańcuch przerwany")+'</b>'+pl(a.count,'wpis','wpisy','wpisów')+(a.ok?'':' · pierwszy zmieniony wpis: nr '+a.bad_line)+'</div>';
+  if(a.entries.length){h+='<table class="aud"><tr><th>czas</th><th>pytanie (zamaskowane)</th><th>wynik</th><th>źródła</th></tr>';
+    for(const e of a.entries)h+='<tr><td>'+esc((e.ts||"").replace("T"," ").slice(0,16))+'</td><td>'+esc(e.question||"")+(e.pii?' <span class="st-no">(zamaskowano dane)</span>':'')+'</td><td class="'+(e.status==="answered"?"st-ok":"st-no")+'">'+(e.status==="answered"?"odpowiedź"+(e.unsupported?" · niepotwierdzone zdania: "+e.unsupported:""):"odmowa")+'</td><td>'+e.sources+'</td></tr>';
+    h+='</table>'}else h+='<p style="color:var(--dim)">Dziennik jest pusty — zadaj pierwsze pytanie.</p>';
+  if(a.path)h+='<p style="color:var(--dim);font-size:12px;margin-top:12px">Plik: '+esc(a.path)+'</p>';openOv("dziennik audytu",h)}
+$("setb").onclick=showSettings;$("audb").onclick=showAudit;
+const EMPTY=$("msgs").innerHTML;$("newb").onclick=()=>{if(busy)return;$("msgs").innerHTML=EMPTY;exTiles(HEALTH.demo||DOCS.some(d=>d.id.startsWith("firma/"))?EX_FIRMA:EX_LOCAL);$("app").classList.remove("viewing");$("q").focus()};
+$("refb").onclick=async()=>{try{await post("/api/reindex");$("foot").textContent="Sprawdzam pliki w folderze…";watchJob()}catch(e){$("foot").textContent=e.message}};
+
+fetch("/api/health").then(r=>r.json()).then(h=>{HEALTH=h;$("add").hidden=!h.upload;$("setb").hidden=$("audb").hidden=$("refb").hidden=!h.settings;
   if(h.demo){$("pill").textContent="demo online · dokumenty fikcyjnej firmy i 11 ustaw";$("pill").style.borderLeftColor="var(--amber)";
     $("foot").textContent="Demo na serwerze 4 vCPU bez GPU — odpowiedź trwa ok. 1 min. Na laptopie z instalatora: 20–25 s, z kartą graficzną ok. 8 s.";exTiles(EX_FIRMA)}
-  else{$("foot").textContent="Folder dokumentów: "+h.documents+". Nic nie jest wysyłane do internetu.";exTiles(DOCS.some(d=>d.id.startsWith("firma/"))?EX_FIRMA:EX_LOCAL)}}).catch(()=>exTiles(EX_LOCAL));
+  else{$("pill").textContent="lokalnie · "+String(h.model||"").replace(/-it-Q6_K\.gguf$|\.gguf$/,"").replace(/^gemma/,"Gemma")+" · nic nie wychodzi z komputera";$("foot").textContent="Folder dokumentów: "+h.documents+". Nic nie jest wysyłane do internetu.";exTiles(DOCS.some(d=>d.id.startsWith("firma/"))?EX_FIRMA:EX_LOCAL)}}).catch(()=>exTiles(EX_LOCAL));
 loadDocs().then(()=>{if(!HEALTH.demo&&DOCS.some(d=>d.id.startsWith("firma/")))exTiles(EX_FIRMA)});
 </script>
 </body></html>
