@@ -1,15 +1,18 @@
-# Linda Sejf — cytuje przepis albo odmawia
+# Linda Sejf — cytuje źródło albo odmawia
 
-**Jak NotebookLM, ale dokumenty nie opuszczają komputera.** Lokalny asystent do własnych dokumentów organizacji
-(regulaminy, procedury, umowy, akta, przepisy) na małym modelu językowym. Działa na zwykłym laptopie z Windows,
-bez karty graficznej, bez internetu i bez konta. Każde zdanie odpowiedzi ma odwołanie `[n]` do fragmentu dokumentu,
-a gdy pasującego fragmentu nie ma, Sejf odpowiada „Nie znaleziono odpowiedzi w dostępnych dokumentach” zamiast zgadywać.
+**Jak NotebookLM, ale dokumenty nie opuszczają komputera.** Lokalny asystent do własnych dokumentów — notatek
+z wykładów, skryptów, artykułów, regulaminów, procedur, umów i przepisów — na małym modelu językowym (Gemma-4-E4B, 4 mld
+parametrów). Działa na zwykłym laptopie z Windows, bez internetu i bez konta; z kartą graficzną szybciej. Pytania, streszczenia,
+fiszki, słowniczek, wyjaśnienie prostym językiem — każde zdanie ma odwołanie `[n]` do fragmentu dokumentu i jest sprawdzane
+weryfikatorem zdań. Gdy pasującego fragmentu nie ma, Sejf odpowiada „Nie znaleziono odpowiedzi w dostępnych dokumentach”
+zamiast zgadywać.
 
-Dla kogo: kancelarie, działy kadr, biura rachunkowe, urzędy, placówki medyczne — wszędzie tam, gdzie dokumentów nie wolno
-wkleić do ChatGPT (tajemnica zawodowa, RODO), a Google ich nie zna.
+Dla kogo: dla każdego, kto pracuje z własnymi tekstami, których nie chce albo nie może wysłać do chmury — studenci i uczniowie
+(notatki, skrypty), nauczyciele i badacze, organizacje pozarządowe, a także kancelarie, kadry, biura rachunkowe, urzędy
+i placówki medyczne (tajemnica zawodowa, RODO).
 
 Zgłoszenie do **Bielik Awards 2026**, kategoria „Najlepsze użycie modelu SLM (<10B)”.
-Strona projektu: https://lindasejf.denmarkeast.cloudapp.azure.com/projekt/ · demo online (dokumenty fikcyjnej firmy +
+Strona projektu: https://lindasejf.denmarkeast.cloudapp.azure.com/projekt/ · demo online (notatki z wykładu, dokumenty fikcyjnej firmy +
 11 ustaw): https://lindasejf.denmarkeast.cloudapp.azure.com
 
 ## Instalacja (Windows 10/11, x64)
@@ -26,18 +29,21 @@ albo przeciągnąć go myszą, „odśwież” wczytuje nowe pliki), na środku 
 „nowa rozmowa”), po prawej podgląd dokumentu z podświetlonym cytowanym fragmentem.
 **Ustawienia**: folder dokumentów (okno wyboru folderu), tryb zwykły / ostrożny, karta graficzna (automatycznie / tylko procesor), wątki.
 Szybkość (te same 3 pytania): karta graficzna Radeon RX 9070 XT ok. 4,5 s na odpowiedź (model ok. 1 s, reszta to wyszukiwanie na CPU); procesor desktopa 9–14 s; laptop Ryzen 7 5825U bez karty graficznej ok. 20–25 s.
-**Studio** (jak w NotebookLM, na zaznaczonych dokumentach):
-- **streszczenie** — 5–8 zdań, każde z odwołaniem `[n]`;
-- **terminy, kwoty i obowiązki** — lista „co: termin/kwota (kogo dotyczy) [n]”;
-- **notatka służbowa** na wpisany temat — tylko ustalenia z dokumentów, bez własnych zaleceń modelu;
-- **notatnik** — zapisane odpowiedzi i wyniki, kopiowanie ze źródłami, eksport do pliku `.md` w `%LOCALAPPDATA%\LindaSejf
-otatki`.
+**Studio** (jak w NotebookLM, na zaznaczonych dokumentach; przy każdym narzędziu można wpisać temat):
+- **streszczenie** — krótko (3–4 zdania), standardowo (5–8) albo szczegółowo (10–14); akapit albo punkty;
+- **pytania sprawdzające** — fiszki do nauki: pytanie, odpowiedź po kliknięciu; zapis do CSV (import w Anki albo Quizlet);
+- **słowniczek pojęć** — pojęcia z wyjaśnieniem tylko z tekstu;
+- **wyjaśnij prościej** — ta sama treść bez żargonu, liczby i wyjątki zostają;
+- **terminy, kwoty i obowiązki** — każda pozycja jako pełne zdanie z odwołaniem;
+- **tezy i argumenty** — tezy, argumenty i ograniczenia tekstu, bez oceny od modelu;
+- **notatka na temat** — tylko ustalenia z dokumentów, bez własnych zaleceń modelu;
+- **notatnik** — zapisane odpowiedzi i wyniki, kopiowanie ze źródłami, eksport do `.md` w `%LOCALAPPDATA%\LindaSejf\notatki`.
 
-Krótkie dokumenty idą do modelu w całości (do 24 fragmentów), z długich (ustawy) Sejf bierze 8 fragmentów pasujących do tematu.
-Każde zdanie wyniku przechodzi przez ten sam weryfikator co odpowiedzi; niepotwierdzone są oznaczone.
-Na karcie graficznej: 3–9 s na wynik. Sprawdzenie Gemini (66 wierszy z 6 wyników na dokumentach firmy i Kodeksie pracy):
-48 poprawnych, 14 częściowo (najczęściej pominięty warunek albo zły numer fragmentu — ten weryfikator wyłapuje), 1 błędny
-(zalecenie dopisane przez model — po tej ocenie usunięte z polecenia notatki), 3 nie były twierdzeniami.
+Krótkie dokumenty idą do modelu w całości (do 24 fragmentów); dłuższe (do ok. 140 fragmentów, np. skrypt albo krótka ustawa)
+— w częściach, a wynik każdej części ma odwołania do jej fragmentów; z bardzo długich Sejf bierze 8 fragmentów pasujących
+do tematu. Każde zdanie wyniku przechodzi przez ten sam weryfikator co odpowiedzi; niepotwierdzone są oznaczone.
+Na karcie graficznej 2–7 s na wynik.
+STUDIO_WYNIKI
 
 **Dziennik audytu**: ostatnie pytania (z zamaskowanymi PESEL/NIP/REGON/IBAN) i sprawdzenie łańcucha SHA-256.
 Na start w folderze dokumentów są trzy fikcyjne dokumenty firmy „Przykład sp. z o.o.” i 11 polskich ustaw.
@@ -74,7 +80,7 @@ lepszą ocenę (`passages`); do modelu nadal trafia cały fragment.
 | `sejf/core.py` | bramka odmowy, prompt, podział na zdania, weryfikacja, dziennik audytu |
 | `sejf/cite.py`, `sejf/labels.py` | odwołania `[n]`, etykiety „Kodeks pracy, art. 22²” |
 | `sejf/retriever_simple.py` | wyszukiwarka (ONNX, SQLite FTS5), indeks z pamięcią podręczną per plik, dodawanie plików w locie |
-| `sejf/tools.py` | studio: streszczenie, terminy/kwoty/obowiązki, notatka służbowa (z weryfikacją zdań) |
+| `sejf/tools.py` | studio: streszczenie, fiszki, słowniczek, prosty język, terminy, tezy, notatka (z weryfikacją zdań) |
 | `sejf/webapi.py` | lista dokumentów, podgląd, zawężenie do wybranych źródeł |
 | `sejf/retriever_localdocs.py` | adapter do komercyjnej wyszukiwarki Linda Probe (opcjonalny, nie jest częścią repozytorium) |
 | `sejf/verifier_onnx.py`, `sejf/pii.py` | weryfikator zdań, maskowanie danych osobowych |

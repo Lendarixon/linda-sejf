@@ -94,6 +94,10 @@ textarea{flex:1;resize:none;height:56px;background:var(--s1);color:var(--fg);bor
 .stiles{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .stile{color:#fff;text-align:left;padding:10px;min-height:64px;font-size:13px;line-height:1.25;display:flex;flex-direction:column;justify-content:space-between}
 .stile small{opacity:.8;font-size:11px}.stile:disabled{opacity:.5;cursor:wait}.stile:hover:not(:disabled){filter:brightness(1.12)}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 14px}.seg button{background:var(--s2);color:#fff;padding:9px 14px;border-left:3px solid transparent}
+.seg button.on{border-left-color:var(--teal);background:#232836}.olab{color:var(--dim);font-size:12px;margin:2px 0}
+.qa li{cursor:pointer}.qa .qq{color:#fff}.qa .qa-a{display:none;color:var(--mut)}.qa li.open .qa-a{display:inline}
+.qa .rev{color:var(--link);font-size:12px;margin-left:6px}.qa li.open .rev{display:none}
 .tlist{margin:0;padding-left:0;list-style:none}.tlist li{margin:6px 0;padding-left:14px;position:relative;line-height:1.55}
 .tlist li::before{content:"";position:absolute;left:0;top:.65em;width:6px;height:6px;background:var(--teal)}
 .tscope{color:var(--dim);font-size:12px;margin-bottom:8px}
@@ -105,8 +109,9 @@ textarea{flex:1;resize:none;height:56px;background:var(--s1);color:var(--fg);bor
 .vb{overflow:auto;overflow-anchor:none;padding:16px 18px 40px;white-space:pre-wrap;font-size:13.5px;line-height:1.6;color:var(--mut)}
 mark{background:var(--mark);color:#0d0f15;padding:1px 0}
 @media (max-width:900px){body{overflow:auto}.app,.app.viewing{grid-template-columns:1fr;height:auto}
-.side{max-height:40vh}.view{position:fixed;inset:0;z-index:5;display:none}.app.viewing .view{display:flex}
+.side{max-height:none;overflow:visible}.stiles{grid-template-columns:repeat(4,1fr)}.view{position:fixed;inset:0;z-index:5;display:none}.app.viewing .view{display:flex}
 .thread{overflow:visible}.top,.thread,.composer{padding-left:16px;padding-right:16px}}
+@media (max-height:900px){.stile{min-height:40px;padding:8px 10px}.stile small{display:none}.studio{padding-top:8px}.studio h4{font-size:18px;margin-bottom:6px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body>
@@ -120,9 +125,13 @@ mark{background:var(--mark);color:#0d0f15;padding:1px 0}
     <label class="allrow"><input type="checkbox" id="all" checked> wszystkie dokumenty</label>
     <div class="docs" id="docs"></div>
     <div class="studio" aria-label="Studio"><h4>studio</h4><div class="stiles">
-      <button class="stile" data-tool="summary" style="background:var(--teal)">streszczenie<small>zaznaczonych dokumentów</small></button>
-      <button class="stile" data-tool="facts" style="background:var(--blue)">terminy, kwoty i obowiązki<small>zestawienie z odwołaniami</small></button>
-      <button class="stile" data-tool="memo" style="background:var(--purple)">notatka służbowa<small>na wybrany temat</small></button>
+      <button class="stile" data-tool="summary" style="background:var(--teal)">streszczenie<small>długość i forma do wyboru</small></button>
+      <button class="stile" data-tool="quiz" style="background:var(--amber)">pytania sprawdzające<small>fiszki do nauki, eksport do Anki</small></button>
+      <button class="stile" data-tool="glossary" style="background:var(--green)">słowniczek pojęć<small>definicje z tekstu</small></button>
+      <button class="stile" data-tool="simple" style="background:var(--blue)">wyjaśnij prościej<small>bez żargonu</small></button>
+      <button class="stile" data-tool="facts" style="background:#2b5797">terminy, kwoty i obowiązki<small>zestawienie z odwołaniami</small></button>
+      <button class="stile" data-tool="claims" style="background:#525e75">tezy i argumenty<small>także ograniczenia</small></button>
+      <button class="stile" data-tool="memo" style="background:var(--purple)">notatka na temat<small>np. do pracy albo nauki</small></button>
       <button class="stile" data-tool="notes" style="background:var(--rasp)">notatnik<span id="nbcnt"></span><small>zapisane wyniki</small></button>
     </div></div>
     <div class="foot" id="foot">Wszystko działa na tym komputerze.</div>
@@ -135,7 +144,7 @@ mark{background:var(--mark);color:#0d0f15;padding:1px 0}
     <div class="thread" id="thread"><div class="wrapc" id="msgs">
       <div class="empty" id="empty">
         <h1>zapytaj swoje dokumenty</h1>
-        <p id="sub">Jak NotebookLM, ale pliki nie opuszczają komputera. Sejf odpowiada z odwołaniem [n] do konkretnego fragmentu, a gdy w dokumentach nie ma odpowiedzi, mówi „nie znaleziono” zamiast zgadywać.</p>
+        <p id="sub">Jak NotebookLM, ale pliki nie opuszczają komputera. Pytaj, streszczaj i ucz się z fiszek — z notatek, skryptów, artykułów, regulaminów czy umów. Każde zdanie ma odwołanie [n] do konkretnego fragmentu, a gdy w dokumentach nie ma odpowiedzi, Sejf mówi „nie znaleziono” zamiast zgadywać.</p>
         <div class="tiles" id="ex"></div>
       </div>
     </div></div>
@@ -160,8 +169,8 @@ const pl=(n,a,b,c)=>n+" "+(n===1?a:(n%10>=2&&n%10<=4&&(n%100<12||n%100>14))?b:c)
 const SUP="⁰¹²³⁴⁵⁶⁷⁸⁹";const sup=t=>t.replace(/(\d[a-z]?)\[(\d{1,2})\]/g,(m,a,b)=>a+[...b].map(d=>SUP[d]).join(""));
 const COLORS=["var(--teal)","var(--blue)","var(--purple)","var(--rasp)","var(--amber)","var(--green)"];
 let DOCS=[],HEALTH={},busy=false;
-const EX_LOCAL=["Do której godziny muszę zgłosić przełożonemu, że jestem chory?","Ile dni urlopu przysługuje po 12 latach pracy?","Jak długo przechowuje się księgi rachunkowe?","W jakim terminie mogę odstąpić od umowy zawartej przez internet?"];
-const EX_FIRMA=["Do której godziny muszę zgłosić przełożonemu, że jestem chory?","Wysłałem maila z danymi klienta do złej osoby. Co mam zrobić?","Ile dni w tygodniu mogę pracować zdalnie?","W jakim terminie muszę rozliczyć delegację?","Ile dni urlopu przysługuje po 12 latach pracy?","Jaki jest budżet firmy na imprezę świąteczną?"];
+const EX_LOCAL=["Do której godziny muszę zgłosić przełożonemu, że jestem chory?","Kiedy popyt jest elastyczny?","Ile dni urlopu przysługuje po 12 latach pracy?","Jak długo przechowuje się księgi rachunkowe?","W jakim terminie mogę odstąpić od umowy zawartej przez internet?"];
+const EX_FIRMA=["Do której godziny muszę zgłosić przełożonemu, że jestem chory?","Wysłałem maila z danymi klienta do złej osoby. Co mam zrobić?","Kiedy popyt jest elastyczny?","W jakim terminie muszę rozliczyć delegację?","Ile dni urlopu przysługuje po 12 latach pracy?","Jaki jest budżet firmy na imprezę świąteczną?"];
 function exTiles(list){$("ex").innerHTML="";list.forEach((t,i)=>{const b=document.createElement("button");b.className="tile";b.style.background=COLORS[i%COLORS.length];
   b.innerHTML=esc(t)+"<small>"+(/budżet|premia|Wi-Fi|psa/.test(t)?"tego nie ma w dokumentach":"zapytaj")+"</small>";b.onclick=()=>{$("q").value=t;ask()};$("ex").append(b)})}
 function selectedIds(){if($("all").checked)return null;return [...document.querySelectorAll(".doc input:checked")].map(x=>x.value)}
@@ -200,16 +209,24 @@ async function ask(){const q=$("q").value.trim();if(!q||busy)return;const ids=se
   finally{clearInterval(tick);busy=false;$("go").disabled=false;$("thread").scrollTop=$("thread").scrollHeight}}
 function renderAnswer(a,isTool){let h='<div class="a">';if(isTool&&a.scope)h+='<div class="tscope">źródło: '+esc(a.scope)+'</div>';
   if(a.status!=="answered"){h+='<div class="refuse">nie znaleziono odpowiedzi w dokumentach</div><div class="why">'+(a.status==="no_sources"?"Żaden fragment nie pasuje wystarczająco do pytania, więc model nie zgaduje. Najbliższe fragmenty są niżej — możesz je sprawdzić.":"Model nie znalazł odpowiedzi w przekazanych fragmentach.")+'</div>'}
-  else{h+=isTool?'<ul class="ans tlist">':'<div class="ans">';for(const s of a.sentences){if(a.removed&&s.status==="unsupported")continue;
-      const tip=s.status==="unsupported"?"Weryfikator nie znalazł potwierdzenia":s.status==="supported"?"Potwierdzone w źródle":"";
-      if(isTool)h+='<li>';h+='<span class="s '+s.status+'" title="'+tip+'">'+esc(s.text.replace(/\s*\[\d{1,2}(?:\s*,\s*\d{1,2})*\]/g,"").replace(/^[-–•]\s*/,""))+'</span>';
+  else{const qa=a.kind==="qa";h+=isTool?'<ul class="ans tlist'+(qa?' qa':'')+'">':'<div class="ans">';for(const s of a.sentences){if(a.removed&&s.status==="unsupported")continue;
+      const tip=s.status==="unsupported"?"Weryfikator nie znalazł potwierdzenia":s.status==="supported"?(s.renumbered?"Potwierdzone w źródle; numer fragmentu poprawiony (model wskazał sąsiedni)":"Potwierdzone w źródle"):"";
+      const clean=s.text.replace(/\s*\[\d{1,2}(?:\s*,\s*\d{1,2})*\]/g,"").replace(/^[-–•]\s*/,"");const m=qa&&clean.match(QA_RE);
+      if(isTool)h+='<li>';if(m)h+='<span class="s '+s.status+'" title="'+tip+'"><span class="qq">'+esc(m[1])+'</span> <span class="rev">pokaż odpowiedź</span><span class="qa-a"> — '+esc(m[2])+'</span></span>';
+      else h+='<span class="s '+s.status+'" title="'+tip+'">'+esc(clean)+'</span>';
       for(const n of s.cited)h+='<button class="cite" data-n="'+n+'" aria-label="Pokaż źródło '+n+'">'+n+'</button>';h+=isTool?'</li>':' '}
-    h+=isTool?'</ul>':'</div>';const bad=a.sentences.filter(s=>s.status==="unsupported").length;
-    h+=a.removed?'<div class="note warn">Usunięto niepotwierdzone zdania: '+a.removed+'</div>':bad?'<div class="note warn">'+(bad===1?"Zdanie podkreślone na czerwono nie ma":"Zdania podkreślone na czerwono ("+bad+") nie mają")+' potwierdzenia w cytowanym fragmencie.</div>':'<div class="note">Każde zdanie potwierdzone w cytowanym fragmencie. Kliknij numer, żeby zobaczyć miejsce w dokumencie.</div>'}
+    h+=isTool?'</ul>':'</div>';const bad=a.sentences.filter(s=>s.status==="unsupported").length;const ren=a.sentences.filter(s=>s.renumbered).length;
+    if(ren)h+='<div class="note">Numer fragmentu poprawiony automatycznie w '+pl(ren,"pozycji","pozycjach","pozycjach")+' — model wskazał sąsiedni fragment, weryfikator znalazł właściwy.</div>';
+    h+=a.removed?'<div class="note warn">Usunięto niepotwierdzone zdania: '+a.removed+'</div>':bad?'<div class="note warn">'+(bad===1?"Zdanie podkreślone na czerwono nie ma":"Zdania podkreślone na czerwono ("+bad+") nie mają")+' potwierdzenia w cytowanym fragmencie.'+(a.tool==="simple"?' W prostym języku zdania są przeredagowane, więc weryfikator częściej ich nie potwierdza — porównaj je ze źródłem (kliknij numer).':'')+'</div>':'<div class="note">Każde zdanie potwierdzone w cytowanym fragmencie. Kliknij numer, żeby zobaczyć miejsce w dokumencie.</div>'}
   if(a.sources&&a.sources.length){h+='<div class="srcs">';for(const s of a.sources)h+='<button data-n="'+s.n+'">['+s.n+'] '+esc(s.label||s.file)+'</button>';h+='</div>'}
-  const t=a.timings||{};h+='<div class="meta">'+(a.cached?'wynik zapisany na serwerze demo (liczenie na procesorze trwało '+a.seconds+' s) · ':a.seconds+' s · ')+'wyszukiwanie '+(t.retrieval_s||0).toFixed(1)+' s · model '+(t.generation_s||0).toFixed(1)+' s · weryfikacja '+(t.verify_s||0).toFixed(1)+' s'+(a.status==="answered"?'<button class="copy" data-copy="1">kopiuj ze źródłami</button><button class="copy" data-note="1">do notatnika</button>':'')+'</div></div>';return h}
+  const t=a.timings||{};h+='<div class="meta">'+(a.cached?'wynik zapisany na serwerze demo (liczenie na procesorze trwało '+a.seconds+' s) · ':a.seconds+' s · ')+'wyszukiwanie '+(t.retrieval_s||0).toFixed(1)+' s · model '+(t.generation_s||0).toFixed(1)+' s · weryfikacja '+(t.verify_s||0).toFixed(1)+' s'+(a.status==="answered"?'<button class="copy" data-copy="1">kopiuj ze źródłami</button><button class="copy" data-note="1">do notatnika</button>'+(a.kind==="qa"&&HEALTH.settings?'<button class="copy" data-csv="1">zapisz fiszki (CSV do Anki)</button>':''):'')+'</div></div>';return h}
 function bind(w,a){w.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{const s=(a.sources||[]).find(x=>x.n==b.dataset.n);if(s)openDoc(idForFile(s.file),s.text)});
   const nb=w.querySelector("[data-note]");if(nb)nb.onclick=()=>addNote(a,nb);
+  w.querySelectorAll(".qa li").forEach(li=>li.addEventListener("click",e=>{if(!e.target.closest(".cite"))li.classList.toggle("open")}));
+  const cv=w.querySelector("[data-csv]");if(cv)cv.onclick=async()=>{const rows=(a.sentences||[]).map(s=>s.text.replace(/\s*\[\d{1,2}(?:\s*,\s*\d{1,2})*\]/g,"").replace(/^[-–•]\s*/,"").match(QA_RE)).filter(Boolean)
+      .map(m=>[m[1],m[2]].map(x=>'"'+x.replace(/"/g,'""')+'"').join(";"));
+    try{const d=await post("/api/export",{markdown:rows.join("\n")+"\n",format:"csv"});cv.textContent="zapisano: "+d.path.split(/[\\/]/).pop();cv.disabled=true;
+      if(API())API().open_folder("notes")}catch(e){cv.textContent=e.message}};
   const c=w.querySelector("[data-copy]");if(c)c.onclick=async()=>{const txt=a.question+"\n\n"+a.sentences.map(s=>s.text).join(" ")+"\n\nŹródła:\n"+(a.sources||[]).map(s=>"["+s.n+"] "+(s.label||s.file)).join("\n");
     try{await navigator.clipboard.writeText(txt);c.textContent="skopiowano"}catch(e){c.textContent="nie udało się skopiować"}setTimeout(()=>c.textContent="kopiuj ze źródłami",1800)}}
 $("go").onclick=ask;$("q").addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();ask()}});
@@ -266,7 +283,12 @@ async function showAudit(){let a;try{const r=await fetch("/api/audit");a=await r
     h+='</table>'}else h+='<p style="color:var(--dim)">Dziennik jest pusty — zadaj pierwsze pytanie.</p>';
   if(a.path)h+='<p style="color:var(--dim);font-size:12px;margin-top:12px">Plik: '+esc(a.path)+'</p>';openOv("dziennik audytu",h)}
 /* studio: narzędzia na wybranych dokumentach + notatnik */
-const TOOLS={summary:"streszczenie",facts:"terminy, kwoty i obowiązki",memo:"notatka służbowa"};
+const TOOLS={summary:"streszczenie",facts:"terminy, kwoty i obowiązki",memo:"notatka na temat",quiz:"pytania sprawdzające",glossary:"słowniczek pojęć",claims:"tezy, argumenty i ograniczenia",simple:"wyjaśnij prościej"};
+const QA_RE=/^\s*P(?:ytanie)?\s*:\s*(.+?)\s*\|\s*O(?:dpowied[źz])?\s*:\s*(.+)$/i;
+const TOOL_HELP={summary:"Najważniejsze myśli, liczby i terminy — każde zdanie z odwołaniem do fragmentu.",quiz:"Pytania z odpowiedzią do nauki albo szkolenia. Odpowiedź pokazuje się po kliknięciu pytania.",
+  glossary:"Pojęcia i ich wyjaśnienia — tylko tak, jak definiuje je tekst.",simple:"Ta sama treść prostymi słowami; trudne terminy objaśnione. Liczby i wyjątki zostają.",
+  facts:"Terminy, daty, kwoty, limity i obowiązki w jednym zestawieniu.",claims:"Główne tezy, argumenty i ograniczenia tekstu — bez oceny od modelu.",memo:"Krótka notatka tylko z zaznaczonych dokumentów, z odwołaniem przy każdym punkcie."};
+let TOPT={};try{TOPT=JSON.parse(localStorage.getItem("sejf-topt")||"{}")}catch(e){TOPT={}}
 let NOTES=[];try{NOTES=JSON.parse(localStorage.getItem("sejf-notes")||"[]")}catch(e){NOTES=[]}
 function saveNotes(){try{localStorage.setItem("sejf-notes",JSON.stringify(NOTES))}catch(e){}$("nbcnt").textContent=NOTES.length?" ("+NOTES.length+")":""}
 function noteFrom(a){const lines=(a.sentences||[]).map(s=>s.text+(s.status==="unsupported"?" (niepotwierdzone w źródle)":""));
@@ -282,17 +304,29 @@ function showNotes(){let h='<p style="color:var(--mut);margin:0 0 10px">Zapisane
   if($("nbclear"))$("nbclear").onclick=()=>{NOTES=[];saveNotes();showNotes()};
   if($("nbcopy"))$("nbcopy").onclick=async()=>{try{await navigator.clipboard.writeText(notesMd());$("nbmsg").textContent="Skopiowano."}catch(e){$("nbmsg").textContent="Nie udało się skopiować."}};
   if($("nbsave"))$("nbsave").onclick=async()=>{try{const d=await post("/api/export",{markdown:notesMd()});$("nbmsg").innerHTML="Zapisano: "+esc(d.path)+(API()?' <button class="ref" id="nbopen">otwórz folder</button>':'');if($("nbopen"))$("nbopen").onclick=()=>API().open_folder("notes")}catch(e){$("nbmsg").textContent=e.message}}}
-async function runTool(tool,topic){const ids=selectedIds();if(ids&&!ids.length){updScope();return}if(busy)return;
+async function runTool(tool,topic,opts){opts=opts||{};const ids=selectedIds();if(ids&&!ids.length){updScope();return}if(busy)return;
   busy=true;$("go").disabled=true;document.querySelectorAll(".stile").forEach(b=>b.disabled=true);
-  const label=TOOLS[tool]+(topic?": "+topic:"");addMsg('<div class="q">'+esc(label)+' <span style="color:var(--dim);font-size:12px">· '+(ids?pl(ids.length,"wybrany dokument","wybrane dokumenty","wybranych dokumentów"):"wszystkie dokumenty")+'</span></div>');
+  const label=TOOLS[tool]+(topic?": "+topic:"")+(tool==="quiz"?" · "+({short:5,standard:8,long:12}[opts.length||"standard"])+" pytań":opts.length&&opts.length!=="standard"?" · "+({short:"krótko",long:"szczegółowo"}[opts.length]):"")+(opts.form==="points"?" · w punktach":"");addMsg('<div class="q">'+esc(label)+' <span style="color:var(--dim);font-size:12px">· '+(ids?pl(ids.length,"wybrany dokument","wybrane dokumenty","wybranych dokumentów"):"wszystkie dokumenty")+'</span></div>');
   const w=addMsg('<div class="a wait"><span class="spin"></span><span>Czytam dokumenty i piszę… <b class="t">0</b> s</span></div>');const t0=Date.now();
   const tick=setInterval(()=>{const el=w.querySelector(".t");if(el)el.textContent=Math.round((Date.now()-t0)/1000)},500);
-  try{const d=await post("/api/tool",{tool,topic:topic||"",documents:ids});w.innerHTML=renderAnswer(d,true);bind(w,d)}
+  try{const d=await post("/api/tool",{tool,topic:topic||"",documents:ids,options:opts});w.innerHTML=renderAnswer(d,true);bind(w,d)}
   catch(e){w.innerHTML='<div class="err">'+esc(e.message||e)+'</div>'}
   finally{clearInterval(tick);busy=false;$("go").disabled=false;document.querySelectorAll(".stile").forEach(b=>b.disabled=false);$("thread").scrollTop=$("thread").scrollHeight}}
-function memoDialog(){openOv("notatka służbowa",'<p style="color:var(--mut);margin:0 0 10px">Temat notatki — Sejf napisze ją tylko z zaznaczonych dokumentów, z odwołaniem przy każdym punkcie.</p><div class="path"><input id="mtopic" placeholder="np. zasady pracy zdalnej" aria-label="Temat notatki"><button class="btn2" id="mgo">napisz</button></div>');
-  const go=()=>{const t=$("mtopic").value.trim();if(!t)return;closeOv();runTool("memo",t)};$("mgo").onclick=go;$("mtopic").onkeydown=e=>{if(e.key==="Enter")go()};$("mtopic").focus()}
-document.querySelectorAll(".stile").forEach(b=>b.onclick=()=>{const t=b.dataset.tool;if(t==="memo")memoDialog();else if(t==="notes")showNotes();else runTool(t,"")});
+function seg(name,items,cur){return '<div class="olab">'+name+'</div><div class="seg" data-seg="'+name+'">'+items.map(([v,l])=>'<button data-v="'+v+'"'+(v===cur?' class="on"':'')+'>'+l+'</button>').join("")+'</div>'}
+function toolDialog(tool){const o=Object.assign({length:"standard",form:"prose"},TOPT[tool]||{});const need=tool==="memo";
+  let h='<p style="color:var(--mut);margin:0 0 12px">'+TOOL_HELP[tool]+'</p>';
+  if(tool==="summary"||tool==="simple"||tool==="quiz")h+=seg("długość",tool==="quiz"?[["short","5 pytań"],["standard","8 pytań"],["long","12 pytań"]]:[["short","krótko"],["standard","standardowo"],["long","szczegółowo"]],o.length);
+  if(tool==="summary")h+=seg("forma",[["prose","akapit"],["points","punkty"]],o.form);
+  h+='<div class="olab">temat'+(need?'':' (opcjonalnie — dla długich dokumentów Sejf weźmie pasujące fragmenty)')+'</div><div class="path"><input id="mtopic" placeholder="'+(need?'np. zasady pracy zdalnej':'np. elastyczność popytu albo urlop wypoczynkowy')+'" aria-label="Temat"><button class="btn" id="mgo">uruchom</button></div>';
+  openOv(TOOLS[tool],h);
+  document.querySelectorAll("[data-seg] button").forEach(b=>b.onclick=()=>{b.parentNode.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on")});
+  const go=()=>{const t=$("mtopic").value.trim();if(need&&!t){$("mtopic").focus();return}
+    const pick=n=>{const b=document.querySelector('[data-seg="'+n+'"] .on');return b?b.dataset.v:undefined};
+    const opts={};if(pick("długość"))opts.length=pick("długość");if(pick("forma"))opts.form=pick("forma");
+    TOPT[tool]=Object.assign({},TOPT[tool]||{},opts);try{localStorage.setItem("sejf-topt",JSON.stringify(TOPT))}catch(e){}
+    closeOv();runTool(tool,t,opts)};
+  $("mgo").onclick=go;$("mtopic").onkeydown=e=>{if(e.key==="Enter")go()};$("mtopic").focus()}
+document.querySelectorAll(".stile").forEach(b=>b.onclick=()=>{const t=b.dataset.tool;if(t==="notes")showNotes();else toolDialog(t)});
 saveNotes();
 $("setb").onclick=showSettings;$("audb").onclick=showAudit;
 const EMPTY=$("msgs").innerHTML;$("newb").onclick=()=>{if(busy)return;$("msgs").innerHTML=EMPTY;exTiles(HEALTH.demo||DOCS.some(d=>d.id.startsWith("firma/"))?EX_FIRMA:EX_LOCAL);$("app").classList.remove("viewing");$("q").focus()};

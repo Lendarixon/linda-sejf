@@ -25,7 +25,7 @@ from sejf import Sejf, tools, verifier_onnx, webapi  # noqa: E402
 from sejf.core import verify_audit_chain  # noqa: E402
 from sejf.retriever_simple import Index, make_retriever  # noqa: E402
 
-VERSION = "1.3.0"
+VERSION = "1.4.0"
 DATA = Path(os.environ.get("SEJF_DATA", Path(os.environ.get("LOCALAPPDATA", Path.home())) / "LindaSejf"))
 DATA.mkdir(parents=True, exist_ok=True)
 CFG_P = DATA / "config.json"
@@ -338,7 +338,9 @@ class H(BaseHTTPRequestHandler):
         with S.lock:
             t0 = time.time()
             try:
-                d = tools.run_tool(S.sejf, S.index, generate_long, tool, docs if isinstance(docs, list) else None, topic)
+                opts = body.get("options") if isinstance(body.get("options"), dict) else {}
+                d = tools.run_tool(S.sejf, S.index, generate_long, tool, docs if isinstance(docs, list) else None, topic,
+                                   opts=opts)
             except ValueError as e:
                 return self._send(400, {"error": str(e)})
         d["seconds"] = round(time.time() - t0, 1)
@@ -352,9 +354,11 @@ class H(BaseHTTPRequestHandler):
             return self._send(400, {"error": "Notatnik jest pusty."})
         out = DATA / "notatki"
         out.mkdir(parents=True, exist_ok=True)
-        p = out / time.strftime("notatnik-%Y%m%d-%H%M%S.md")
+        # fiszki: plik CSV (pytanie;odpowiedź) do importu w Anki albo Quizlet; nazwa pliku ustalana tutaj, nie przez stronę
+        csv = body.get("format") == "csv"
+        p = out / time.strftime("fiszki-%Y%m%d-%H%M%S.csv" if csv else "notatnik-%Y%m%d-%H%M%S.md")
         p.write_text(md, encoding="utf-8")
-        log("zapisano notatnik:", p)
+        log("zapisano:", p)
         return self._send(200, {"ok": True, "path": str(p)})
 
     def _settings(self):
