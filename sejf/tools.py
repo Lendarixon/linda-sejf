@@ -59,8 +59,9 @@ def gather_sources(index, doc_ids, topic: str = ""):
                       label=legal_label(m["file"], m["start_line"], m["text"])) for i, m in enumerate(chunks, 1)]
         return src, "cały dokument" if len(files) == 1 else f"całe dokumenty ({len(files)})"
     if not topic.strip():
-        raise ValueError("Wybrane dokumenty są za długie, żeby przetworzyć je w całości — wpisz temat "
-                         "(np. „urlop wypoczynkowy”), a Sejf weźmie pasujące fragmenty.")
+        raise ValueError("Wybrane dokumenty są za długie, żeby przetworzyć je w całości. Zaznacz po lewej jeden "
+                         "dokument (np. „Regulamin pracy”) albo użyj notatki służbowej z tematem "
+                         "(np. „urlop wypoczynkowy”) — wtedy Sejf weźmie pasujące fragmenty.")
     prev = index.only_files
     index.only_files = wanted
     try:
