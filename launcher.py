@@ -48,7 +48,7 @@ class Api:
     def open_folder(self, which):
         """which: 'docs' albo 'data' — żadnych dowolnych ścieżek z interfejsu (np. udziałów sieciowych)."""
         import app
-        p = {"docs": app.S.docs, "data": app.DATA}.get(str(which))
+        p = {"docs": app.S.docs, "data": app.DATA, "notes": app.DATA / "notatki"}.get(str(which))
         if p is None or not Path(p).is_dir() or str(p).startswith("\\\\") or os.name != "nt":
             return False
         os.startfile(str(p))  # noqa: S606

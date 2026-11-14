@@ -21,11 +21,11 @@ from urllib.parse import unquote
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from sejf import Sejf, verifier_onnx, webapi  # noqa: E402
+from sejf import Sejf, tools, verifier_onnx, webapi  # noqa: E402
 from sejf.core import verify_audit_chain  # noqa: E402
 from sejf.retriever_simple import Index, make_retriever  # noqa: E402
 
-VERSION = "1.2.1"
+VERSION = "1.3.0"
 DATA = Path(os.environ.get("SEJF_DATA", Path(os.environ.get("LOCALAPPDATA", Path.home())) / "LindaSejf"))
 DATA.mkdir(parents=True, exist_ok=True)
 CFG_P = DATA / "config.json"
@@ -104,13 +104,18 @@ def missing_files():
                              MODELS / "verifier" / "model_int8.onnx") if not p.exists()]
 
 
-def generate(messages):
-    body = json.dumps({"messages": messages, "temperature": 0, "max_tokens": 350, "cache_prompt": True,
+def generate(messages, max_tokens=350):
+    body = json.dumps({"messages": messages, "temperature": 0, "max_tokens": max_tokens, "cache_prompt": True,
                        "chat_template_kwargs": {"enable_thinking": False}}).encode()
     req = urllib.request.Request(f"http://127.0.0.1:{LLAMA_PORT}/v1/chat/completions", data=body,
                                  headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=600) as r:
+    with urllib.request.urlopen(req, timeout=900) as r:
         return json.loads(r.read())["choices"][0]["message"]["content"]
+
+
+def generate_long(messages):
+    """Streszczenia, zestawienia i notatki: dłuższa odpowiedź niż w pytaniach."""
+    return generate(messages, max_tokens=1100)
 
 
 def gpu_devices():
@@ -150,7 +155,7 @@ def start(status=log):
             accel = ["-ngl", "999", "--device", devs[0][0]]
             S.device = f"karta graficzna: {devs[0][1]}"
     log("akceleracja:", S.device)
-    S.llama = subprocess.Popen([str(LLAMA), "-m", str(GGUF), "--host", "127.0.0.1", "--port", str(LLAMA_PORT), "-c", "6144",
+    S.llama = subprocess.Popen([str(LLAMA), "-m", str(GGUF), "--host", "127.0.0.1", "--port", str(LLAMA_PORT), "-c", "12288",
                                 "-t", str(S.threads), "-tb", str(S.threads), "--temp", "0", "-np", "1", "--jinja", "--no-webui",
                                 *accel],
                                stdout=open(DATA / "llama.log", "ab"), stderr=subprocess.STDOUT, creationflags=flags)
@@ -289,6 +294,10 @@ class H(BaseHTTPRequestHandler):
                 return self._ask()
             if self.path == "/api/settings":
                 return self._settings()
+            if self.path == "/api/tool":
+                return self._tool()
+            if self.path == "/api/export":
+                return self._export()
             if self.path == "/api/reindex":
                 if S.job["busy"]:
                     return self._send(409, {"error": "Indeksowanie już trwa."})
@@ -318,6 +327,35 @@ class H(BaseHTTPRequestHandler):
         d["seconds"] = round(dt, 1)
         log("pytanie:", a.status, round(dt, 1), "s")
         return self._send(200, d)
+
+    def _tool(self):
+        body = self._json()
+        tool = str(body.get("tool", ""))
+        topic = str(body.get("topic", "")).strip()[:300]
+        docs = body.get("documents") or None
+        if S.job["busy"]:
+            return self._send(409, {"error": "Trwa indeksowanie dokumentów — spróbuj za chwilę."})
+        with S.lock:
+            t0 = time.time()
+            try:
+                d = tools.run_tool(S.sejf, S.index, generate_long, tool, docs if isinstance(docs, list) else None, topic)
+            except ValueError as e:
+                return self._send(400, {"error": str(e)})
+        d["seconds"] = round(time.time() - t0, 1)
+        log("narzędzie:", tool, d["status"], d["seconds"], "s")
+        return self._send(200, d)
+
+    def _export(self):
+        body = self._json(limit=2_000_000)
+        md = str(body.get("markdown", ""))
+        if not md.strip():
+            return self._send(400, {"error": "Notatnik jest pusty."})
+        out = DATA / "notatki"
+        out.mkdir(parents=True, exist_ok=True)
+        p = out / time.strftime("notatnik-%Y%m%d-%H%M%S.md")
+        p.write_text(md, encoding="utf-8")
+        log("zapisano notatnik:", p)
+        return self._send(200, {"ok": True, "path": str(p)})
 
     def _settings(self):
         body = self._json()

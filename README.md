@@ -18,8 +18,7 @@ Strona projektu: https://lindasejf.denmarkeast.cloudapp.azure.com/projekt/ · de
    więc SmartScreen może pokazać ostrzeżenie: „Więcej informacji” → „Uruchom mimo to”.
 2. Zainstaluj (bez uprawnień administratora, do `%LOCALAPPDATA%\Programs\Linda Sejf`).
 3. Uruchom **Linda Sejf** z menu Start. Za pierwszym razem pobiera modele z Hugging Face (ok. 8,2 GB, przypięte wersje,
-   sprawdzane sumy SHA-256) i buduje indeks dokumentów (kilka minut). Potem w przeglądarce otwiera się aplikacja
-   `http://127.0.0.1:8765/`. Zamknięcie okna konsoli zatrzymuje aplikację.
+   sprawdzane sumy SHA-256) i buduje indeks dokumentów (kilka minut). Potem otwiera się okno programu; zamknięcie okna zatrzymuje aplikację.
 
 Program otwiera się we własnym oknie (WebView2 wbudowany w Windows 10/11; bez niego — w przeglądarce).
 Po lewej **źródła** (dokumenty z folderu; można zaznaczyć, w których szukać, dodać plik przyciskiem „+ dodaj plik”
@@ -27,6 +26,19 @@ albo przeciągnąć go myszą, „odśwież” wczytuje nowe pliki), na środku 
 „nowa rozmowa”), po prawej podgląd dokumentu z podświetlonym cytowanym fragmentem.
 **Ustawienia**: folder dokumentów (okno wyboru folderu), tryb zwykły / ostrożny, karta graficzna (automatycznie / tylko procesor), wątki.
 Szybkość (te same 3 pytania): karta graficzna Radeon RX 9070 XT ok. 4,5 s na odpowiedź (model ok. 1 s, reszta to wyszukiwanie na CPU); procesor desktopa 9–14 s; laptop Ryzen 7 5825U bez karty graficznej ok. 20–25 s.
+**Studio** (jak w NotebookLM, na zaznaczonych dokumentach):
+- **streszczenie** — 5–8 zdań, każde z odwołaniem `[n]`;
+- **terminy, kwoty i obowiązki** — lista „co: termin/kwota (kogo dotyczy) [n]”;
+- **notatka służbowa** na wpisany temat — tylko ustalenia z dokumentów, bez własnych zaleceń modelu;
+- **notatnik** — zapisane odpowiedzi i wyniki, kopiowanie ze źródłami, eksport do pliku `.md` w `%LOCALAPPDATA%\LindaSejf
+otatki`.
+
+Krótkie dokumenty idą do modelu w całości (do 24 fragmentów), z długich (ustawy) Sejf bierze 8 fragmentów pasujących do tematu.
+Każde zdanie wyniku przechodzi przez ten sam weryfikator co odpowiedzi; niepotwierdzone są oznaczone.
+Na karcie graficznej: 3–9 s na wynik. Sprawdzenie Gemini (66 wierszy z 6 wyników na dokumentach firmy i Kodeksie pracy):
+48 poprawnych, 14 częściowo (najczęściej pominięty warunek albo zły numer fragmentu — ten weryfikator wyłapuje), 1 błędny
+(zalecenie dopisane przez model — po tej ocenie usunięte z polecenia notatki), 3 nie były twierdzeniami.
+
 **Dziennik audytu**: ostatnie pytania (z zamaskowanymi PESEL/NIP/REGON/IBAN) i sprawdzenie łańcucha SHA-256.
 Na start w folderze dokumentów są trzy fikcyjne dokumenty firmy „Przykład sp. z o.o.” i 11 polskich ustaw.
 Obsługiwane pliki: `.txt`, `.md`, `.pdf` (z warstwą tekstu), `.docx`. Wymagania: 16 GB RAM, ok. 9 GB na dysku.
@@ -62,6 +74,7 @@ lepszą ocenę (`passages`); do modelu nadal trafia cały fragment.
 | `sejf/core.py` | bramka odmowy, prompt, podział na zdania, weryfikacja, dziennik audytu |
 | `sejf/cite.py`, `sejf/labels.py` | odwołania `[n]`, etykiety „Kodeks pracy, art. 22²” |
 | `sejf/retriever_simple.py` | wyszukiwarka (ONNX, SQLite FTS5), indeks z pamięcią podręczną per plik, dodawanie plików w locie |
+| `sejf/tools.py` | studio: streszczenie, terminy/kwoty/obowiązki, notatka służbowa (z weryfikacją zdań) |
 | `sejf/webapi.py` | lista dokumentów, podgląd, zawężenie do wybranych źródeł |
 | `sejf/retriever_localdocs.py` | adapter do komercyjnej wyszukiwarki Linda Probe (opcjonalny, nie jest częścią repozytorium) |
 | `sejf/verifier_onnx.py`, `sejf/pii.py` | weryfikator zdań, maskowanie danych osobowych |

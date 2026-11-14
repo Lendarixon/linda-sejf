@@ -89,6 +89,14 @@ textarea{flex:1;resize:none;height:56px;background:var(--s1);color:var(--fg);bor
 .side.drop{outline:3px dashed var(--teal);outline-offset:-8px}
 .ref{background:none;color:var(--dim);font-size:12px;padding:0 0 0 8px}.ref:hover{color:#fff}
 .copy{background:none;color:var(--dim);font-size:12px;padding:0;margin-left:10px}.copy:hover{color:#fff}
+.studio{border-top:1px solid var(--line);padding:12px 12px 14px}
+.studio h4{font:300 22px/1 var(--disp);margin:0 8px 10px;text-transform:lowercase}
+.stiles{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.stile{color:#fff;text-align:left;padding:10px;min-height:64px;font-size:13px;line-height:1.25;display:flex;flex-direction:column;justify-content:space-between}
+.stile small{opacity:.8;font-size:11px}.stile:disabled{opacity:.5;cursor:wait}.stile:hover:not(:disabled){filter:brightness(1.12)}
+.tlist{margin:0;padding-left:0;list-style:none}.tlist li{margin:6px 0;padding-left:14px;position:relative;line-height:1.55}
+.tlist li::before{content:"";position:absolute;left:0;top:.65em;width:6px;height:6px;background:var(--teal)}
+.tscope{color:var(--dim);font-size:12px;margin-bottom:8px}
 /* podgląd */
 .view{background:var(--s1);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0;overflow:hidden}
 .vh{display:flex;align-items:flex-start;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
@@ -111,6 +119,12 @@ mark{background:var(--mark);color:#0d0f15;padding:1px 0}
     <input type="file" id="file" accept=".txt,.md,.pdf,.docx" hidden>
     <label class="allrow"><input type="checkbox" id="all" checked> wszystkie dokumenty</label>
     <div class="docs" id="docs"></div>
+    <div class="studio" aria-label="Studio"><h4>studio</h4><div class="stiles">
+      <button class="stile" data-tool="summary" style="background:var(--teal)">streszczenie<small>zaznaczonych dokumentów</small></button>
+      <button class="stile" data-tool="facts" style="background:var(--blue)">terminy, kwoty i obowiązki<small>zestawienie z odwołaniami</small></button>
+      <button class="stile" data-tool="memo" style="background:var(--purple)">notatka służbowa<small>na wybrany temat</small></button>
+      <button class="stile" data-tool="notes" style="background:var(--rasp)">notatnik<span id="nbcnt"></span><small>zapisane wyniki</small></button>
+    </div></div>
     <div class="foot" id="foot">Wszystko działa na tym komputerze.</div>
   </aside>
   <main class="main">
@@ -184,19 +198,20 @@ async function ask(){const q=$("q").value.trim();if(!q||busy)return;const ids=se
     const a=await r.json();if(!r.ok)throw new Error(a.error||("HTTP "+r.status));w.innerHTML=renderAnswer(a);bind(w,a)}
   catch(e){w.innerHTML='<div class="err">'+esc(e.message||e)+'</div>';if(!$("q").value)$("q").value=q}
   finally{clearInterval(tick);busy=false;$("go").disabled=false;$("thread").scrollTop=$("thread").scrollHeight}}
-function renderAnswer(a){let h='<div class="a">';
+function renderAnswer(a,isTool){let h='<div class="a">';if(isTool&&a.scope)h+='<div class="tscope">źródło: '+esc(a.scope)+'</div>';
   if(a.status!=="answered"){h+='<div class="refuse">nie znaleziono odpowiedzi w dokumentach</div><div class="why">'+(a.status==="no_sources"?"Żaden fragment nie pasuje wystarczająco do pytania, więc model nie zgaduje. Najbliższe fragmenty są niżej — możesz je sprawdzić.":"Model nie znalazł odpowiedzi w przekazanych fragmentach.")+'</div>'}
-  else{h+='<div class="ans">';for(const s of a.sentences){if(a.removed&&s.status==="unsupported")continue;
+  else{h+=isTool?'<ul class="ans tlist">':'<div class="ans">';for(const s of a.sentences){if(a.removed&&s.status==="unsupported")continue;
       const tip=s.status==="unsupported"?"Weryfikator nie znalazł potwierdzenia":s.status==="supported"?"Potwierdzone w źródle":"";
-      h+='<span class="s '+s.status+'" title="'+tip+'">'+esc(s.text.replace(/\s*\[\d{1,2}(?:\s*,\s*\d{1,2})*\]/g,""))+'</span>';
-      for(const n of s.cited)h+='<button class="cite" data-n="'+n+'" aria-label="Pokaż źródło '+n+'">'+n+'</button>';h+=' '}
-    h+='</div>';const bad=a.sentences.filter(s=>s.status==="unsupported").length;
+      if(isTool)h+='<li>';h+='<span class="s '+s.status+'" title="'+tip+'">'+esc(s.text.replace(/\s*\[\d{1,2}(?:\s*,\s*\d{1,2})*\]/g,"").replace(/^[-–•]\s*/,""))+'</span>';
+      for(const n of s.cited)h+='<button class="cite" data-n="'+n+'" aria-label="Pokaż źródło '+n+'">'+n+'</button>';h+=isTool?'</li>':' '}
+    h+=isTool?'</ul>':'</div>';const bad=a.sentences.filter(s=>s.status==="unsupported").length;
     h+=a.removed?'<div class="note warn">Usunięto niepotwierdzone zdania: '+a.removed+'</div>':bad?'<div class="note warn">'+(bad===1?"Zdanie podkreślone na czerwono nie ma":"Zdania podkreślone na czerwono ("+bad+") nie mają")+' potwierdzenia w cytowanym fragmencie.</div>':'<div class="note">Każde zdanie potwierdzone w cytowanym fragmencie. Kliknij numer, żeby zobaczyć miejsce w dokumencie.</div>'}
   if(a.sources&&a.sources.length){h+='<div class="srcs">';for(const s of a.sources)h+='<button data-n="'+s.n+'">['+s.n+'] '+esc(s.label||s.file)+'</button>';h+='</div>'}
-  const t=a.timings||{};h+='<div class="meta">'+a.seconds+' s · wyszukiwanie '+(t.retrieval_s||0).toFixed(1)+' s · model '+(t.generation_s||0).toFixed(1)+' s · weryfikacja '+(t.verify_s||0).toFixed(1)+' s'+(a.status==="answered"?'<button class="copy" data-copy="1">kopiuj odpowiedź ze źródłami</button>':'')+'</div></div>';return h}
+  const t=a.timings||{};h+='<div class="meta">'+a.seconds+' s · wyszukiwanie '+(t.retrieval_s||0).toFixed(1)+' s · model '+(t.generation_s||0).toFixed(1)+' s · weryfikacja '+(t.verify_s||0).toFixed(1)+' s'+(a.status==="answered"?'<button class="copy" data-copy="1">kopiuj ze źródłami</button><button class="copy" data-note="1">do notatnika</button>':'')+'</div></div>';return h}
 function bind(w,a){w.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{const s=(a.sources||[]).find(x=>x.n==b.dataset.n);if(s)openDoc(idForFile(s.file),s.text)});
+  const nb=w.querySelector("[data-note]");if(nb)nb.onclick=()=>addNote(a,nb);
   const c=w.querySelector("[data-copy]");if(c)c.onclick=async()=>{const txt=a.question+"\n\n"+a.sentences.map(s=>s.text).join(" ")+"\n\nŹródła:\n"+(a.sources||[]).map(s=>"["+s.n+"] "+(s.label||s.file)).join("\n");
-    try{await navigator.clipboard.writeText(txt);c.textContent="skopiowano"}catch(e){c.textContent="nie udało się skopiować"}setTimeout(()=>c.textContent="kopiuj odpowiedź ze źródłami",1800)}}
+    try{await navigator.clipboard.writeText(txt);c.textContent="skopiowano"}catch(e){c.textContent="nie udało się skopiować"}setTimeout(()=>c.textContent="kopiuj ze źródłami",1800)}}
 $("go").onclick=ask;$("q").addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();ask()}});
 $("add").onclick=()=>$("file").click();
 async function upload(f){$("add").textContent="dodaję: "+f.name+"…";$("add").disabled=true;
@@ -250,6 +265,35 @@ async function showAudit(){let a;try{const r=await fetch("/api/audit");a=await r
     for(const e of a.entries)h+='<tr><td>'+esc((e.ts||"").replace("T"," ").slice(0,16))+'</td><td>'+esc(e.question||"")+(e.pii?' <span class="st-no">(zamaskowano dane)</span>':'')+'</td><td class="'+(e.status==="answered"?"st-ok":"st-no")+'">'+(e.status==="answered"?"odpowiedź"+(e.unsupported?" · niepotwierdzone zdania: "+e.unsupported:""):"odmowa")+'</td><td>'+e.sources+'</td></tr>';
     h+='</table>'}else h+='<p style="color:var(--dim)">Dziennik jest pusty — zadaj pierwsze pytanie.</p>';
   if(a.path)h+='<p style="color:var(--dim);font-size:12px;margin-top:12px">Plik: '+esc(a.path)+'</p>';openOv("dziennik audytu",h)}
+/* studio: narzędzia na wybranych dokumentach + notatnik */
+const TOOLS={summary:"streszczenie",facts:"terminy, kwoty i obowiązki",memo:"notatka służbowa"};
+let NOTES=[];try{NOTES=JSON.parse(localStorage.getItem("sejf-notes")||"[]")}catch(e){NOTES=[]}
+function saveNotes(){try{localStorage.setItem("sejf-notes",JSON.stringify(NOTES))}catch(e){}$("nbcnt").textContent=NOTES.length?" ("+NOTES.length+")":""}
+function noteFrom(a){const lines=(a.sentences||[]).map(s=>s.text+(s.status==="unsupported"?" (niepotwierdzone w źródle)":""));
+  return {title:a.question||"Odpowiedź",when:new Date().toLocaleString("pl-PL"),text:lines.join("\n"),sources:(a.sources||[]).map(s=>"["+s.n+"] "+(s.label||s.file))}}
+function addNote(a,btn){NOTES.push(noteFrom(a));saveNotes();if(btn){btn.textContent="dodano do notatnika";btn.disabled=true}}
+function notesMd(){return "# Notatnik Linda Sejf\n\n"+NOTES.map(n=>"## "+n.title+"\n\n_"+n.when+"_\n\n"+n.text+"\n\n**Źródła:**\n"+n.sources.map(x=>"- "+x).join("\n")).join("\n\n---\n\n")+"\n"}
+function showNotes(){let h='<p style="color:var(--mut);margin:0 0 10px">Zapisane odpowiedzi i zestawienia (tylko na tym komputerze).</p>';
+  if(!NOTES.length)h+='<p style="color:var(--dim)">Notatnik jest pusty. Przy odpowiedzi albo zestawieniu kliknij „do notatnika”.</p>';
+  NOTES.forEach((n,i)=>{h+='<div class="set"><h3>'+esc(n.title)+' <button class="ref" data-del="'+i+'">usuń</button></h3><p>'+esc(n.when)+'</p><div style="white-space:pre-wrap;font-size:14px">'+esc(n.text)+'</div><p style="margin-top:8px">'+n.sources.map(esc).join("<br>")+'</p></div>'});
+  if(NOTES.length)h+='<div class="path" style="margin-top:12px">'+(HEALTH.settings?'<button class="btn2" id="nbsave">zapisz do pliku .md</button>':'')+'<button class="btn2" id="nbcopy">kopiuj całość</button><button class="btn2" id="nbclear">wyczyść</button></div><div class="job" id="nbmsg"></div>';
+  openOv("notatnik",h);
+  document.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{NOTES.splice(+b.dataset.del,1);saveNotes();showNotes()});
+  if($("nbclear"))$("nbclear").onclick=()=>{NOTES=[];saveNotes();showNotes()};
+  if($("nbcopy"))$("nbcopy").onclick=async()=>{try{await navigator.clipboard.writeText(notesMd());$("nbmsg").textContent="Skopiowano."}catch(e){$("nbmsg").textContent="Nie udało się skopiować."}};
+  if($("nbsave"))$("nbsave").onclick=async()=>{try{const d=await post("/api/export",{markdown:notesMd()});$("nbmsg").innerHTML="Zapisano: "+esc(d.path)+(API()?' <button class="ref" id="nbopen">otwórz folder</button>':'');if($("nbopen"))$("nbopen").onclick=()=>API().open_folder("notes")}catch(e){$("nbmsg").textContent=e.message}}}
+async function runTool(tool,topic){const ids=selectedIds();if(ids&&!ids.length){updScope();return}if(busy)return;
+  busy=true;$("go").disabled=true;document.querySelectorAll(".stile").forEach(b=>b.disabled=true);
+  const label=TOOLS[tool]+(topic?": "+topic:"");addMsg('<div class="q">'+esc(label)+' <span style="color:var(--dim);font-size:12px">· '+(ids?pl(ids.length,"wybrany dokument","wybrane dokumenty","wybranych dokumentów"):"wszystkie dokumenty")+'</span></div>');
+  const w=addMsg('<div class="a wait"><span class="spin"></span><span>Czytam dokumenty i piszę… <b class="t">0</b> s</span></div>');const t0=Date.now();
+  const tick=setInterval(()=>{const el=w.querySelector(".t");if(el)el.textContent=Math.round((Date.now()-t0)/1000)},500);
+  try{const d=await post("/api/tool",{tool,topic:topic||"",documents:ids});w.innerHTML=renderAnswer(d,true);bind(w,d)}
+  catch(e){w.innerHTML='<div class="err">'+esc(e.message||e)+'</div>'}
+  finally{clearInterval(tick);busy=false;$("go").disabled=false;document.querySelectorAll(".stile").forEach(b=>b.disabled=false);$("thread").scrollTop=$("thread").scrollHeight}}
+function memoDialog(){openOv("notatka służbowa",'<p style="color:var(--mut);margin:0 0 10px">Temat notatki — Sejf napisze ją tylko z zaznaczonych dokumentów, z odwołaniem przy każdym punkcie.</p><div class="path"><input id="mtopic" placeholder="np. zasady pracy zdalnej" aria-label="Temat notatki"><button class="btn2" id="mgo">napisz</button></div>');
+  const go=()=>{const t=$("mtopic").value.trim();if(!t)return;closeOv();runTool("memo",t)};$("mgo").onclick=go;$("mtopic").onkeydown=e=>{if(e.key==="Enter")go()};$("mtopic").focus()}
+document.querySelectorAll(".stile").forEach(b=>b.onclick=()=>{const t=b.dataset.tool;if(t==="memo")memoDialog();else if(t==="notes")showNotes();else runTool(t,"")});
+saveNotes();
 $("setb").onclick=showSettings;$("audb").onclick=showAudit;
 const EMPTY=$("msgs").innerHTML;$("newb").onclick=()=>{if(busy)return;$("msgs").innerHTML=EMPTY;exTiles(HEALTH.demo||DOCS.some(d=>d.id.startsWith("firma/"))?EX_FIRMA:EX_LOCAL);$("app").classList.remove("viewing");$("q").focus()};
 $("refb").onclick=async()=>{try{await post("/api/reindex");$("foot").textContent="Sprawdzam pliki w folderze…";watchJob()}catch(e){$("foot").textContent=e.message}};
