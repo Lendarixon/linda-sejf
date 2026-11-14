@@ -31,7 +31,7 @@ def main():
     pay.mkdir(parents=True)
     for f in APP_FILES:
         shutil.copy2(ROOT / f, pay / f)
-    ign = shutil.ignore_patterns("__pycache__", "*.pyc", "validate_*.json", "validate_*.log")
+    ign = shutil.ignore_patterns("__pycache__", "*.pyc", "validate_*.json", "validate_*.log", "index_v1.html", "index.src.html", "build_ui.py")
     for d in APP_DIRS:
         shutil.copytree(ROOT / d, pay / d, ignore=ign)
     shutil.copytree(a.runtime, pay / "runtime", ignore=ign)

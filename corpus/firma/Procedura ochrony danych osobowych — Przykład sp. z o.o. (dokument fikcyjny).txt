@@ -1,0 +1,29 @@
+PROCEDURA OCHRONY DANYCH OSOBOWYCH I ZGŁASZANIA NARUSZEŃ
+Przykład sp. z o.o.
+(dokument fikcyjny, przygotowany do demonstracji Linda Sejf)
+
+§ 1. Cel
+Procedura określa zasady przetwarzania danych osobowych klientów i pracowników oraz postępowanie w razie naruszenia ochrony danych.
+
+§ 2. Role
+1. Inspektorem ochrony danych (IOD) w spółce jest Anna Nowak, kontakt: iod@przyklad.example, tel. wewnętrzny 214.
+2. Za rejestr czynności przetwarzania odpowiada dział prawny; rejestr jest aktualizowany co najmniej raz na kwartał.
+
+§ 3. Zasady codzienne
+1. Dokumenty zawierające dane osobowe drukuje się wyłącznie na drukarkach z funkcją wydruku po zalogowaniu kartą.
+2. Wydruki niepotrzebne niszczy się w niszczarkach oznaczonych naklejką „P-4”; zabrania się wyrzucania ich do zwykłych koszy.
+3. Danych osobowych nie wolno przesyłać przez prywatną pocztę ani prywatne komunikatory. Pliki z danymi klientów wysyła się na zewnątrz wyłącznie w archiwum zaszyfrowanym hasłem, a hasło przekazuje się innym kanałem (SMS lub telefon).
+4. Komputer zostawiony bez nadzoru blokuje się skrótem Windows+L; ekran blokuje się automatycznie po 5 minutach bezczynności.
+
+§ 4. Zgłaszanie naruszeń
+1. Pracownik, który zauważył możliwe naruszenie ochrony danych (np. zgubienie laptopa, wysłanie e-maila do złego adresata, nieuprawniony dostęp), zgłasza je IOD niezwłocznie, nie później niż w ciągu 2 godzin od jego stwierdzenia, przez formularz w intranecie albo telefonicznie.
+2. IOD ocenia naruszenie w ciągu 24 godzin i rekomenduje zarządowi, czy zgłosić je do Prezesa UODO. Zgłoszenia do Prezesa UODO dokonuje się w terminie 72 godzin od stwierdzenia naruszenia.
+3. Każde naruszenie, także niezgłoszone do UODO, wpisuje się do wewnętrznego rejestru naruszeń.
+
+§ 5. Okresy przechowywania
+1. Nagrania z monitoringu wejścia do biura przechowuje się 30 dni, a następnie automatycznie nadpisuje.
+2. Dokumenty rekrutacyjne kandydatów niezatrudnionych usuwa się po 3 miesiącach od zakończenia rekrutacji, chyba że kandydat zgodził się na udział w przyszłych rekrutacjach — wtedy po 12 miesiącach.
+3. Korespondencję z klientami w sprawie reklamacji przechowuje się 3 lata od zakończenia sprawy.
+
+§ 6. Szkolenia
+Każdy nowy pracownik przechodzi szkolenie z ochrony danych w ciągu 7 dni od rozpoczęcia pracy; szkolenie przypominające odbywa się raz w roku.

@@ -25,11 +25,13 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from sejf import Sejf, verifier_onnx  # noqa: E402
 from sejf.retriever_simple import Index, make_retriever  # noqa: E402
+from sejf import webapi  # noqa: E402
+from urllib.parse import unquote  # noqa: E402
 
 DATA = Path(os.environ.get("SEJF_DATA", Path(os.environ.get("LOCALAPPDATA", Path.home())) / "LindaSejf"))
 DATA.mkdir(parents=True, exist_ok=True)
 CFG_P = DATA / "config.json"
-cfg = json.loads(CFG_P.read_text(encoding="utf-8")) if CFG_P.exists() else {}
+cfg = json.loads(CFG_P.read_text(encoding="utf-8-sig")) if CFG_P.exists() else {}
 
 
 def opt(key, env, default):
@@ -45,11 +47,12 @@ exe = "llama-server.exe" if os.name == "nt" else "llama-server"
 LLAMA = Path(opt("llama", "SEJF_LLAMA", HERE / "bin" / exe))
 PORT = int(opt("port", "SEJF_PORT", 8765))
 THREADS = int(opt("threads", "SEJF_THREADS", max(2, (os.cpu_count() or 4) // 2)))
-MIN_RERANK = float(opt("min_rerank", "SEJF_MIN_RERANK", 0.975))
+MIN_RERANK = float(opt("min_rerank", "SEJF_MIN_RERANK", 0.7))
+PASSAGES = int(opt("passages", "SEJF_PASSAGES", 1))
 LLAMA_PORT = PORT + 1
 if not CFG_P.exists():
     CFG_P.write_text(json.dumps({"documents": str(DOCS), "models": str(MODELS), "gguf": str(GGUF), "port": PORT,
-                                 "threads": THREADS, "min_rerank": MIN_RERANK}, ensure_ascii=False, indent=1), encoding="utf-8")
+                                 "threads": THREADS}, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
 def log(*a):
@@ -68,7 +71,7 @@ if missing:
 
 log("Linda Sejf: dokumenty", DOCS)
 t = time.time()
-index = Index(DOCS, MODELS, DATA / "state", threads=THREADS)
+index = Index(DOCS, MODELS, DATA / "state", threads=THREADS, passages=bool(PASSAGES))
 log("indeks gotowy:", len(index.meta), "fragmentów,", round(time.time() - t, 1), "s")
 retrieve = make_retriever(index)
 
@@ -127,19 +130,44 @@ class H(BaseHTTPRequestHandler):
             return self._send(200, INDEX_HTML, "text/html; charset=utf-8")
         if self.path == "/api/health":
             return self._send(200, {"ok": True, "model": GGUF.name, "verifier": vcfg.get("name"), "documents": str(DOCS),
-                                    "chunks": len(index.meta), "min_rerank": MIN_RERANK, "threads": THREADS, "local": True})
+                                    "chunks": len(index.meta), "min_rerank": MIN_RERANK, "threads": THREADS, "local": True,
+                                    "upload": True})
+        if self.path == "/api/docs":
+            return self._send(200, webapi.docs_list(index))
+        if self.path.startswith("/api/doc?"):
+            d = webapi.doc_text(index, self.path)
+            return self._send(200, d) if d else self._send(404, {"error": "not-found"})
         return self._send(404, {"error": "not-found"})
 
+    def _upload(self):
+        name = webapi.safe_upload_name(unquote(self.headers.get("X-Filename", "")))
+        n = int(self.headers.get("Content-Length", "0") or 0)
+        if not name or n <= 0 or n > 50 * 1024 * 1024:
+            return self._send(400, {"error": "Dozwolone pliki .txt, .md, .pdf, .docx do 50 MB."})
+        dst = DOCS / name
+        if dst.exists():
+            return self._send(409, {"error": "Plik o tej nazwie już jest w folderze dokumentów."})
+        dst.write_bytes(self.rfile.read(n))
+        with gen_lock:
+            added = index.add_file(dst)
+        log("dodano plik:", name, added, "fragmentów")
+        if not added:
+            return self._send(200, {"ok": True, "chunks": 0, "warning": "Nie udało się odczytać tekstu (skan bez OCR?)."})
+        return self._send(200, {"ok": True, "chunks": added})
+
     def do_POST(self):
-        if self.path != "/api/ask":
-            return self._send(404, {"error": "not-found"})
         if self.headers.get("Origin") not in (None, f"http://127.0.0.1:{PORT}", f"http://localhost:{PORT}"):
             return self._send(403, {"error": "origin"})
+        if self.path == "/api/upload":
+            return self._upload()
+        if self.path != "/api/ask":
+            return self._send(404, {"error": "not-found"})
         try:
             n = int(self.headers.get("Content-Length", "0"))
             body = json.loads(self.rfile.read(n)) if 0 < n <= 8192 else {}
             q = str(body.get("question", "")).strip()
             mode = "strict" if body.get("mode") == "strict" else "flag"
+            scope = body.get("documents") or None
         except Exception:
             return self._send(400, {"error": "bad-json"})
         if not q or len(q) > 1000:
@@ -147,6 +175,7 @@ class H(BaseHTTPRequestHandler):
         try:
             with gen_lock:
                 t0 = time.time()
+                webapi.set_scope(index, scope if isinstance(scope, list) else None)
                 a = sejf.ask(q, user="local", mode=mode)
                 dt = time.time() - t0
             d = a.to_dict()

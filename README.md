@@ -1,25 +1,31 @@
 # Linda Sejf — cytuje przepis albo odmawia
 
-Lokalny asystent do dokumentów (prawo, akta biurowe) na małym modelu językowym. Działa na zwykłym laptopie z Windows,
-bez karty graficznej i bez chmury. Każde zdanie odpowiedzi ma odwołanie `[n]` do fragmentu dokumentu, a gdy żaden
-fragment nie pasuje do pytania, Sejf odpowiada „Nie znaleziono odpowiedzi w dostępnych dokumentach” zamiast zgadywać.
+**Jak NotebookLM, ale dokumenty nie opuszczają komputera.** Lokalny asystent do własnych dokumentów organizacji
+(regulaminy, procedury, umowy, akta, przepisy) na małym modelu językowym. Działa na zwykłym laptopie z Windows,
+bez karty graficznej, bez internetu i bez konta. Każde zdanie odpowiedzi ma odwołanie `[n]` do fragmentu dokumentu,
+a gdy pasującego fragmentu nie ma, Sejf odpowiada „Nie znaleziono odpowiedzi w dostępnych dokumentach” zamiast zgadywać.
+
+Dla kogo: kancelarie, działy kadr, biura rachunkowe, urzędy, placówki medyczne — wszędzie tam, gdzie dokumentów nie wolno
+wkleić do ChatGPT (tajemnica zawodowa, RODO), a Google ich nie zna.
 
 Zgłoszenie do **Bielik Awards 2026**, kategoria „Najlepsze użycie modelu SLM (<10B)”.
-Strona projektu, film i prezentacja: https://lindasejf.denmarkeast.cloudapp.azure.com/projekt/ ·
-demo online: https://lindasejf.denmarkeast.cloudapp.azure.com
+Strona projektu: https://lindasejf.denmarkeast.cloudapp.azure.com/projekt/ · demo online (dokumenty fikcyjnej firmy +
+11 ustaw): https://lindasejf.denmarkeast.cloudapp.azure.com
 
 ## Instalacja (Windows 10/11, x64)
 
-1. Pobierz `LindaSejf-Setup-1.0.0.exe` z zakładki **Releases** (ok. 50 MB). Instalator nie jest podpisany cyfrowo,
+1. Pobierz `LindaSejf-Setup-<wersja>.exe` z zakładki **Releases** (ok. 50 MB). Instalator nie jest podpisany cyfrowo,
    więc SmartScreen może pokazać ostrzeżenie: „Więcej informacji” → „Uruchom mimo to”.
 2. Zainstaluj (bez uprawnień administratora, do `%LOCALAPPDATA%\Programs\Linda Sejf`).
 3. Uruchom **Linda Sejf** z menu Start. Za pierwszym razem pobiera modele z Hugging Face (ok. 8,2 GB, przypięte wersje,
-   sprawdzane sumy SHA-256) i buduje indeks dokumentów (kilka minut). Potem otwiera się przeglądarka z aplikacją
-   pod adresem `http://127.0.0.1:8765/`. Zamknięcie okna konsoli zatrzymuje aplikację.
+   sprawdzane sumy SHA-256) i buduje indeks dokumentów (kilka minut). Potem w przeglądarce otwiera się aplikacja
+   `http://127.0.0.1:8765/`. Zamknięcie okna konsoli zatrzymuje aplikację.
 
-Wymagania: 16 GB RAM, ok. 9 GB na dysku. Na start w folderze dokumentów (`corpus`, skrót „Folder dokumentów Linda Sejf”)
-jest 11 polskich ustaw. Dodaj własne pliki `.txt`, `.md`, `.pdf` (z warstwą tekstu) lub `.docx` i uruchom aplikację ponownie.
-Ustawienia: `%LOCALAPPDATA%\LindaSejf\config.json` (folder dokumentów, model, próg bramki, wątki).
+W aplikacji: po lewej **źródła** (dokumenty z folderu; można zaznaczyć, w których szukać, i dodać plik przyciskiem
+„+ dodaj plik”), na środku rozmowa, po prawej podgląd dokumentu z podświetlonym cytowanym fragmentem.
+Na start w folderze dokumentów są trzy fikcyjne dokumenty firmy „Przykład sp. z o.o.” i 11 polskich ustaw.
+Obsługiwane pliki: `.txt`, `.md`, `.pdf` (z warstwą tekstu), `.docx`. Wymagania: 16 GB RAM, ok. 9 GB na dysku.
+Ustawienia: `%LOCALAPPDATA%\LindaSejf\config.json` (`documents`, `gguf`, `threads`, `min_rerank`, `passages`).
 
 ## Uruchomienie ze źródeł (Windows / Linux)
 
@@ -28,63 +34,59 @@ pip install numpy onnxruntime tokenizers pypdf python-docx
 python tools/download_models.py          # modele do ./models
 # llama-server z https://github.com/ggml-org/llama.cpp/releases (build b12336) do ./bin/
 python app.py
-python -m pytest -q tests                # 24 testy
+python -m pytest -q tests
 ```
 
 ## Jak to działa
 
 ```
 pytanie ─► wyszukiwanie: e5-small (znaczenie) + BM25 (słowa), łączone RRF, 30 kandydatów
-        ─► polski reranker (sdadas/polish-reranker-base-ranknet) ocenia kandydatów
-        ─► BRAMKA: najlepsza ocena < 0,975  →  „Nie znaleziono odpowiedzi…” (ok. 6 s, model nie jest uruchamiany)
-        ─► Gemma-4-E4B Q6_K w llama.cpp odpowiada z odwołaniami [n] (albo odmawia)
+        ─► polski reranker (sdadas/polish-reranker-base-ranknet) ocenia kandydatów i ich krótkie fragmenty (ustęp/punkt)
+        ─► BRAMKA: najlepsza ocena < 0,7  →  „Nie znaleziono odpowiedzi…” (kilka sekund, model nie jest uruchamiany)
+        ─► Gemma-4-E4B Q6_K w llama.cpp odpowiada z odwołaniami [n] (albo sama odmawia)
         ─► weryfikator zdań (HerBERT, ONNX int8) oznacza zdania niepotwierdzone przez cytowany fragment
         ─► dziennik audytu z łańcuchem SHA-256, numery PESEL/NIP/REGON/IBAN maskowane w dzienniku
 ```
+
+Reranker widzi ok. 256 pierwszych tokenów fragmentu, więc zdanie na końcu długiego fragmentu dostawało niską ocenę
+i bramka odmawiała mimo dobrego źródła. Dlatego oceniamy też krótkie okna wewnątrz najlepszych fragmentów i bierzemy
+lepszą ocenę (`passages`); do modelu nadal trafia cały fragment.
 
 | plik | rola |
 |---|---|
 | `sejf/core.py` | bramka odmowy, prompt, podział na zdania, weryfikacja, dziennik audytu |
 | `sejf/cite.py`, `sejf/labels.py` | odwołania `[n]`, etykiety „Kodeks pracy, art. 22²” |
-| `sejf/retriever_simple.py` | samodzielna wyszukiwarka (ONNX, SQLite FTS5) |
+| `sejf/retriever_simple.py` | wyszukiwarka (ONNX, SQLite FTS5), indeks z pamięcią podręczną per plik, dodawanie plików w locie |
+| `sejf/webapi.py` | lista dokumentów, podgląd, zawężenie do wybranych źródeł |
 | `sejf/retriever_localdocs.py` | adapter do komercyjnej wyszukiwarki Linda Probe (opcjonalny, nie jest częścią repozytorium) |
 | `sejf/verifier_onnx.py`, `sejf/pii.py` | weryfikator zdań, maskowanie danych osobowych |
-| `app.py`, `ui/index.html` | lokalny serwer i interfejs |
-| `tools/download_models.py`, `tools/export_onnx.py` | pobieranie modeli, eksport ONNX |
-| `tools/validate_retriever.py` | porównanie tej wyszukiwarki z Linda Probe na tych samych pytaniach (zbiory pytań niepubliczne) |
+| `app.py`, `ui/index.src.html` → `ui/index.html` | lokalny serwer i interfejs (`python ui/build_ui.py`) |
+| `tools/` | pobieranie modeli, eksport ONNX, walidacja wyszukiwarki, źródła do ewaluacji |
 | `installer/` | instalator Inno Setup |
 
-## Wyniki (z pomiarów w zgłoszeniu)
+## Wyniki
 
-124 pytania „z życia” z odpowiedzią w ustawach + 31 pułapek, ślepa ocena dwóch sędziów-modeli (Gemini 4 Hydrogen, Bielik-11B):
+124 pytania „z życia” z odpowiedzią w ustawach + 31 pułapek (zbiór napisany przez Gemini w rolach kadrowej, urzędnika
+i księgowej), ślepa ocena dwóch sędziów-modeli (Gemini 4 Hydrogen, Bielik-11B; zakres = obaj). Procent wszystkich
+124 pytań; odmowa nie jest błędem. Gemma-4-E4B Q6_K:
 
-| konfiguracja | odpowiada | błędne | odrzucone pułapki |
-|---|---|---|---|
-| Gemma-4-E4B bez bramki | — | 6–9% | 94% |
-| **Gemma-4-E4B z bramką 0,9 (Linda Probe)** | 52% | **2%** | 97% (30/31) |
-| Bielik-4.5B (naprawiony tokenizer) bez / z bramką | — / 62% | 27–32% / 15% | 55% / 84% |
+| konfiguracja | odpowiada | poprawne | błędne | odrzucone pułapki |
+|---|---|---|---|---|
+| **ta wyszukiwarka + bramka 0,7 (domyślnie)** | **81%** | **60–65%** | **6–9%** | 28/31 |
+| ta wyszukiwarka + bramka 0,9 | 69% | 52–57% | 5–6% | 28/31 |
+| ta wyszukiwarka + bramka 0,95 (ostrożnie) | 60% | 45–50% | 4–6% | 29/31 |
+| ta wyszukiwarka bez bramki | 83% | 60–67% | 7–10% | 28/31 |
+| wyszukiwarka Linda Probe + bramka 0,9 (pierwsza wersja zgłoszenia) | 52% | 40–44% | 2% | 30/31 |
 
-Ograniczenia: sędziowie to modele, nie ludzie; bramka obniża zasięg (Sejf odpowiada na ok. połowę pytań); ewaluacja
-tylko na tekstach ustaw. Pomiary w zgłoszeniu wykonano z wyszukiwarką Linda Probe; wyszukiwarka open source w tym
-repozytorium została z nią porównana na tych samych 155 pytaniach — wynik w sekcji poniżej.
+Właściwy artykuł w top 5 źródeł: 88% pytań (Linda Probe: 71%). Przy n = 124 niepewność to ok. ±4 pkt proc.
+Dlaczego 0,7, a nie 0,9: ocena rerankera mocno zależy od sformułowania pytania („Do której godziny muszę zgłosić, że jestem
+chory?” 0,78, a „…zgłosić przełożonemu, że jestem chory?” 0,98 — w regulaminie jest „nieobecność”, nie „choroba”). Próg 0,9
+odrzucał więc wiele zwykłych pytań; przy 0,7 bramka zatrzymuje pytania wyraźnie spoza dokumentów, a resztę odmów robi model.
+Ostrożniejszy tryb: `"min_rerank": 0.95` w `config.json`.
 
-## Wyszukiwarka open source a Linda Probe (sprawdzone)
-
-Wyszukiwarka w tym repozytorium (e5-small + BM25 + ten sam reranker) ma inny rozkład ocen niż Linda Probe, więc próg bramki
-skalibrowaliśmy tą samą regułą co w zgłoszeniu: pierwszy próg, przy którym na zbiorze (a) (289 pytań Bielika-11B) nie przechodzi
-żadna pułapka → **0,975** (domyślny w `app.py`). Sprawdzenie na niezależnym zbiorze (b), 124 pytania + 31 pułapek
-(`tools/validate_retriever.py`; zbiory pytań nie są publiczne):
-
-| | Linda Probe, próg 0,9 | open source, próg 0,975 |
-|---|---|---|
-| właściwy artykuł w top 5 (wszystkie pytania) | 71% | 88% |
-| pytania przepuszczone przez bramkę do modelu | 63% | 44% |
-| właściwy artykuł wśród przepuszczonych | 88,5% | 94,5% |
-| pułapki zatrzymane już przez bramkę | 26/31 | 31/31 |
-
-Wersja open source jest więc ostrożniejsza (rzadziej odpowiada, nie przepuszcza pułapek). Odsetka błędnych odpowiedzi z modelem
-dla tej wyszukiwarki nie mierzyliśmy osobno — liczby 2% / 15% w tabeli wyżej dotyczą konfiguracji z Linda Probe.
-Próg można zmienić w `config.json` (`min_rerank`).
+Ograniczenia: sędziowie to modele, nie ludzie; ewaluacja na ustawach — dokumenty firmowe w demo są fikcyjne i służą
+tylko do demonstracji; pytania wymagające wnioskowania („limit hotelu w Krakowie”, gdy dokument mówi o „pozostałych
+miastach”) reranker ocenia nisko i Sejf wtedy odmawia.
 
 ## Wkład dla Bielika: tokenizer v3 w GGUF
 

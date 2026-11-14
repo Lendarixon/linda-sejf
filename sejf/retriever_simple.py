@@ -79,6 +79,26 @@ def chunks(text: str):
         yield pending
 
 
+def windows(text: str, max_chars: int = 380, step: int = 2):
+    """Krótkie okna (zwykle ustęp lub punkt) do oceny rerankerem: kolejne wiersze do ~380 znaków, start co 2 wiersze.
+    'context' = okno + 1 wiersz przed i po (to trafia do modelu); ctx_start = numer pierwszego wiersza kontekstu w fragmencie."""
+    lines = text.split("\n")
+    out, seen = [], set()
+    for a in range(0, len(lines), step):
+        b, size = a, 0
+        while b < len(lines) and (size < max_chars or b == a):
+            size += len(lines[b]) + 1
+            b += 1
+        if (a, b) in seen or not "".join(lines[a:b]).strip():
+            continue
+        seen.add((a, b))
+        ca, cb = max(0, a - 1), min(len(lines), b + 1)
+        out.append({"text": "\n".join(lines[a:b]), "context": "\n".join(lines[ca:cb]), "ctx_start": ca})
+        if b >= len(lines):
+            break
+    return out
+
+
 # ------------------------------------------------------------------ modele ONNX
 class _Onnx:
     def __init__(self, d: Path, threads: int, max_length: int, pair: bool):
@@ -131,7 +151,10 @@ _WORD = re.compile(r"\w+", re.U)
 
 
 class Index:
-    def __init__(self, folder, models_dir, state_dir, threads: int = 4, rerank_n: int = 30, depth: int = 60):
+    def __init__(self, folder, models_dir, state_dir, threads: int = 4, rerank_n: int = 30, depth: int = 60,
+                 passages: bool = False, passage_top: int = 15):
+        self.passages, self.passage_top = passages, passage_top
+        self.only_files = None  # zbiór pełnych ścieżek plików, do których zawęża się wyszukiwanie (wybór źródeł w UI)
         self.folder = Path(folder)
         self.models = Path(models_dir)
         self.state = Path(state_dir)
@@ -145,53 +168,133 @@ class Index:
         exts = TEXT_EXT | {".pdf", ".docx"}
         return sorted(p for p in self.folder.rglob("*") if p.is_file() and p.suffix.lower() in exts)
 
+    def _file_part(self, p: Path):
+        """Fragmenty i wektory jednego pliku; pamięć podręczna per plik (ścieżka + rozmiar + data zmiany)."""
+        st = p.stat()
+        key = hashlib.sha256(f"{p}|{st.st_size}|{st.st_mtime_ns}".encode()).hexdigest()[:20]
+        cache = self.state / "files" / f"{key}.npz"
+        if cache.exists():
+            z = np.load(cache, allow_pickle=False)
+            return json.loads(str(z["meta"])), z["v"]
+        meta = []
+        for c in chunks(read_text(p)):
+            c["file"] = str(p)
+            meta.append(c)
+        vec = self.emb(["passage: " + p.stem + "\n" + m["text"] for m in meta]).astype(np.float32) if meta \
+            else np.zeros((0, 384), np.float32)
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(cache, v=vec, meta=np.array(json.dumps(meta, ensure_ascii=False)))
+        return meta, vec
+
     def _build(self):
-        files = self._files()
-        sig = hashlib.sha256("\n".join(f"{p}|{p.stat().st_size}|{p.stat().st_mtime_ns}" for p in files).encode()).hexdigest()[:16]
-        meta_p, vec_p = self.state / f"index_{sig}.json", self.state / f"index_{sig}.npz"
-        if meta_p.exists() and vec_p.exists():
-            self.meta = json.loads(meta_p.read_text(encoding="utf-8"))
-            self.vec = np.load(vec_p)["v"]
-        else:
-            self.meta = []
-            for p in files:
-                for c in chunks(read_text(p)):
-                    c["file"] = str(p)
-                    self.meta.append(c)
-            self.vec = self.emb(["passage: " + Path(m["file"]).stem + "\n" + m["text"] for m in self.meta]).astype(np.float32)
-            np.savez_compressed(vec_p, v=self.vec)
-            meta_p.write_text(json.dumps(self.meta, ensure_ascii=False), encoding="utf-8")
+        self.meta, vecs = [], []
+        for p in self._files():
+            m, v = self._file_part(p)
+            self.meta += m
+            vecs.append(v)
+        self.vec = np.vstack(vecs) if vecs else np.zeros((0, 384), np.float32)
         self.db = sqlite3.connect(":memory:", check_same_thread=False)
         self.db.execute("CREATE VIRTUAL TABLE docs USING fts5(text, tokenize='unicode61')")
         self.db.executemany("INSERT INTO docs(rowid, text) VALUES (?, ?)",
                             ((i, m["text"].lower()) for i, m in enumerate(self.meta)))
 
-    def _lexical(self, query: str):
+    def add_file(self, p) -> int:
+        """Dodaje nowy plik do działającego indeksu (bez przebudowy całości). Zwraca liczbę fragmentów."""
+        p = Path(p)
+        m, v = self._file_part(p)
+        start = len(self.meta)
+        self.meta += m
+        self.vec = np.vstack([self.vec, v]) if len(v) else self.vec
+        self.db.executemany("INSERT INTO docs(rowid, text) VALUES (?, ?)",
+                            ((start + i, x["text"].lower()) for i, x in enumerate(m)))
+        return len(m)
+
+    def documents(self):
+        """Lista plików w indeksie: ścieżka względna, liczba fragmentów."""
+        cnt = {}
+        for m in self.meta:
+            cnt[m["file"]] = cnt.get(m["file"], 0) + 1
+        out = []
+        for f, n in sorted(cnt.items()):
+            try:
+                rel = str(Path(f).relative_to(self.folder))
+            except ValueError:
+                rel = Path(f).name
+            out.append({"id": rel.replace("\\", "/"), "name": Path(f).stem, "chunks": n})
+        return out
+
+    def file_by_id(self, doc_id: str):
+        for f in {m["file"] for m in self.meta}:
+            try:
+                rel = str(Path(f).relative_to(self.folder)).replace("\\", "/")
+            except ValueError:
+                rel = Path(f).name
+            if rel == doc_id:
+                return Path(f)
+        return None
+
+    def _lexical(self, query: str, allowed=None):
         terms = [t for t in _WORD.findall(query.lower()) if len(t) >= 3]
         if not terms:
             return []
         expr = " OR ".join('"' + t.replace('"', '""') + '"' for t in terms)
-        rows = self.db.execute("SELECT rowid FROM docs WHERE docs MATCH ? ORDER BY bm25(docs) LIMIT ?", (expr, self.depth)).fetchall()
-        return [r[0] for r in rows]
+        lim = self.depth if allowed is None else 100000
+        rows = [r[0] for r in self.db.execute("SELECT rowid FROM docs WHERE docs MATCH ? ORDER BY bm25(docs) LIMIT ?", (expr, lim))]
+        if allowed is not None:
+            rows = [r for r in rows if r in allowed]
+        return rows[: self.depth]
 
     def search(self, query: str, k: int = 5):
         if not self.meta or not query.strip():
             return []
         q = self.emb(["query: " + query])[0]
-        dense = np.argsort(-(self.vec @ q))[: self.depth].tolist()
+        allowed = None
+        if self.only_files:
+            allowed = {i for i, m in enumerate(self.meta) if m["file"] in self.only_files}
+            if not allowed:
+                return []
+            idx = np.fromiter(allowed, dtype=np.int64)
+            dense = idx[np.argsort(-(self.vec[idx] @ q))][: self.depth].tolist()
+        else:
+            dense = np.argsort(-(self.vec @ q))[: self.depth].tolist()
         fused = {}
         for r, i in enumerate(dense, 1):
             fused[i] = fused.get(i, 0.0) + 1 / (60 + r)
-        for r, i in enumerate(self._lexical(query), 1):
+        for r, i in enumerate(self._lexical(query, allowed), 1):
             fused[i] = fused.get(i, 0.0) + 1 / (60 + r)
         cand = sorted(fused, key=lambda i: -fused[i])[: self.rerank_n]
         scores = self.rr(query, [self.meta[i]["text"] for i in cand])
-        order = sorted(zip(cand, scores), key=lambda x: -x[1])[:k]
+        ranked = sorted(zip(cand, scores), key=lambda x: -x[1])
+        if not self.passages:
+            out = []
+            for i, s in ranked[:k]:
+                m = self.meta[i]
+                out.append({"file": m["file"], "start_line": m["start_line"], "snippet": m["text"],
+                            "locator": f"lines {m['start_line']}-{m['end_line']}", "score": fused[i], "rerank_score": float(s)})
+            return out
+        # Tryb fragmentów: w najlepszych kandydatach oceniamy krótkie okna (ustęp/punkt), bo szum wokół właściwego
+        # zdania obniża ocenę całego fragmentu, a reranker widzi tylko ok. 256 pierwszych tokenów fragmentu.
+        wins = []
+        for i, s in ranked[: self.passage_top]:
+            for w in windows(self.meta[i]["text"]):
+                wins.append((i, s, w))
+        wscores = self.rr(query, [w[2]["text"] for w in wins]) if wins else []
+        best = {}
+        for (i, s, w), ws in zip(wins, wscores):
+            if i not in best or ws > best[i][0]:
+                best[i] = (ws, w)
+        items = []
+        for i, s in ranked:
+            ws, w = best.get(i, (None, None))
+            items.append((max(s, ws) if ws is not None else s, i, w))
+        items.sort(key=lambda x: -x[0])
         out = []
-        for i, s in order:
+        for sc, i, w in items[:k]:
             m = self.meta[i]
+            # do modelu trafia cały fragment (kontekst), a najlepsze okno służy tylko do oceny i podświetlenia w UI
             out.append({"file": m["file"], "start_line": m["start_line"], "snippet": m["text"],
-                        "locator": f"lines {m['start_line']}-{m['end_line']}", "score": fused[i], "rerank_score": float(s)})
+                        "locator": f"lines {m['start_line']}-{m['end_line']}", "score": fused[i], "rerank_score": float(sc),
+                        "best_window": w["text"] if w else None})
         return out
 
 

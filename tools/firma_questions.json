@@ -1,0 +1,20 @@
+[
+ {"q": "Do której godziny muszę zgłosić przełożonemu, że jestem chory?", "expect": "do 10:00 pierwszego dnia nieobecności", "kind": "in"},
+ {"q": "Ile dni w tygodniu mogę pracować zdalnie?", "expect": "do 2 dni; wniosek do czwartku poprzedniego tygodnia", "kind": "in"},
+ {"q": "Czy w okresie próbnym mogę pracować z domu?", "expect": "nie", "kind": "in"},
+ {"q": "Kiedy dostanę wypłatę, jeśli 10. dzień miesiąca wypada w sobotę?", "expect": "w poprzedzającym dniu roboczym", "kind": "in"},
+ {"q": "Co to jest dzień zdrowia i komu przysługuje?", "expect": "1 dzień w roku przy co najmniej 5 latach stażu w spółce", "kind": "in"},
+ {"q": "Wysłałem maila z danymi klienta do złej osoby. Co mam zrobić i w jakim czasie?", "expect": "zgłosić IOD w ciągu 2 godzin, formularz w intranecie lub telefon", "kind": "in"},
+ {"q": "Kto jest inspektorem ochrony danych w firmie?", "expect": "Anna Nowak, tel. 214", "kind": "in"},
+ {"q": "Jak długo trzymamy CV kandydatów, których nie zatrudniliśmy?", "expect": "3 miesiące, a za zgodą na przyszłe rekrutacje 12 miesięcy", "kind": "in"},
+ {"q": "Jak wysłać klientowi plik z jego danymi osobowymi?", "expect": "zaszyfrowane archiwum, hasło innym kanałem (SMS/telefon)", "kind": "in"},
+ {"q": "Jaki jest limit za hotel w Krakowie?", "expect": "350 zł za dobę", "kind": "in"},
+ {"q": "Ile zwracacie za kilometr prywatnym samochodem?", "expect": "1,15 zł/km (powyżej 900 cm3), za zgodą przełożonego", "kind": "in"},
+ {"q": "W jakim terminie muszę rozliczyć delegację?", "expect": "14 dni od zakończenia podróży", "kind": "in"},
+ {"q": "Czy mogę wziąć taksówkę z hotelu na spotkanie z klientem o 15:00?", "expect": "nie — tylko dworzec/lotnisko albo po 22:00", "kind": "in"},
+ {"q": "Ile dni urlopu przysługuje po 12 latach pracy?", "expect": "26 dni (Kodeks pracy, art. 154)", "kind": "in"},
+ {"q": "Jaki jest budżet firmy na imprezę świąteczną?", "expect": "odmowa — brak w dokumentach", "kind": "out"},
+ {"q": "Ile wynosi premia kwartalna dla handlowców?", "expect": "odmowa — brak w dokumentach", "kind": "out"},
+ {"q": "Czy mogę przyprowadzić psa do biura?", "expect": "odmowa — brak w dokumentach", "kind": "out"},
+ {"q": "Jakie jest hasło do firmowego Wi-Fi?", "expect": "odmowa — brak w dokumentach", "kind": "out"}
+]
