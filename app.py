@@ -25,7 +25,7 @@ from sejf import Sejf, verifier_onnx, webapi  # noqa: E402
 from sejf.core import verify_audit_chain  # noqa: E402
 from sejf.retriever_simple import Index, make_retriever  # noqa: E402
 
-VERSION = "1.2.0"
+VERSION = "1.2.1"
 DATA = Path(os.environ.get("SEJF_DATA", Path(os.environ.get("LOCALAPPDATA", Path.home())) / "LindaSejf"))
 DATA.mkdir(parents=True, exist_ok=True)
 CFG_P = DATA / "config.json"
@@ -89,6 +89,8 @@ class State:
         self.lock = threading.Lock()   # jedna generacja / jedna przebudowa indeksu naraz
         self.index = self.sejf = self.llama = None
         self.vcfg = {}
+        self.gpu = cfg.get("gpu") if cfg.get("gpu") in ("auto", "cpu") else "auto"
+        self.device = "procesor"
 
     def progress(self, k, n, name):
         self.job.update(done=k, total=n, text=f"Indeksuję {k}/{n}: {name}")
@@ -111,6 +113,22 @@ def generate(messages):
         return json.loads(r.read())["choices"][0]["message"]["content"]
 
 
+def gpu_devices():
+    """Karty graficzne widoczne dla llama.cpp (Vulkan: AMD, NVIDIA, Intel, także zintegrowane)."""
+    try:
+        out = subprocess.run([str(LLAMA), "--list-devices"], capture_output=True, text=True, timeout=60,
+                             creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
+    except Exception:
+        return []
+    devs = []
+    for line in (out.stdout + out.stderr).splitlines():
+        line = line.strip()
+        if line.split(":")[0].startswith(("Vulkan", "CUDA", "ROCm", "Metal")) and ":" in line:
+            dev, name = line.split(":", 1)
+            devs.append((dev.strip(), name.strip().split(" (")[0]))
+    return devs
+
+
 def start(status=log):
     """Ładuje indeks, model i weryfikator, uruchamia serwer HTTP w wątku. Zwraca adres URL."""
     miss = missing_files()
@@ -125,8 +143,16 @@ def start(status=log):
     log("indeks gotowy:", len(S.index.meta), "fragmentów,", round(time.time() - t, 1), "s")
     status("Uruchamiam model językowy…")
     flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+    accel = ["-ngl", "0"]
+    if S.gpu == "auto":
+        devs = gpu_devices()
+        if devs:  # cały model na pierwszą kartę (zwykle osobną), bez dzielenia z kartą zintegrowaną
+            accel = ["-ngl", "999", "--device", devs[0][0]]
+            S.device = f"karta graficzna: {devs[0][1]}"
+    log("akceleracja:", S.device)
     S.llama = subprocess.Popen([str(LLAMA), "-m", str(GGUF), "--host", "127.0.0.1", "--port", str(LLAMA_PORT), "-c", "6144",
-                                "-t", str(S.threads), "-tb", str(S.threads), "--temp", "0", "-np", "1", "--jinja", "--no-webui"],
+                                "-t", str(S.threads), "-tb", str(S.threads), "--temp", "0", "-np", "1", "--jinja", "--no-webui",
+                                *accel],
                                stdout=open(DATA / "llama.log", "ab"), stderr=subprocess.STDOUT, creationflags=flags)
     for _ in range(600):
         try:
@@ -180,7 +206,7 @@ def reindex(folder=None):
 
 def settings_dict():
     return {"documents": str(S.docs), "mode": S.mode, "min_rerank": S.min_rerank, "threads": S.threads,
-            "cpu": os.cpu_count(), "model": GGUF.name, "verifier": S.vcfg.get("name"), "data": str(DATA),
+            "cpu": os.cpu_count(), "gpu": S.gpu, "device": S.device, "model": GGUF.name, "verifier": S.vcfg.get("name"), "data": str(DATA),
             "version": VERSION, "job": S.job}
 
 
@@ -302,6 +328,10 @@ class H(BaseHTTPRequestHandler):
             c["mode"] = S.mode
             c.pop("min_rerank", None)
             msg.append("tryb: " + ("ostrożny" if S.mode == "careful" else "zwykły"))
+        if body.get("gpu") in ("auto", "cpu"):
+            c["gpu"] = body["gpu"]
+            msg.append("karta graficzna: " + ("automatycznie" if body["gpu"] == "auto" else "wyłączona")
+                       + " (od następnego uruchomienia)")
         if body.get("threads"):
             t = max(1, min(int(body["threads"]), os.cpu_count() or 8))
             c["threads"] = t

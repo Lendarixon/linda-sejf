@@ -25,7 +25,8 @@ Program otwiera się we własnym oknie (WebView2 wbudowany w Windows 10/11; bez 
 Po lewej **źródła** (dokumenty z folderu; można zaznaczyć, w których szukać, dodać plik przyciskiem „+ dodaj plik”
 albo przeciągnąć go myszą, „odśwież” wczytuje nowe pliki), na środku rozmowa („kopiuj odpowiedź ze źródłami”,
 „nowa rozmowa”), po prawej podgląd dokumentu z podświetlonym cytowanym fragmentem.
-**Ustawienia**: folder dokumentów (okno wyboru folderu), tryb zwykły / ostrożny, wątki procesora.
+**Ustawienia**: folder dokumentów (okno wyboru folderu), tryb zwykły / ostrożny, karta graficzna (automatycznie / tylko procesor), wątki.
+Szybkość (te same 3 pytania): karta graficzna Radeon RX 9070 XT ok. 4,5 s na odpowiedź (model ok. 1 s, reszta to wyszukiwanie na CPU); procesor desktopa 9–14 s; laptop Ryzen 7 5825U bez karty graficznej ok. 20–25 s.
 **Dziennik audytu**: ostatnie pytania (z zamaskowanymi PESEL/NIP/REGON/IBAN) i sprawdzenie łańcucha SHA-256.
 Na start w folderze dokumentów są trzy fikcyjne dokumenty firmy „Przykład sp. z o.o.” i 11 polskich ustaw.
 Obsługiwane pliki: `.txt`, `.md`, `.pdf` (z warstwą tekstu), `.docx`. Wymagania: 16 GB RAM, ok. 9 GB na dysku.

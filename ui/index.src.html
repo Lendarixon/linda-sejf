@@ -229,8 +229,10 @@ async function showSettings(){let s;try{const r=await fetch("/api/settings");s=a
   '<div class="set"><h3>Tryb odpowiedzi</h3><p>Jak chętnie Sejf odpowiada, gdy dopasowanie fragmentu do pytania jest słabe. Liczby z testu na 124 pytaniach z praktyki biurowej i 31 pytaniach-pułapkach.</p><div class="modes">'+
   '<button class="mode'+(s.mode==="normal"?" on":"")+'" data-mode="normal"><b>zwykły</b><span>odpowiada na ok. 81% pytań, 6–9% błędnych</span></button>'+
   '<button class="mode'+(s.mode==="careful"?" on":"")+'" data-mode="careful"><b>ostrożny</b><span>odpowiada na ok. 60% pytań, 4–6% błędnych</span></button></div></div>'+
-  '<div class="set"><h3>Wydajność</h3><p>Wątki procesora dla modelu i wyszukiwarki (zmiana działa od następnego uruchomienia).</p><select id="thr" class="btn2" aria-label="Wątki procesora">'+thr.map(t=>'<option'+(t===s.threads?' selected':'')+'>'+t+'</option>').join("")+'</select></div>'+
-  '<div class="set"><h3>Informacje</h3><div class="kv"><span>model</span><b>'+esc(s.model)+'</b><span>weryfikator</span><b>'+esc(s.verifier||"")+'</b><span>próg odmowy</span><b>'+s.min_rerank+'</b><span>wersja</span><b>'+esc(s.version)+'</b><span>dane programu</span><b>'+esc(s.data)+(nat?' <button class="ref" id="opendata">otwórz</button>':'')+'</b></div></div>');
+  '<div class="set"><h3>Wydajność</h3><p>Model działa na karcie graficznej (Vulkan: AMD, NVIDIA, Intel, także zintegrowanej) albo na samym procesorze. Teraz: <b style="color:#fff">'+esc(s.device||"")+'</b>. Zmiany działają od następnego uruchomienia.</p>'+
+  '<div class="path"><select id="gpu" class="btn2" aria-label="Karta graficzna"><option value="auto"'+(s.gpu!=="cpu"?" selected":"")+'>karta graficzna: automatycznie</option><option value="cpu"'+(s.gpu==="cpu"?" selected":"")+'>tylko procesor</option></select>'+
+  '<select id="thr" class="btn2" aria-label="Wątki procesora">'+thr.map(t=>'<option value="'+t+'"'+(t===s.threads?' selected':'')+'>wątki procesora: '+t+'</option>').join("")+'</select></div></div>'+
+  '<div class="set"><h3>Informacje</h3><div class="kv"><span>model</span><b>'+esc(s.model)+'</b><span>działa na</span><b>'+esc(s.device||"")+'</b><span>weryfikator</span><b>'+esc(s.verifier||"")+'</b><span>próg odmowy</span><b>'+s.min_rerank+'</b><span>wersja</span><b>'+esc(s.version)+'</b><span>dane programu</span><b>'+esc(s.data)+(nat?' <button class="ref" id="opendata">otwórz</button>':'')+'</b></div></div>');
   const msg=t=>{$("job").textContent=t};
   const setDir=async p=>{try{await post("/api/settings",{documents:p});$("curdir").textContent=p;msg("Indeksuję nowy folder…");watchJob()}catch(e){msg(e.message)}};
   if(nat){$("pick").onclick=async()=>{const p=await API().pick_folder();if(p)setDir(p)};
@@ -239,6 +241,7 @@ async function showSettings(){let s;try{const r=await fetch("/api/settings");s=a
   $("reidx").onclick=async()=>{try{await post("/api/reindex");msg("Sprawdzam pliki…");watchJob()}catch(e){msg(e.message)}};
   document.querySelectorAll(".mode").forEach(b=>b.onclick=async()=>{try{await post("/api/settings",{mode:b.dataset.mode});document.querySelectorAll(".mode").forEach(x=>x.classList.toggle("on",x===b));msg("Zapisano tryb.")}catch(e){msg(e.message)}});
   $("thr").onchange=async()=>{try{const d=await post("/api/settings",{threads:+$("thr").value});msg(d.message)}catch(e){msg(e.message)}};
+  $("gpu").onchange=async()=>{try{const d=await post("/api/settings",{gpu:$("gpu").value});msg(d.message)}catch(e){msg(e.message)}};
   if(s.job.busy)watchJob()}
 async function showAudit(){let a;try{const r=await fetch("/api/audit");a=await r.json();if(!r.ok)throw new Error(a.error)}catch(e){openOv("dziennik audytu",'<div class="err">Nie udało się wczytać dziennika: '+esc(e.message||e)+'</div>');return}
   let h='<p style="color:var(--mut);margin:0">Każde pytanie trafia do dziennika na tym komputerze: jego treść z zamaskowanymi numerami PESEL, NIP, REGON i IBAN, wynik, źródła i weryfikacja zdań. Każdy wpis zawiera skrót SHA-256 poprzedniego, więc zmiana albo usunięcie wpisu jest wykrywane.</p>';
@@ -253,7 +256,7 @@ $("refb").onclick=async()=>{try{await post("/api/reindex");$("foot").textContent
 
 fetch("/api/health").then(r=>r.json()).then(h=>{HEALTH=h;$("add").hidden=!h.upload;$("setb").hidden=$("audb").hidden=$("refb").hidden=!h.settings;
   if(h.demo){$("pill").textContent="demo online · dokumenty fikcyjnej firmy i 11 ustaw";$("pill").style.borderLeftColor="var(--amber)";
-    $("foot").textContent="Demo na serwerze 4 vCPU bez GPU — odpowiedź trwa ok. 1 min. Na laptopie z instalatora: 20–25 s, z kartą graficzną ok. 8 s.";exTiles(EX_FIRMA)}
+    $("foot").textContent="Demo na serwerze 4 vCPU bez GPU — odpowiedź trwa ok. 1 min. Program z instalatora: na laptopie bez karty graficznej 20–25 s, z kartą graficzną ok. 5 s.";exTiles(EX_FIRMA)}
   else{$("pill").textContent="lokalnie · "+String(h.model||"").replace(/-it-Q6_K\.gguf$|\.gguf$/,"").replace(/^gemma/,"Gemma")+" · nic nie wychodzi z komputera";$("foot").textContent="Folder dokumentów: "+h.documents+". Nic nie jest wysyłane do internetu.";exTiles(DOCS.some(d=>d.id.startsWith("firma/"))?EX_FIRMA:EX_LOCAL)}}).catch(()=>exTiles(EX_LOCAL));
 loadDocs().then(()=>{if(!HEALTH.demo&&DOCS.some(d=>d.id.startsWith("firma/")))exTiles(EX_FIRMA)});
 </script>
