@@ -60,6 +60,13 @@ input[type=checkbox]{accent-color:var(--acc);width:15px;height:15px;margin:0;fle
 .file:hover .tobrief,.file:focus-within .tobrief,.fold:hover .tobrief,.fold:focus-within .tobrief{opacity:1;width:24px}
 .tobrief:hover,.tobrief:focus-visible{color:var(--link);background:var(--hover)}.tobrief .ico{width:14px;height:14px}
 .file[draggable="true"],.fold[draggable="true"]{cursor:grab}
+#docs.has-brief input[type=checkbox]{opacity:.38}
+.brief-note{margin:0 8px 6px;padding:5px 8px;border-radius:var(--r2);background:var(--panel2);border:1px solid var(--line);color:var(--dim);font-size:11.5px;line-height:1.4}
+.brief-note .linkbtn{color:var(--link);font-size:inherit;padding:0;text-decoration:underline;text-underline-offset:2px;border-radius:3px}
+.brief-note .linkbtn:hover{color:var(--fg)}
+.file .bdot{display:none;width:6px;height:6px;border-radius:50%;background:var(--acc2);flex:none}
+.file.in-brief{box-shadow:inset 2px 0 0 var(--acc)}
+.file.in-brief .bdot{display:block}
 .empty-src{color:var(--dim);font-size:13px;padding:14px 10px;line-height:1.55}
 .foot{border-top:1px solid var(--line);padding:9px 14px;color:var(--dim);font-size:11.5px;display:flex;gap:8px;align-items:center}
 .foot span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -141,6 +148,11 @@ input[type=checkbox]{accent-color:var(--acc);width:15px;height:15px;margin:0;fle
 .opts{max-width:820px;margin:7px auto 0;display:flex;gap:16px;flex-wrap:wrap;color:var(--dim);font-size:11.5px;padding:0 10px}
 .opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
 /* studio */
+.stscope{padding:0 12px 10px;min-width:0}
+.seg.seg-sm{margin:0 0 6px;gap:5px}
+.seg.seg-sm button{padding:4px 10px;font-size:12px;line-height:1.25}
+.seg.seg-sm button:hover:not(.on){background:var(--hover);color:var(--fg)}
+.stscope-desc{color:var(--dim);font-size:12px;line-height:1.35;overflow-wrap:anywhere}
 .tools{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 12px 10px}
 .tool{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:var(--r2);background:var(--panel2);border:1px solid transparent;text-align:left;font-size:13px;line-height:1.25;min-height:44px}
 .tool:hover:not(:disabled){background:var(--hover);border-color:var(--line)}
@@ -193,7 +205,8 @@ select.btn{appearance:auto;border-radius:var(--r2)}
 @media (max-width:980px){.cols.lmin,.cols.rmin{--lw:1fr;--rw:1fr}body{overflow:auto}.shell{height:auto;min-height:100vh}.cols,.cols.lwide,.cols.rwide{grid-template-columns:1fr}
   .pane{max-height:none}.left .scroll,.right .scroll{max-height:46vh}.mid{min-height:70vh}.thread{max-height:none}.bar .nb,.pill{display:none}
   .brief{flex-wrap:nowrap;min-width:0}.brief-list{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin;-webkit-overflow-scrolling:touch}.bchip{flex:none}
-  .file .tobrief,.fold .tobrief{opacity:.7;width:24px}}
+  .file .tobrief,.fold .tobrief{opacity:.7;width:24px}
+  .stscope{padding:0 12px 8px}.stscope .seg{gap:4px}.stscope .seg button{max-width:100%}}
 @media (prefers-reduced-motion:reduce){*,body::before{animation:none!important;transition:none!important}}
 </style></head>
 <body>
@@ -278,6 +291,13 @@ select.btn{appearance:auto;border-radius:var(--r2)}
     <section class="pane right" aria-label="Studio">
       <div class="ph"><h2>studio</h2><button class="ib coll" id="rcoll" title="Zwiń panel" aria-label="Zwiń panel"><svg class="ico"><use href="#i-panelr"/></svg></button></div>
       <div id="stlist" style="display:flex;flex-direction:column;min-height:0;flex:1">
+        <div class="stscope" id="stscope">
+          <div class="seg seg-sm" role="radiogroup" aria-label="Zakres dokumentów w studiu">
+            <button type="button" role="radio" data-stscope="conv" aria-checked="true" class="on">jak rozmowa</button>
+            <button type="button" role="radio" data-stscope="all" aria-checked="false" tabindex="-1">wszystkie</button>
+          </div>
+          <div class="stscope-desc" id="stscope-desc"></div>
+        </div>
         <div class="tools" id="tools"></div>
         <div class="sec"><span>wyniki</span><button class="ib" id="expall" hidden title="Zapisz wszystkie wyniki do pliku .md" aria-label="Eksportuj wszystkie"><svg class="ico"><use href="#i-dl"/></svg></button></div>
         <div class="scroll" id="results"></div>
@@ -328,23 +348,47 @@ function nice(n){return n.replace(/\s*\((dokument fikcyjny|materiał przykładow
 function isOn(id){return SEL===null||SEL.has(id)}
 function selectedIds(){return SEL===null?null:[...SEL]}
 function workIds(){return CONV.docs.length?[...CONV.docs]:selectedIds()}
+let STUDIO_SCOPE="conv";try{const s=localStorage.getItem("sejf-studio-scope");if(s==="all"||s==="conv")STUDIO_SCOPE=s}catch(e){}
+function studioIds(){return STUDIO_SCOPE==="all"?null:workIds()}
+function studioScopeText(){
+  if(STUDIO_SCOPE==="all")return "wszystkie dokumenty ("+DOCS.length+"), niezależnie od teczki i zaznaczenia";
+  if(CONV.docs.length)return "jak rozmowa: teczka, "+pl(CONV.docs.length,"dokument","dokumenty","dokumentów");
+  const s=studioIds();
+  if(s===null)return "jak rozmowa: wszystkie dokumenty ("+DOCS.length+")";
+  if(!s.length)return "jak rozmowa: nic nie zaznaczono";
+  return "jak rozmowa: zaznaczone po lewej, "+s.length+" z "+DOCS.length}
+function renderStudioScope(){const el=$("stscope");if(!el)return;
+  el.querySelectorAll("[data-stscope]").forEach(b=>{const on=b.dataset.stscope===STUDIO_SCOPE;
+    b.classList.toggle("on",on);b.setAttribute("aria-checked",on?"true":"false");b.tabIndex=on?0:-1});
+  const desc=$("stscope-desc");if(desc)desc.textContent=studioScopeText()}
+function setStudioScope(v){if(v!=="all"&&v!=="conv")return;STUDIO_SCOPE=v;
+  try{localStorage.setItem("sejf-studio-scope",v)}catch(e){}updScope()}
 function updScope(){const s=workIds();const n=s===null?DOCS.length:s.length;
   if(CONV.docs.length){$("srcn").textContent="w teczce: "+pl(n,"dokument","dokumenty","dokumentów");
-    $("srcn").title="Pytania i narzędzia studia używają dokumentów z teczki rozmowy"}
+    $("srcn").title="Pytania używają dokumentów z teczki rozmowy"}
   else{$("srcn").textContent=pl(n,"źródło","źródła","źródeł");
     $("srcn").title=s===null?"Szukam we wszystkich dokumentach":"Szukam tylko w zaznaczonych dokumentach"}
-  $("go").disabled=busy||n===0}
-function renderDocs(){const g={};DOCS.forEach(d=>(g[grpName(d.id)]=g[grpName(d.id)]||[]).push(d));
+  $("go").disabled=busy||n===0;renderStudioScope()}
+function syncDocsBrief(){const docsEl=$("docs");if(!docsEl)return;
+  const has=CONV.docs.length>0;docsEl.classList.toggle("has-brief",has&&!SR);if(SR)return;
+  const note=$("brief-note");if(note)note.hidden=!has;
+  const set=new Set(CONV.docs);
+  docsEl.querySelectorAll(".file[data-doc]").forEach(row=>{const on=set.has(row.dataset.doc);
+    row.classList.toggle("in-brief",on);if(on)row.title="w teczce rozmowy";else row.removeAttribute("title")})}
+function renderDocs(){const docsEl=$("docs"),hadTree=!!docsEl.querySelector(".selall"),prevTop=hadTree?docsEl.scrollTop:0;
+  const g={};DOCS.forEach(d=>(g[grpName(d.id)]=g[grpName(d.id)]||[]).push(d));
   const keys=Object.keys(g).sort((a,b)=>a===""?1:b===""?-1:a.localeCompare(b));const nOn=DOCS.filter(d=>isOn(d.id)).length;
   let h='<label class="selall"><input type="checkbox" id="all"'+(nOn===DOCS.length&&DOCS.length?" checked":"")+'> wybierz wszystkie<span class="sp"></span><small>'+nOn+"/"+DOCS.length+'</small></label>';
+  h+='<div class="brief-note" id="brief-note"'+(CONV.docs.length?'':' hidden')+'>rozmowa używa teczki — zaznaczenie wróci po wyczyszczeniu · <button type="button" class="linkbtn" id="docs-bclr">wyczyść teczkę</button></div>';
   for(const k of keys){const items=g[k];
     if(k){const on=items.filter(d=>isOn(d.id)).length;const shut=SHUT.has(k);
       h+='<div class="fold'+(shut?" shut":"")+'" draggable="true" data-f="'+esc(k)+'"><svg class="ico chev"><use href="#i-chev"/></svg><input type="checkbox" data-fc="'+esc(k)+'"'+(on===items.length?" checked":"")+(on&&on<items.length?" data-ind=1":"")+' aria-label="Zaznacz folder '+esc(k)+'"><button class="fn" draggable="true" aria-expanded="'+!shut+'" title="'+esc(k)+'">'+ICO("folder")+'<span>'+esc(FOLD_NAMES[k]||k)+'</span></button><button class="tobrief" type="button" data-addf="'+esc(k)+'" title="do teczki rozmowy" aria-label="Dodaj folder do teczki rozmowy: '+esc(FOLD_NAMES[k]||k)+'">'+ICO("plus")+'</button><span class="cnt" title="plików w folderze">'+items.length+'</span></div>'}
     if(k&&SHUT.has(k))continue;
-    for(const d of items)h+='<div class="file'+(k?'':' root')+'" draggable="true" data-doc="'+esc(d.id)+'"><input type="checkbox" data-id="'+esc(d.id)+'"'+(isOn(d.id)?" checked":"")+' aria-label="Użyj: '+esc(d.name)+'"><span class="badge b-'+(["pdf","docx","md"].includes(ext(d.id))?ext(d.id):"txt")+'">'+esc(ext(d.id))+'</span><button class="n" draggable="true" data-open="'+esc(d.id)+'" title="'+esc(d.name)+'">'+esc(nice(d.name))+'</button><button class="tobrief" type="button" data-addd="'+esc(d.id)+'" title="do teczki rozmowy" aria-label="Dodaj do teczki rozmowy: '+esc(nice(d.name))+'">'+ICO("plus")+'</button><span class="cnt" title="liczba fragmentów w indeksie">'+d.chunks+'</span></div>'}
+    for(const d of items)h+='<div class="file'+(k?'':' root')+'" draggable="true" data-doc="'+esc(d.id)+'"><input type="checkbox" data-id="'+esc(d.id)+'"'+(isOn(d.id)?" checked":"")+' aria-label="Użyj: '+esc(d.name)+'"><span class="badge b-'+(["pdf","docx","md"].includes(ext(d.id))?ext(d.id):"txt")+'">'+esc(ext(d.id))+'</span><button class="n" draggable="true" data-open="'+esc(d.id)+'" title="'+esc(d.name)+'">'+esc(nice(d.name))+'</button><button class="tobrief" type="button" data-addd="'+esc(d.id)+'" title="do teczki rozmowy" aria-label="Dodaj do teczki rozmowy: '+esc(nice(d.name))+'">'+ICO("plus")+'</button><span class="bdot" title="w teczce rozmowy" aria-label="w teczce rozmowy"></span><span class="cnt" title="liczba fragmentów w indeksie">'+d.chunks+'</span></div>'}
   if(!DOCS.length)h='<div class="empty-src">Katalog jest pusty. '+(HEALTH.upload?'Przeciągnij tu pliki .txt, .md, .pdf albo .docx, kliknij „dodaj pliki” albo wskaż inny katalog.':'Brak dokumentów.')+'</div>';
-  $("docs").innerHTML=h;
+  docsEl.innerHTML=h;if(hadTree)docsEl.scrollTop=prevTop;
   document.querySelectorAll("[data-ind]").forEach(x=>x.indeterminate=true);
+  const bclr=$("docs-bclr");if(bclr)bclr.onclick=clearBriefcase;
   const all=$("all");if(all)all.onchange=()=>{SEL=all.checked?null:new Set();renderDocs()};
   document.querySelectorAll("#docs input[data-id]").forEach(x=>x.onchange=()=>{if(SEL===null)SEL=new Set(DOCS.map(d=>d.id));x.checked?SEL.add(x.dataset.id):SEL.delete(x.dataset.id);if(SEL.size===DOCS.length)SEL=null;renderDocs()});
   document.querySelectorAll("[data-fc]").forEach(x=>x.onchange=()=>{const k=x.dataset.fc;if(SEL===null)SEL=new Set(DOCS.map(d=>d.id));
@@ -353,9 +397,9 @@ function renderDocs(){const g={};DOCS.forEach(d=>(g[grpName(d.id)]=g[grpName(d.i
   document.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>openDoc(b.dataset.open,null));
   document.querySelectorAll("[data-addd]").forEach(b=>b.onclick=e=>{e.stopPropagation();addToBriefcase([b.dataset.addd])});
   document.querySelectorAll("[data-addf]").forEach(b=>b.onclick=e=>{e.stopPropagation();addToBriefcase(DOCS.filter(d=>grpName(d.id)===b.dataset.addf).map(d=>d.id))});
-  updScope();filterNames()}
+  syncDocsBrief();updScope();filterNames()}
 function loadDocs(){return fetch("/api/docs").then(r=>r.json()).then(d=>{DOCS=d.documents||[];DOCS_LOADED=true;
-  if(SEL)SEL=new Set([...SEL].filter(id=>DOCS.some(x=>x.id===id)));
+  if(SEL){SEL=new Set([...SEL].filter(id=>DOCS.some(x=>x.id===id)));if(DOCS.length&&SEL.size===DOCS.length)SEL=null}
   const prev=CONV.docs.length;CONV.docs=CONV.docs.filter(id=>DOCS.some(x=>x.id===id));
   if(CONV.docs.length!==prev&&CONV.items.length)saveConv();
   renderBriefcase();if(SR)updScope();else renderDocs()})}
@@ -470,12 +514,12 @@ let CONV={id:null,title:"",items:[],docs:[]};
 let BRIEF_TIP=false;try{BRIEF_TIP=!!localStorage.getItem("sejf-briefcase-tip")}catch(e){}
 function announceBriefcase(msg){const el=$("brief-live");if(!el)return;el.textContent="";requestAnimationFrame(()=>{el.textContent=msg})}
 function renderBriefcase(){const bar=$("brief"),list=$("brief-list");if(!bar||!list)return;
-  if(!CONV.docs.length){bar.hidden=true;list.innerHTML="";updScope();return}
+  if(!CONV.docs.length){bar.hidden=true;list.innerHTML="";syncDocsBrief();updScope();return}
   bar.hidden=false;
   list.innerHTML=CONV.docs.map(id=>{const doc=DOCS.find(d=>d.id===id);const nm=nice(doc?doc.name:id.split("/").pop());
     return '<button class="bchip" type="button" data-brm="'+esc(id)+'" title="'+esc(id)+'" aria-label="Usuń z teczki: '+esc(nm)+'"><span class="bchip-n">'+esc(nm)+'</span><span class="bchip-x" aria-hidden="true">×</span></button>'}).join("");
   list.querySelectorAll("[data-brm]").forEach((b,idx)=>b.onclick=()=>removeFromBriefcase(b.dataset.brm,idx));
-  updScope()}
+  syncDocsBrief();updScope()}
 function addToBriefcase(ids){const valid=(ids||[]).filter(id=>DOCS.some(d=>d.id===id));const added=[];
   for(const id of valid)if(!CONV.docs.includes(id)){CONV.docs.push(id);added.push(id)}
   if(!added.length){if(valid.length)announceBriefcase("Dokumenty są już w teczce rozmowy.");return}
@@ -488,9 +532,11 @@ function removeFromBriefcase(id,idx){const hadFocus=document.activeElement&&docu
   const doc=DOCS.find(d=>d.id===id);CONV.docs=next;renderBriefcase();if(CONV.items.length)saveConv();
   announceBriefcase("Usunięto z teczki: "+(doc?nice(doc.name):id)+".");
   if(hadFocus){const chips=$("brief-list").querySelectorAll(".bchip");if(chips.length)chips[Math.min(idx||0,chips.length-1)].focus();else $("q").focus()}}
-function clearBriefcase(){if(!CONV.docs.length)return;const hadFocus=document.activeElement===$("brief-clr");
+function clearBriefcase(){if(!CONV.docs.length)return;
+  const act=document.activeElement,fromTree=act===$("docs-bclr"),fromBar=act===$("brief-clr");
   CONV.docs=[];renderBriefcase();if(CONV.items.length)saveConv();
-  announceBriefcase("Wyczyszczono teczkę rozmowy.");if(hadFocus)$("q").focus()}
+  announceBriefcase("Wyczyszczono teczkę rozmowy.");
+  if(fromTree){const all=$("all");if(all)all.focus();else $("q").focus()}else if(fromBar)$("q").focus()}
 $("brief-clr").onclick=clearBriefcase;
 const EX_LOCAL=["Kiedy popyt jest elastyczny?","Do której godziny muszę zgłosić przełożonemu, że jestem chory?","Ile dni urlopu przysługuje po 12 latach pracy?","Jak długo przechowuje się księgi rachunkowe?"];
 const EX_OWN=["Jakie terminy i kwoty wynikają z tych dokumentów?","Jakie obowiązki opisują dokumenty?","Co jest najważniejsze w tych materiałach?"];
@@ -571,6 +617,11 @@ const KIND_ICO={note:["pin","#4a5162"]};
 let TOPT={};try{TOPT=JSON.parse(localStorage.getItem("sejf-topt")||"{}")}catch(e){TOPT={}}
 $("tools").innerHTML=Object.entries(TOOLS).map(([k,[n,ic,col]])=>'<button class="tool" data-tool="'+k+'"><i style="background:'+col+'">'+ICO(ic)+'</i>'+n+'</button>').join("");
 document.querySelectorAll(".tool").forEach(b=>b.onclick=()=>toolDialog(b.dataset.tool));
+$("stscope").querySelectorAll("[data-stscope]").forEach(b=>b.onclick=()=>setStudioScope(b.dataset.stscope));
+$("stscope").querySelector('[role="radiogroup"]').addEventListener("keydown",e=>{
+  if(!["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","End"].includes(e.key))return;
+  e.preventDefault();const next=e.key==="Home"?"conv":e.key==="End"?"all":(STUDIO_SCOPE==="conv"?"all":"conv");
+  setStudioScope(next);const target=$("stscope").querySelector('[data-stscope="'+next+'"]');if(target)target.focus()});
 function icoFor(tool){const t=TOOLS[tool];if(t)return [t[1],t[2]];return KIND_ICO.note}
 let PENDING=null;
 async function loadResults(){let a=[];try{a=await STORE.list("studio")}catch(e){}
@@ -590,7 +641,7 @@ $("rback").onclick=closeResult;
 $("expall").onclick=async()=>{const btn=$("expall");if(btn.disabled)return;btn.disabled=true;try{const a=await STORE.list("studio");let md="# Studio Linda Sejf\n";for(const r of a){const d=await STORE.get("studio",r.id);if(d)md+="\n\n## "+d.title+"\n\n"+asText(d.data||{})}
   if(HEALTH.settings){try{const r=await post("/api/export",{markdown:md});toast("Zapisano wszystkie wyniki: "+r.path.split(/[\\/]/).pop());if(API())API().open_folder("notes")}catch(e){toast(e.message,true)}}
   else{try{await navigator.clipboard.writeText(md);toast("Skopiowano wszystkie wyniki.")}catch(e){toast("Nie udało się skopiować.",true)}}}finally{btn.disabled=false}};
-async function runTool(tool,topic,opts){opts=opts||{};const ids=workIds();if(ids&&!ids.length){toast("Zaznacz co najmniej jedno źródło.",true);return}if(busy)return;
+async function runTool(tool,topic,opts){opts=opts||{};const ids=studioIds();if(ids&&!ids.length){toast("Zaznacz co najmniej jedno źródło.",true);return}if(busy)return;
   setBusy(true);const lab=TOOLS[tool][0]+(topic?": "+topic:"")+(tool==="quiz"?" · "+({short:5,standard:8,long:12}[opts.length||"standard"])+" pytań":opts.length&&opts.length!=="standard"?" · "+({short:"krótko",long:"szczegółowo"}[opts.length]):"")+(opts.form==="points"?" · w punktach":"");
   const docs=ids?ids.map(i=>nice((DOCS.find(d=>d.id===i)||{name:i}).name)):[];const title=lab+(docs.length===1?" — "+docs[0]:docs.length?" — "+pl(docs.length,"dokument","dokumenty","dokumentów"):"");
   PENDING={tool,label:title};closeResult();loadResults();const t0=Date.now();const tick=setInterval(()=>{const el=$("pt");if(el)el.textContent=Math.round((Date.now()-t0)/1000)},500);
@@ -599,9 +650,8 @@ async function runTool(tool,topic,opts){opts=opts||{};const ids=workIds();if(ids
   catch(e){PENDING=null;loadResults();toast(e.message||String(e),true)}
   finally{clearInterval(tick);setBusy(false)}}
 function seg(name,items,cur){return '<div class="olab">'+name+'</div><div class="seg" data-seg="'+name+'">'+items.map(([v,l])=>'<button data-v="'+v+'"'+(v===cur?' class="on"':'')+'>'+l+'</button>').join("")+'</div>'}
-function toolDialog(tool){const o=Object.assign({length:"standard",form:"prose"},TOPT[tool]||{});const need=tool==="memo";const ids=workIds();
-  const scopeTxt=CONV.docs.length?"w teczce: "+pl(ids.length,"dokument","dokumenty","dokumentów")+" — wyczyść teczkę, żeby użyć zaznaczenia po lewej":ids===null?"wszystkich dokumentach ("+DOCS.length+") — zaznacz po lewej, żeby zawęzić":pl(ids.length,"zaznaczonym dokumencie","zaznaczonych dokumentach","zaznaczonych dokumentach");
-  let h='<p style="color:var(--mut);margin:0 0 12px">'+TOOL_HELP[tool]+'</p><p style="color:var(--dim);font-size:12.5px;margin:-6px 0 14px">Na: '+scopeTxt+'</p>';
+function toolDialog(tool){const o=Object.assign({length:"standard",form:"prose"},TOPT[tool]||{});const need=tool==="memo";
+  let h='<p style="color:var(--mut);margin:0 0 12px">'+TOOL_HELP[tool]+'</p><p style="color:var(--dim);font-size:12.5px;margin:-6px 0 14px">Na: '+esc(studioScopeText())+' — zmienisz to w pasku zakresu studia</p>';
   if(tool==="summary"||tool==="simple"||tool==="quiz")h+=seg("długość",tool==="quiz"?[["short","5 pytań"],["standard","8 pytań"],["long","12 pytań"]]:[["short","krótko"],["standard","standardowo"],["long","szczegółowo"]],o.length);
   if(tool==="summary")h+=seg("forma",[["prose","akapit"],["points","punkty"]],o.form);
   h+='<div class="olab">temat'+(need?'':' (opcjonalnie — przy długich dokumentach Sejf weźmie pasujące fragmenty)')+'</div><div class="path"><input id="mtopic" placeholder="'+(need?'np. zasady pracy zdalnej':'np. elastyczność popytu albo urlop wypoczynkowy')+'" aria-label="Temat"><button class="btn pri" id="mgo">utwórz</button></div>';
@@ -677,7 +727,7 @@ async function showAudit(){let a;try{const r=await fetch("/api/audit");a=await r
 $("setb").onclick=showSettings;$("audb").onclick=showAudit;
 
 /* ---------- start ---------- */
-hello();
+hello();updScope();
 fetch("/api/health").then(r=>r.json()).then(h=>{HEALTH=h;const nat=!!API();
   $("add").hidden=!h.upload;$("pickdir").hidden=!(h.settings&&nat);$("opendir").hidden=!(h.settings&&nat);$("refb").hidden=!h.settings;$("setb").hidden=$("audb").hidden=!h.settings;
   $("pillt").textContent=h.demo?"demo online · pliki przykładowe":"lokalnie · "+String(h.model||"").replace(/-it-Q6_K\.gguf$|\.gguf$/,"").replace(/^gemma/,"Gemma");
