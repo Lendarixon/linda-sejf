@@ -27,7 +27,7 @@ from sejf.retriever_simple import Index, make_retriever  # noqa: E402
 from sejf.store import Store  # noqa: E402
 from sejf.uploads import UploadQueue  # noqa: E402
 
-VERSION = "1.5.0"
+VERSION = "1.5.1"
 DATA = Path(os.environ.get("SEJF_DATA", Path(os.environ.get("LOCALAPPDATA", Path.home())) / "LindaSejf"))
 DATA.mkdir(parents=True, exist_ok=True)
 CFG_P = DATA / "config.json"
@@ -177,6 +177,8 @@ def start(status=log):
     status("Wczytuję weryfikator zdań…")
     vfn, vthr, S.vcfg = verifier_onnx.load(MODELS / "verifier", threads=S.threads)
     S.uploads = UploadQueue(lambda: S.index, S.lock, busy=lambda: S.job["busy"], log=log)
+    for p in S.index.pending_vectors:
+        S.uploads.submit_vectors(p, p.name)
     S.sejf = Sejf(make_retriever(S.index), generate, vfn, threshold=vthr, mode="flag", k=5,
                   min_rerank_score=S.min_rerank or None, audit_path=AUDIT,
                   model_info={"generator": GGUF.name, "verifier": S.vcfg.get("name")})
@@ -196,9 +198,10 @@ def reindex(folder=None):
     S.job.update(busy=True, done=0, total=0, text="Sprawdzam pliki…")
 
     def run():
+        pending = []
         with S.lock:
             try:
-                S.index.reload(folder, progress=S.progress)
+                pending = S.index.reload(folder, progress=S.progress) or []
                 if folder is not None:
                     S.docs = Path(folder)
                     c = load_cfg()
@@ -211,6 +214,9 @@ def reindex(folder=None):
                 S.job.update(text="Błąd indeksowania: " + str(e)[:200])
             finally:
                 S.job["busy"] = False
+        if S.uploads:
+            for p in pending:
+                S.uploads.submit_vectors(p, p.name)
     threading.Thread(target=run, daemon=True).start()
 
 

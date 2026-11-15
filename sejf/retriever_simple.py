@@ -163,6 +163,8 @@ class Index:
                  passages: bool = False, passage_top: int = 15, progress=None):
         self.passages, self.passage_top = passages, passage_top
         self.only_files = None  # zbiór pełnych ścieżek plików, do których zawęża się wyszukiwanie (wybór źródeł w UI)
+        self.gen = 0
+        self.pending_vectors = []
         self.folder = Path(folder)
         self.models = Path(models_dir)
         self.state = Path(state_dir)
@@ -176,51 +178,96 @@ class Index:
         exts = TEXT_EXT | {".pdf", ".docx"}
         return sorted(p for p in self.folder.rglob("*") if p.is_file() and p.suffix.lower() in exts and not p.name.startswith(("~$", ".")))
 
-    def _file_part(self, p: Path, progress=None):
-        """Fragmenty i wektory jednego pliku; pamięć podręczna per plik (ścieżka + rozmiar + data zmiany)."""
+    def _cache_path(self, p: Path) -> Path:
         st = p.stat()
         key = hashlib.sha256(f"{p}|{st.st_size}|{st.st_mtime_ns}".encode()).hexdigest()[:20]
-        cache = self.state / "files" / f"{key}.npz"
-        if cache.exists():
-            z = np.load(cache, allow_pickle=False)
-            return json.loads(str(z["meta"])), z["v"]
+        return self.state / "files" / f"{key}.npz"
+
+    def _load_cache(self, p: Path):
+        cache = self._cache_path(p)
+        if not cache.exists():
+            return None
+        z = np.load(cache, allow_pickle=False)
+        meta = json.loads(str(z["meta"]))
+        vec = z["v"]
+        if len(vec) != len(meta):
+            return None
+        return meta, vec
+
+    def save_cache(self, p: Path, meta, vec):
+        """Zapisuje kompletny cache fragmentów i wektorów pliku (.npz)."""
+        cache = self._cache_path(p)
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(cache, v=vec.astype(np.float32), meta=np.array(json.dumps(meta, ensure_ascii=False)))
+
+    def prepare_text(self, p):
+        """Odczytuje tekst i dzieli go na fragmenty bez liczenia wektorów e5 (szybkie, pod BM25)."""
+        p = Path(p)
         meta = []
         for c in chunks(read_text(p)):
             c["file"] = str(p)
             meta.append(c)
-        vec = self.emb(["passage: " + p.stem + "\n" + m["text"] for m in meta], progress=progress).astype(np.float32) if meta \
-            else np.zeros((0, 384), np.float32)
-        cache.parent.mkdir(parents=True, exist_ok=True)
-        np.savez_compressed(cache, v=vec, meta=np.array(json.dumps(meta, ensure_ascii=False)))
+        return meta
+
+    def embed_meta(self, p: Path, meta, progress=None):
+        """Liczy wektory e5 dla podanych fragmentów pliku (bez zmiany indeksu)."""
+        if not meta:
+            return np.zeros((0, 384), np.float32)
+        p = Path(p)
+        return self.emb(["passage: " + p.stem + "\n" + m["text"] for m in meta], progress=progress).astype(np.float32)
+
+    def _file_part(self, p: Path, progress=None):
+        """Fragmenty i wektory jednego pliku; pamięć podręczna per plik (ścieżka + rozmiar + data zmiany)."""
+        cached = self._load_cache(p)
+        if cached is not None:
+            return cached
+        meta = self.prepare_text(p)
+        vec = self.embed_meta(p, meta, progress=progress)
+        self.save_cache(p, meta, vec)
         return meta, vec
 
     def _build(self, progress=None, folder=None):
-        """Buduje indeks folderu (pliki znane z pamięci podręcznej są wczytywane, nowe — liczone).
+        """Buduje indeks folderu (pliki z pamięci podręcznej wczytywane od razu, nowe — tylko tekstowo do policzenia w tle).
         Gotowy indeks (razem z folderem) podmieniany jest naraz, więc w trakcie przebudowy działa stary."""
         folder = Path(folder) if folder is not None else self.folder
         exts = TEXT_EXT | {".pdf", ".docx"}
         files = sorted(p for p in folder.rglob("*") if p.is_file() and p.suffix.lower() in exts
                        and not p.name.startswith(("~$", ".")))
-        meta, vecs = [], []
+        meta, vecs, masks, pending = [], [], [], []
         for k, p in enumerate(files, 1):
             try:
-                m, v = self._file_part(p)
+                cached = self._load_cache(p)
+                if cached is not None:
+                    m, v = cached
+                    mask = np.ones(len(m), dtype=bool)
+                else:
+                    m = self.prepare_text(p)
+                    v = np.zeros((len(m), 384), np.float32)
+                    mask = np.zeros(len(m), dtype=bool)
+                    if m:
+                        pending.append(p)
             except Exception:  # plik nieczytelny / zablokowany — pomijamy, nie przerywamy całości
-                m, v = [], np.zeros((0, 384), np.float32)
+                m, v, mask = [], np.zeros((0, 384), np.float32), np.zeros(0, dtype=bool)
             meta += m
-            vecs.append(v)
+            if len(m):
+                vecs.append(v)
+                masks.append(mask)
             if progress:
                 progress(k, len(files), p.name)
         vec = np.vstack(vecs) if vecs else np.zeros((0, 384), np.float32)
+        has_vec = np.concatenate(masks) if masks else np.zeros(0, dtype=bool)
         db = sqlite3.connect(":memory:", check_same_thread=False)
         db.execute("CREATE VIRTUAL TABLE docs USING fts5(text, tokenize='unicode61')")
         db.executemany("INSERT INTO docs(rowid, text) VALUES (?, ?)", ((i, m["text"].lower()) for i, m in enumerate(meta)))
-        self.meta, self.vec, self.db, self.folder = meta, vec, db, folder
+        self.gen += 1
+        self.meta, self.vec, self.has_vec, self.db, self.folder = meta, vec, has_vec, db, folder
         self.only_files = None
+        self.pending_vectors = pending
+        return pending
 
     def reload(self, folder=None, progress=None):
-        """Zmiana folderu dokumentów albo odświeżenie (nowe, zmienione i usunięte pliki)."""
-        self._build(progress, folder)
+        """Zmiana folderu dokumentów albo odświeżenie (nowe, zmienione i usunięte pliki). Zwraca pliki bez cache."""
+        return self._build(progress, folder)
 
     def prepare_file(self, p, progress=None):
         """Fragmenty i wektory nowego pliku — bez zmiany indeksu (można liczyć w tle, bez blokady)."""
@@ -230,11 +277,60 @@ class Index:
         """Dodaje nowy plik do działającego indeksu (bez przebudowy całości). Zwraca liczbę fragmentów."""
         return self.commit_file(*self.prepare_file(p))
 
+    def commit_text(self, meta) -> tuple[int, int]:
+        """Dołącza fragmenty tekstu do indeksu (BM25 + zerowe wektory i maska False; wołać pod blokadą aplikacji)."""
+        start = len(self.meta)
+        n = len(meta)
+        if not n:
+            return start, 0
+        self.meta = self.meta + meta
+        zeros = np.zeros((n, 384), np.float32)
+        self.vec = np.vstack([self.vec, zeros]) if len(self.vec) else zeros
+        mask = np.zeros(n, dtype=bool)
+        self.has_vec = np.concatenate([self.has_vec, mask]) if len(self.has_vec) else mask
+        self.db.executemany("INSERT INTO docs(rowid, text) VALUES (?, ?)",
+                            ((start + i, x["text"].lower()) for i, x in enumerate(meta)))
+        return start, n
+
+    def fill_vectors(self, start: int, v, gen: int) -> bool:
+        """Wpisuje partię policzonych wektorów i ustawia maskę has_vec; ignoruje nieaktualne pokolenie indeksu."""
+        if gen != self.gen or not len(v):
+            return False
+        end = start + len(v)
+        if start < 0 or end > len(self.vec):
+            return False
+        self.vec[start:end] = v
+        self.has_vec[start:end] = True
+        return True
+
+    def remove_file(self, p) -> int:
+        """Usuwa wszystkie fragmenty pliku z indeksu (np. po anulowaniu). Wołać pod blokadą aplikacji."""
+        target = str(Path(p))
+        keep = [i for i, m in enumerate(self.meta) if m["file"] != target]
+        removed = len(self.meta) - len(keep)
+        if not removed:
+            return 0
+        self.meta = [self.meta[i] for i in keep]
+        self.vec = self.vec[keep] if keep else np.zeros((0, 384), np.float32)
+        self.has_vec = self.has_vec[keep] if keep else np.zeros(0, dtype=bool)
+        if self.only_files:
+            self.only_files.discard(target)
+        self.db.execute("DROP TABLE IF EXISTS docs")
+        self.db.execute("CREATE VIRTUAL TABLE docs USING fts5(text, tokenize='unicode61')")
+        if self.meta:
+            self.db.executemany("INSERT INTO docs(rowid, text) VALUES (?, ?)",
+                                ((i, m["text"].lower()) for i, m in enumerate(self.meta)))
+        self.gen += 1
+        return removed
+
     def commit_file(self, m, v) -> int:
         """Dołącza policzone fragmenty do indeksu (szybkie; wołać pod blokadą aplikacji)."""
         start = len(self.meta)
-        self.meta += m
-        self.vec = np.vstack([self.vec, v]) if len(v) else self.vec
+        self.meta = self.meta + m
+        if len(v):
+            self.vec = np.vstack([self.vec, v]) if len(self.vec) else v
+            mask = np.ones(len(v), dtype=bool)
+            self.has_vec = np.concatenate([self.has_vec, mask]) if len(self.has_vec) else mask
         self.db.executemany("INSERT INTO docs(rowid, text) VALUES (?, ?)",
                             ((start + i, x["text"].lower()) for i, x in enumerate(m)))
         return len(m)
@@ -277,22 +373,27 @@ class Index:
     def search(self, query: str, k: int = 5):
         if not self.meta or not query.strip():
             return []
-        q = self.emb(["query: " + query])[0]
         allowed = None
         if self.only_files:
             allowed = {i for i, m in enumerate(self.meta) if m["file"] in self.only_files}
             if not allowed:
                 return []
-            idx = np.fromiter(allowed, dtype=np.int64)
+            idx = np.array(sorted(i for i in allowed if self.has_vec[i]), dtype=np.int64)
+        else:
+            idx = np.flatnonzero(self.has_vec)
+        if len(idx):
+            q = self.emb(["query: " + query])[0]
             dense = idx[np.argsort(-(self.vec[idx] @ q))][: self.depth].tolist()
         else:
-            dense = np.argsort(-(self.vec @ q))[: self.depth].tolist()
+            dense = []
         fused = {}
         for r, i in enumerate(dense, 1):
             fused[i] = fused.get(i, 0.0) + 1 / (60 + r)
         for r, i in enumerate(self._lexical(query, allowed), 1):
             fused[i] = fused.get(i, 0.0) + 1 / (60 + r)
         cand = sorted(fused, key=lambda i: -fused[i])[: self.rerank_n]
+        if not cand:
+            return []
         scores = self.rr(query, [self.meta[i]["text"] for i in cand])
         ranked = sorted(zip(cand, scores), key=lambda x: -x[1])
         if not self.passages:

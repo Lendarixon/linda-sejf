@@ -36,7 +36,11 @@ tylko zamiast Dysku Google jest **katalog na dysku**:
 - **na środku — rozmowa**, **po prawej — studio** z wynikami zapisanymi w `%LOCALAPPDATA%\LindaSejf\studio`. Oba panele boczne można zwinąć.
 **Ustawienia**: katalog dokumentów (okno wyboru folderu), tryb zwykły / ostrożny, karta graficzna (automatycznie / tylko procesor), wątki.
 Szybkość (te same 3 pytania): karta graficzna Radeon RX 9070 XT ok. 4,5 s na odpowiedź (model ok. 1 s, reszta to wyszukiwanie na CPU); procesor desktopa 9–14 s; laptop Ryzen 7 5825U bez karty graficznej ok. 20–25 s.
-Dodawanie pliku: ok. 40 fragmentów na sekundę na CPU (plik tekstowy 3,5 MB = 7 400 fragmentów, ok. 3 min).
+Dodawanie pliku (od 1.5.1): po kilku sekundach plik jest w drzewie i można o niego pytać — wyszukiwanie po słowach (BM25)
+działa od razu, a wektory e5 (wyszukiwanie po znaczeniu) liczą się w tle, ok. 40 fragmentów na sekundę na CPU (plik 3,6 MB =
+6 600 fragmentów: przeszukiwalny po 4 s, wektory gotowe po ok. 3 min). Tak samo przy starcie programu z nowymi plikami w katalogu.
+**Teczka rozmowy**: dokument albo cały folder można przeciągnąć z lewego panelu do rozmowy lub do studia (albo kliknąć „+” przy
+pliku) — pytania i narzędzia studia działają wtedy tylko na dokumentach z teczki; teczka zapisuje się razem z rozmową.
 **Studio** (jak w NotebookLM, na zaznaczonych dokumentach; przy każdym narzędziu można wpisać temat):
 - **streszczenie** — krótko (3–4 zdania), standardowo (5–8) albo szczegółowo (10–14); akapit albo punkty;
 - **pytania sprawdzające** — fiszki do nauki: pytanie, odpowiedź po kliknięciu; zapis do CSV (import w Anki albo Quizlet);

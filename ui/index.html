@@ -27,7 +27,7 @@ input,textarea,select{font:inherit;color:var(--fg)}
 .ib{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px;color:var(--mut)}.ib:hover{background:var(--hover);color:var(--fg)}
 .cols{display:grid;grid-template-columns:var(--lw,320px) minmax(0,1fr) var(--rw,320px);gap:12px;padding:0 12px 12px;min-height:0;transition:grid-template-columns .28s ease}
 .cols.lwide{--lw:min(560px,40vw)}.cols.rwide{--rw:min(540px,40vw)}.cols.lmin{--lw:52px}.cols.rmin{--rw:52px}
-.pane{background:var(--panel);backdrop-filter:blur(12px) saturate(1.15);-webkit-backdrop-filter:blur(12px) saturate(1.15);border:1px solid var(--line);border-radius:var(--r);display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
+.pane{position:relative;background:var(--panel);backdrop-filter:blur(12px) saturate(1.15);-webkit-backdrop-filter:blur(12px) saturate(1.15);border:1px solid var(--line);border-radius:var(--r);display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden;transition:border-color .15s}
 .ph{display:flex;align-items:center;gap:6px;padding:12px 12px 8px 16px;min-height:52px}
 .ph h2{font:400 16px/1 var(--font);margin:0;flex:1;white-space:nowrap}
 .cols.lmin .left>*:not(.ph),.cols.rmin .right>*:not(.ph){display:none}.cols.lmin .left .ph>*:not(.coll),.cols.rmin .right .ph>*:not(.coll){display:none}
@@ -56,6 +56,10 @@ input[type=checkbox]{accent-color:var(--acc);width:15px;height:15px;margin:0;fle
 .badge{font-size:9.5px;font-weight:700;letter-spacing:.02em;width:30px;text-align:center;padding:2px 0;border-radius:4px;flex:none;color:#fff;text-transform:uppercase}
 .b-pdf{background:#b8433f}.b-docx{background:#2b5797}.b-md{background:#4a5162}.b-txt{background:#3a404d}
 .cnt{color:var(--dim);font-size:11.5px;flex:none}
+.file .tobrief,.fold .tobrief{opacity:0;width:0;padding:2px 0;overflow:hidden;color:var(--dim);flex:none;display:inline-flex;align-items:center;justify-content:center}
+.file:hover .tobrief,.file:focus-within .tobrief,.fold:hover .tobrief,.fold:focus-within .tobrief{opacity:1;width:24px}
+.tobrief:hover,.tobrief:focus-visible{color:var(--link);background:var(--hover)}.tobrief .ico{width:14px;height:14px}
+.file[draggable="true"],.fold[draggable="true"]{cursor:grab}
 .empty-src{color:var(--dim);font-size:13px;padding:14px 10px;line-height:1.55}
 .foot{border-top:1px solid var(--line);padding:9px 14px;color:var(--dim);font-size:11.5px;display:flex;gap:8px;align-items:center}
 .foot span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -68,7 +72,7 @@ input[type=checkbox]{accent-color:var(--acc);width:15px;height:15px;margin:0;fle
 .up .pb i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .4s}
 .up.wait .pb i{width:30%;animation:slide 1.2s ease-in-out infinite}
 @keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(340%)}}
-.up small{color:var(--dim)}.up.done{border-color:rgba(47,191,143,.35)}.up.err{border-color:rgba(224,86,91,.45)}
+.up small{color:var(--dim)}.up.done{border-color:rgba(47,191,143,.35)}.up.warn{border-color:rgba(224,160,58,.5)}.up.searchable{border-color:rgba(91,143,240,.35)}.up.err{border-color:rgba(224,86,91,.45)}
 /* wyniki wyszukiwania i podgląd */
 .hit{display:block;width:100%;text-align:left;padding:9px 10px;border-radius:var(--r2);color:var(--fg)}
 .hit:hover{background:var(--hover)}.hit b{font-weight:600;font-size:12.5px;color:var(--mut);display:block;margin-bottom:3px}
@@ -119,6 +123,15 @@ input[type=checkbox]{accent-color:var(--acc);width:15px;height:15px;margin:0;fle
 @keyframes r{to{transform:rotate(360deg)}}
 .err{border:1px solid rgba(224,86,91,.4);background:rgba(224,86,91,.08);padding:10px 14px;border-radius:var(--r2)}
 .composer{padding:10px 20px 16px}
+.brief{max-width:820px;margin:0 auto 8px;display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:14px;background:var(--panel2);border:1px solid var(--line);font-size:12.5px}
+.brief-lbl{color:var(--dim);font-size:11.5px;flex:none}
+.brief-list{display:flex;flex-wrap:wrap;gap:6px;flex:1;min-width:0}
+.bchip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;background:var(--accbg);border:1px solid rgba(91,143,240,.35);color:var(--fg);font-size:12px;max-width:220px;line-height:1.35}
+.bchip:hover{background:rgba(47,111,230,.28);border-color:rgba(91,143,240,.6)}
+.bchip-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bchip-x{color:var(--mut);font-size:13px;line-height:1;flex:none}.bchip:hover .bchip-x{color:#fff}
+.brief-clr{color:var(--mut);font-size:11.5px;padding:3px 8px;border-radius:999px;flex:none}.brief-clr:hover{background:var(--hover);color:var(--fg)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;margin:0;padding:0}
 .box{max-width:820px;margin:0 auto;background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:22px;padding:8px 8px 8px 16px;display:flex;align-items:flex-end;gap:10px;transition:border-color .15s}
 .box:focus-within{border-color:rgba(91,143,240,.55)}
 .box textarea{flex:1;resize:none;background:none;border:0;outline:0;min-height:24px;max-height:180px;padding:7px 0;font-size:15px;line-height:1.45}
@@ -168,11 +181,19 @@ select.btn{appearance:auto;border-radius:var(--r2)}
 .drop{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(10,12,17,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .drop.on{display:flex}.drop div{border:2px dashed rgba(91,143,240,.7);border-radius:20px;padding:46px 60px;text-align:center;background:rgba(47,111,230,.08)}
 .drop b{display:block;font:300 30px/1.2 var(--disp);margin-bottom:6px}.drop span{color:var(--mut)}
+.cols.doc-dragging .mid,.cols.doc-dragging .right{border-color:rgba(91,143,240,.45)}
+.docdrop{position:absolute;inset:0;z-index:15;display:none;align-items:center;justify-content:center;padding:24px;pointer-events:none;background:rgba(10,12,17,.52);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:var(--r)}
+.pane.doc-over .docdrop{display:flex}.pane.doc-over{border-color:rgba(91,143,240,.75)}
+.docdrop div{border:2px dashed rgba(91,143,240,.7);border-radius:16px;padding:28px 34px;text-align:center;background:var(--accbg);max-width:340px}
+.docdrop b{display:block;font:300 22px/1.2 var(--disp);margin-bottom:4px;color:var(--fg)}.docdrop span{color:var(--mut);font-size:13px}
+.cols.rmin .right .docdrop{display:none!important}
 .toasts{position:fixed;left:16px;bottom:16px;z-index:40;display:flex;flex-direction:column;gap:8px;max-width:min(420px,calc(100vw - 32px))}
 .toast{background:rgba(26,30,40,.95);border:1px solid var(--line);border-radius:var(--r2);padding:10px 14px;font-size:13px;box-shadow:0 12px 30px rgba(0,0,0,.4);animation:rise .2s ease}
-.toast.bad{border-color:rgba(224,86,91,.5)}
+.toast.bad{border-color:rgba(224,86,91,.5)}.toast.warn{border-color:rgba(224,160,58,.55)}
 @media (max-width:980px){.cols.lmin,.cols.rmin{--lw:1fr;--rw:1fr}body{overflow:auto}.shell{height:auto;min-height:100vh}.cols,.cols.lwide,.cols.rwide{grid-template-columns:1fr}
-  .pane{max-height:none}.left .scroll,.right .scroll{max-height:46vh}.mid{min-height:70vh}.thread{max-height:none}.bar .nb,.pill{display:none}}
+  .pane{max-height:none}.left .scroll,.right .scroll{max-height:46vh}.mid{min-height:70vh}.thread{max-height:none}.bar .nb,.pill{display:none}
+  .brief{flex-wrap:nowrap;min-width:0}.brief-list{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin;-webkit-overflow-scrolling:touch}.bchip{flex:none}
+  .file .tobrief,.fold .tobrief{opacity:.7;width:24px}}
 @media (prefers-reduced-motion:reduce){*,body::before{animation:none!important;transition:none!important}}
 </style></head>
 <body>
@@ -241,10 +262,17 @@ select.btn{appearance:auto;border-radius:var(--r2)}
       <div class="mh"><b id="ctitle">nowa rozmowa</b><button class="ib" id="newb" title="Nowa rozmowa" aria-label="Nowa rozmowa"><svg class="ico"><use href="#i-plus"/></svg></button></div>
       <div class="thread" id="thread"><div class="wrapc" id="msgs"></div></div>
       <div class="composer">
+        <div class="brief" id="brief" hidden role="region" aria-label="Teczka rozmowy">
+          <span class="brief-lbl">teczka:</span>
+          <div class="brief-list" id="brief-list"></div>
+          <button class="brief-clr" id="brief-clr" type="button" title="Wyczyść teczkę rozmowy">wyczyść</button>
+        </div>
+        <div class="sr-only" id="brief-live" aria-live="polite" aria-atomic="true"></div>
         <div class="box"><textarea id="q" rows="1" maxlength="1000" placeholder="Zapytaj o swoje dokumenty…" aria-label="Pytanie"></textarea>
           <span class="srcn" id="srcn"></span><button class="send" id="go" aria-label="Wyślij"><svg class="ico"><use href="#i-send"/></svg></button></div>
         <div class="opts"><label><input type="checkbox" id="strict"> tylko potwierdzone zdania</label><span>Enter — wyślij · Shift+Enter — nowa linia</span></div>
       </div>
+      <div class="docdrop" aria-hidden="true"><div><b>teczka rozmowy</b><span>upuść, żeby pracować na tych dokumentach</span></div></div>
     </main>
     <!-- prawy panel: studio -->
     <section class="pane right" aria-label="Studio">
@@ -258,6 +286,7 @@ select.btn{appearance:auto;border-radius:var(--r2)}
         <div class="vhead"><button class="ib" id="rback" aria-label="Wróć do studia"><svg class="ico"><use href="#i-back"/></svg></button><b id="rt"></b><button class="ib" id="rmd" title="Zapisz jako .md" aria-label="Zapisz jako .md"><svg class="ico"><use href="#i-dl"/></svg></button><button class="ib" id="rdel" title="Usuń wynik" aria-label="Usuń wynik"><svg class="ico"><use href="#i-trash"/></svg></button></div>
         <div class="scroll rview" id="rv"></div>
       </div>
+      <div class="docdrop" aria-hidden="true"><div><b>teczka rozmowy</b><span>upuść, żeby pracować na tych dokumentach</span></div></div>
     </section>
   </div>
 </div>
@@ -272,8 +301,8 @@ const pl=(n,a,b,c)=>n+" "+(n===1?a:(n%10>=2&&n%10<=4&&(n%100<12||n%100>14))?b:c)
 const SUP="⁰¹²³⁴⁵⁶⁷⁸⁹";const sup=t=>t.replace(/(\d[a-z]?)\[(\d{1,2})\]/g,(m,a,b)=>a+[...b].map(d=>SUP[d]).join(""));
 const ICO=(id,cls)=>'<svg class="ico'+(cls?" "+cls:"")+'"><use href="#i-'+id+'"/></svg>';
 const API=()=>window.pywebview&&window.pywebview.api;
-let DOCS=[],HEALTH={},busy=false,SEL=null; // SEL: null = wszystkie, inaczej Set id
-function toast(t,bad){const d=document.createElement("div");d.className="toast"+(bad?" bad":"");d.textContent=t;$("toasts").append(d);setTimeout(()=>d.remove(),bad?7000:4200)}
+let DOCS=[],DOCS_LOADED=false,HEALTH={},busy=false,SEL=null; // SEL: null = wszystkie, inaczej Set id
+function toast(t,bad){const d=document.createElement("div");d.className="toast"+(bad==="warn"?" warn":bad?" bad":"");d.textContent=t;$("toasts").append(d);setTimeout(()=>d.remove(),bad?7000:4200)}
 async function post(url,body){const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body||{})});let d={};try{d=await r.json()}catch(e){}if(!r.ok)throw new Error(d.error||("HTTP "+r.status));return d}
 
 /* ---------- zapis: rozmowy i wyniki studia (na dysku w aplikacji, w przeglądarce w demo) ---------- */
@@ -298,28 +327,38 @@ function ext(id){const m=/\.(\w+)$/.exec(id);return m?m[1].toLowerCase():"txt"}
 function nice(n){return n.replace(/\s*\((dokument fikcyjny|materiał przykładowy)\)/,"").replace(/ — Przykład sp\. z o\.o\./,"")}
 function isOn(id){return SEL===null||SEL.has(id)}
 function selectedIds(){return SEL===null?null:[...SEL]}
-function updScope(){const s=selectedIds();const n=s===null?DOCS.length:s.length;
-  $("srcn").innerHTML=pl(n,"źródło","źródła","źródeł");$("srcn").title=s===null?"Szukam we wszystkich dokumentach":"Szukam tylko w zaznaczonych dokumentach";
+function workIds(){return CONV.docs.length?[...CONV.docs]:selectedIds()}
+function updScope(){const s=workIds();const n=s===null?DOCS.length:s.length;
+  if(CONV.docs.length){$("srcn").textContent="w teczce: "+pl(n,"dokument","dokumenty","dokumentów");
+    $("srcn").title="Pytania i narzędzia studia używają dokumentów z teczki rozmowy"}
+  else{$("srcn").textContent=pl(n,"źródło","źródła","źródeł");
+    $("srcn").title=s===null?"Szukam we wszystkich dokumentach":"Szukam tylko w zaznaczonych dokumentach"}
   $("go").disabled=busy||n===0}
 function renderDocs(){const g={};DOCS.forEach(d=>(g[grpName(d.id)]=g[grpName(d.id)]||[]).push(d));
   const keys=Object.keys(g).sort((a,b)=>a===""?1:b===""?-1:a.localeCompare(b));const nOn=DOCS.filter(d=>isOn(d.id)).length;
   let h='<label class="selall"><input type="checkbox" id="all"'+(nOn===DOCS.length&&DOCS.length?" checked":"")+'> wybierz wszystkie<span class="sp"></span><small>'+nOn+"/"+DOCS.length+'</small></label>';
   for(const k of keys){const items=g[k];
     if(k){const on=items.filter(d=>isOn(d.id)).length;const shut=SHUT.has(k);
-      h+='<div class="fold'+(shut?" shut":"")+'" data-f="'+esc(k)+'"><svg class="ico chev"><use href="#i-chev"/></svg><input type="checkbox" data-fc="'+esc(k)+'"'+(on===items.length?" checked":"")+(on&&on<items.length?" data-ind=1":"")+' aria-label="Zaznacz folder '+esc(k)+'"><button class="fn" aria-expanded="'+!shut+'" title="'+esc(k)+'">'+ICO("folder")+'<span>'+esc(FOLD_NAMES[k]||k)+'</span></button><span class="cnt" title="plików w folderze">'+items.length+'</span></div>'}
+      h+='<div class="fold'+(shut?" shut":"")+'" draggable="true" data-f="'+esc(k)+'"><svg class="ico chev"><use href="#i-chev"/></svg><input type="checkbox" data-fc="'+esc(k)+'"'+(on===items.length?" checked":"")+(on&&on<items.length?" data-ind=1":"")+' aria-label="Zaznacz folder '+esc(k)+'"><button class="fn" draggable="true" aria-expanded="'+!shut+'" title="'+esc(k)+'">'+ICO("folder")+'<span>'+esc(FOLD_NAMES[k]||k)+'</span></button><button class="tobrief" type="button" data-addf="'+esc(k)+'" title="do teczki rozmowy" aria-label="Dodaj folder do teczki rozmowy: '+esc(FOLD_NAMES[k]||k)+'">'+ICO("plus")+'</button><span class="cnt" title="plików w folderze">'+items.length+'</span></div>'}
     if(k&&SHUT.has(k))continue;
-    for(const d of items)h+='<div class="file'+(k?'':' root')+'"><input type="checkbox" data-id="'+esc(d.id)+'"'+(isOn(d.id)?" checked":"")+' aria-label="Użyj: '+esc(d.name)+'"><span class="badge b-'+(["pdf","docx","md"].includes(ext(d.id))?ext(d.id):"txt")+'">'+esc(ext(d.id))+'</span><button class="n" data-open="'+esc(d.id)+'" title="'+esc(d.name)+'">'+esc(nice(d.name))+'</button><span class="cnt" title="liczba fragmentów w indeksie">'+d.chunks+'</span></div>'}
+    for(const d of items)h+='<div class="file'+(k?'':' root')+'" draggable="true" data-doc="'+esc(d.id)+'"><input type="checkbox" data-id="'+esc(d.id)+'"'+(isOn(d.id)?" checked":"")+' aria-label="Użyj: '+esc(d.name)+'"><span class="badge b-'+(["pdf","docx","md"].includes(ext(d.id))?ext(d.id):"txt")+'">'+esc(ext(d.id))+'</span><button class="n" draggable="true" data-open="'+esc(d.id)+'" title="'+esc(d.name)+'">'+esc(nice(d.name))+'</button><button class="tobrief" type="button" data-addd="'+esc(d.id)+'" title="do teczki rozmowy" aria-label="Dodaj do teczki rozmowy: '+esc(nice(d.name))+'">'+ICO("plus")+'</button><span class="cnt" title="liczba fragmentów w indeksie">'+d.chunks+'</span></div>'}
   if(!DOCS.length)h='<div class="empty-src">Katalog jest pusty. '+(HEALTH.upload?'Przeciągnij tu pliki .txt, .md, .pdf albo .docx, kliknij „dodaj pliki” albo wskaż inny katalog.':'Brak dokumentów.')+'</div>';
   $("docs").innerHTML=h;
   document.querySelectorAll("[data-ind]").forEach(x=>x.indeterminate=true);
   const all=$("all");if(all)all.onchange=()=>{SEL=all.checked?null:new Set();renderDocs()};
-  document.querySelectorAll("[data-id]").forEach(x=>x.onchange=()=>{if(SEL===null)SEL=new Set(DOCS.map(d=>d.id));x.checked?SEL.add(x.dataset.id):SEL.delete(x.dataset.id);if(SEL.size===DOCS.length)SEL=null;renderDocs()});
+  document.querySelectorAll("#docs input[data-id]").forEach(x=>x.onchange=()=>{if(SEL===null)SEL=new Set(DOCS.map(d=>d.id));x.checked?SEL.add(x.dataset.id):SEL.delete(x.dataset.id);if(SEL.size===DOCS.length)SEL=null;renderDocs()});
   document.querySelectorAll("[data-fc]").forEach(x=>x.onchange=()=>{const k=x.dataset.fc;if(SEL===null)SEL=new Set(DOCS.map(d=>d.id));
     DOCS.filter(d=>grpName(d.id)===k).forEach(d=>x.checked?SEL.add(d.id):SEL.delete(d.id));if(SEL.size===DOCS.length)SEL=null;renderDocs()});
   document.querySelectorAll(".fold .fn,.fold .chev").forEach(b=>b.onclick=()=>{const k=b.closest(".fold").dataset.f;SHUT.has(k)?SHUT.delete(k):SHUT.add(k);try{localStorage.setItem("sejf-shut",JSON.stringify([...SHUT]))}catch(e){}renderDocs()});
   document.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>openDoc(b.dataset.open,null));
+  document.querySelectorAll("[data-addd]").forEach(b=>b.onclick=e=>{e.stopPropagation();addToBriefcase([b.dataset.addd])});
+  document.querySelectorAll("[data-addf]").forEach(b=>b.onclick=e=>{e.stopPropagation();addToBriefcase(DOCS.filter(d=>grpName(d.id)===b.dataset.addf).map(d=>d.id))});
   updScope();filterNames()}
-function loadDocs(){return fetch("/api/docs").then(r=>r.json()).then(d=>{DOCS=d.documents||[];if(SEL)SEL=new Set([...SEL].filter(id=>DOCS.some(x=>x.id===id)));if(SR)updScope();else renderDocs()})}
+function loadDocs(){return fetch("/api/docs").then(r=>r.json()).then(d=>{DOCS=d.documents||[];DOCS_LOADED=true;
+  if(SEL)SEL=new Set([...SEL].filter(id=>DOCS.some(x=>x.id===id)));
+  const prev=CONV.docs.length;CONV.docs=CONV.docs.filter(id=>DOCS.some(x=>x.id===id));
+  if(CONV.docs.length!==prev&&CONV.items.length)saveConv();
+  renderBriefcase();if(SR)updScope();else renderDocs()})}
 function idForFile(f){f=String(f).replace(/\\/g,"/");const base=f.split("/").pop();
   return (DOCS.find(d=>f.endsWith("/"+d.id)||f===d.id)||DOCS.find(d=>d.id.split("/").pop()===base)||{}).id}
 /* podgląd dokumentu w panelu źródeł (jak w NotebookLM) */
@@ -366,30 +405,59 @@ async function uploadFiles(files){if(!HEALTH.upload){toast("W demo nie można do
     if(f.size>50*1024*1024){toast(f.name+": plik większy niż 50 MB.",true);continue}
     try{const r=await fetch("/api/upload",{method:"POST",headers:{"X-Filename":encodeURIComponent(f.name),"Content-Type":"application/octet-stream"},body:f});
       let d={};try{d=await r.json()}catch(e){}if(!r.ok)throw new Error(d.error||r.status);
-      pollUploads();if(f.size>3*1024*1024)toast(f.name+": duży plik ("+(f.size/1048576).toFixed(1)+" MB) — indeksowanie potrwa dłużej, możesz w tym czasie pytać.")}
+      pollUploads();if(f.size>3*1024*1024)toast(f.name+": duży plik ("+(f.size/1048576).toFixed(1)+" MB) — będzie można pytać za chwilę.")}
     catch(e){toast("Nie dodano "+f.name+": "+(e.message||e),true)}}
   pollUploads()}
-let upTimer=null,SEEN=new Set();
-async function pollUploads(){clearTimeout(upTimer);let j=[];try{const r=await fetch("/api/uploads");if(!r.ok)throw 0;j=(await r.json()).jobs||[]}catch(e){upTimer=setTimeout(pollUploads,3000);return}
-  const now=Date.now()/1000;let h="",active=false,changed=false;
-  for(const x of j){const fin=["done","error","cancelled"].includes(x.state);if(!fin)active=true;
-    if(fin&&!SEEN.has(x.id)){SEEN.add(x.id);if(x.state==="done"){changed=true;toast(x.error?x.name+": "+x.error:"Dodano "+x.name+" — "+pl(x.chunks,"fragment","fragmenty","fragmentów")+".",!!x.error)}
-      else if(x.state==="error")toast("Nie dodano "+x.name+": "+x.error,true)}
-    if(fin&&now-x.finished>6)continue;
-    const pct=x.total?Math.round(100*x.done/x.total):0;let sub="";
-    if(x.state==="queued")sub="w kolejce";else if(x.state==="indexing"){const el=now-x.started;const eta=x.done>0?el*(x.total-x.done)/x.done:0;
-      sub=x.total?pct+"% · "+x.done+"/"+x.total+" fragmentów"+(eta>5?" · ok. "+(eta>90?Math.round(eta/60)+" min":Math.round(eta)+" s"):""):"czytam plik…"}
-    else if(x.state==="done")sub=x.error||pl(x.chunks,"fragment","fragmenty","fragmentów")+" — gotowe";else if(x.state==="cancelled")sub="anulowano";else sub=x.error;
-    h+='<div class="up'+(x.state==="done"?" done":x.state==="error"?" err":"")+(x.state==="queued"||(x.state==="indexing"&&!x.total)?" wait":"")+'"><div class="t"><b title="'+esc(x.name)+'">'+esc(x.name)+'</b>'+
-      (fin?'':'<button data-cancel="'+x.id+'" title="Anuluj" aria-label="Anuluj dodawanie">×</button>')+'</div><div class="pb"><i style="width:'+(x.state==="done"?100:pct)+'%"></i></div><small>'+esc(sub)+'</small></div>'}
-  $("ups").innerHTML=h;document.querySelectorAll("[data-cancel]").forEach(b=>b.onclick=()=>post("/api/uploads/cancel",{id:+b.dataset.cancel}).then(pollUploads));
-  if(changed)loadDocs();if(active||h)upTimer=setTimeout(pollUploads,active?700:2000)}
+let upTimer=null,SEEN=new Set(),SEEN_S=new Set(),S_AT={},upBusy=false,upAgain=false;
+async function pollUploads(){if(HEALTH.demo||HEALTH.upload===false)return;if(upBusy){upAgain=true;return}upBusy=true;clearTimeout(upTimer);
+  try{let j=[];try{const r=await fetch("/api/uploads");if(!r.ok)throw 0;j=(await r.json()).jobs||[]}catch(e){upTimer=setTimeout(pollUploads,3000);return}
+    const now=Date.now()/1000;let h="",active=false,changed=false;
+    for(const x of j){const fin=["done","error","cancelled"].includes(x.state);if(!fin)active=true;
+      if(x.state==="searchable"){if(!S_AT[x.id])S_AT[x.id]=now;if(!SEEN_S.has(x.id)){SEEN_S.add(x.id);changed=true;toast(x.name+" — można już pytać")}}
+      if(fin&&!SEEN.has(x.id)){SEEN.add(x.id);
+        if(x.state==="done"){if(!SEEN_S.has(x.id))changed=true;toast(x.error?"Dodano "+x.name+" — "+x.error:"Dodano "+x.name+" — "+pl(x.chunks,"fragment","fragmenty","fragmentów")+".",x.error?"warn":false)}
+        else if(x.state==="error")toast("Nie dodano "+x.name+": "+x.error,true);
+        else if(x.state==="cancelled"&&SEEN_S.has(x.id))changed=true}
+      if(fin&&now-x.finished>6){delete S_AT[x.id];continue}
+      const pct=x.total?Math.round(100*x.done/x.total):0;let sub="";
+      if(x.state==="queued")sub="w kolejce";
+      else if(x.state==="indexing"){const el=now-x.started;const eta=x.done>0?el*(x.total-x.done)/x.done:0;
+        sub=x.total?pct+"% · "+x.done+"/"+x.total+" fragmentów"+(eta>5?" · ok. "+(eta>90?Math.round(eta/60)+" min":Math.round(eta)+" s"):""):"czytam plik…"}
+      else if(x.state==="searchable"){const el=now-(x.vec_started||S_AT[x.id]||x.started||now);const eta=x.done>0&&x.total?el*(x.total-x.done)/x.done:0;
+        sub="można już pytać — doliczam wyszukiwanie po znaczeniu"+(x.total?", "+pct+"%"+(eta>5?", ~"+(eta>90?Math.round(eta/60)+" min":Math.round(eta)+" s"):""):"…")}
+      else if(x.state==="done")sub=x.error?(x.chunks?pl(x.chunks,"fragment","fragmenty","fragmentów")+" — "+x.error:x.error):pl(x.chunks,"fragment","fragmenty","fragmentów")+" — gotowe";
+      else if(x.state==="cancelled")sub="anulowano";else sub=x.error;
+      const cls="up"+(x.state==="done"?(x.error?" warn":" done"):x.state==="error"?" err":x.state==="searchable"?" searchable":"")+(x.state==="queued"||((x.state==="indexing"||x.state==="searchable")&&!x.total)?" wait":"");
+      h+='<div class="'+cls+'"><div class="t"><b title="'+esc(x.name)+'">'+esc(x.name)+'</b>'+
+        (fin?'':'<button data-cancel="'+x.id+'" title="Anuluj" aria-label="Anuluj dodawanie">×</button>')+'</div><div class="pb"><i style="width:'+(x.state==="done"?100:pct)+'%"></i></div><small>'+esc(sub)+'</small></div>'}
+    $("ups").innerHTML=h;document.querySelectorAll("[data-cancel]").forEach(b=>b.onclick=()=>post("/api/uploads/cancel",{id:+b.dataset.cancel}).then(pollUploads));
+    if(changed)loadDocs();upTimer=setTimeout(pollUploads,active?700:h?2000:5000)}
+  finally{upBusy=false;if(upAgain){upAgain=false;pollUploads()}}}
 $("add").onclick=()=>$("file").click();$("file").onchange=()=>{uploadFiles([...$("file").files]);$("file").value=""};
-let dragN=0;const hasFiles=e=>e.dataTransfer&&[...e.dataTransfer.types].includes("Files");
+let dragN=0,DOCDRAG=false;
+const DOC_MIME="application/x-sejf-docs";
+const hasDocs=e=>DOCDRAG||(e.dataTransfer&&[...e.dataTransfer.types].includes(DOC_MIME));
+const hasFiles=e=>e.dataTransfer&&!hasDocs(e)&&[...e.dataTransfer.types].includes("Files");
+function docDragOff(){DOCDRAG=false;$("cols").classList.remove("doc-dragging");document.querySelectorAll(".mid,.right").forEach(p=>p._dropOff&&p._dropOff())}
+$("docs").addEventListener("dragstart",e=>{if(e.target.closest("input,.tobrief")){e.preventDefault();return}
+  const row=e.target.closest(".file,.fold");if(!row){e.preventDefault();return}
+  const ids=row.classList.contains("file")?[row.dataset.doc]:DOCS.filter(d=>grpName(d.id)===row.dataset.f).map(d=>d.id);
+  if(!ids.length){e.preventDefault();return}
+  DOCDRAG=true;e.dataTransfer.effectAllowed="copy";e.dataTransfer.setData(DOC_MIME,JSON.stringify(ids));
+  try{e.dataTransfer.setDragImage(row,20,14)}catch(err){}
+  $("cols").classList.add("doc-dragging")});
+document.addEventListener("dragend",docDragOff);
+for(const pane of [document.querySelector(".mid"),document.querySelector(".right")]){
+  let overN=0;const off=()=>{overN=0;pane.classList.remove("doc-over")};pane._dropOff=off;
+  pane.addEventListener("dragenter",e=>{if(!hasDocs(e))return;e.preventDefault();overN++;pane.classList.add("doc-over")});
+  pane.addEventListener("dragover",e=>{if(!hasDocs(e))return;e.preventDefault();e.dataTransfer.dropEffect="copy"});
+  pane.addEventListener("dragleave",e=>{if(!hasDocs(e))return;if(--overN<=0)off()});
+  pane.addEventListener("drop",e=>{if(!hasDocs(e))return;e.preventDefault();e.stopPropagation();docDragOff();
+    try{const ids=JSON.parse(e.dataTransfer.getData(DOC_MIME)||"[]");if(Array.isArray(ids))addToBriefcase(ids)}catch(err){}})}
 function dropOff(){dragN=0;$("drop").classList.remove("on")}
 window.addEventListener("dragenter",e=>{if(!hasFiles(e))return;e.preventDefault();if(!HEALTH.upload)return;dragN++;
   $("dropt").textContent=".txt, .md, .pdf, .docx — trafią do: "+(HEALTH.documents||"katalogu dokumentów");$("drop").classList.add("on")});
-window.addEventListener("blur",dropOff);document.addEventListener("keydown",e=>{if(e.key==="Escape")dropOff()});
+window.addEventListener("blur",()=>{dropOff();docDragOff()});document.addEventListener("keydown",e=>{if(e.key==="Escape"){dropOff();docDragOff()}});
 window.addEventListener("dragover",e=>{if(hasFiles(e)){e.preventDefault();e.dataTransfer.dropEffect=HEALTH.upload?"copy":"none"}});
 window.addEventListener("dragleave",e=>{if(!hasFiles(e))return;if(--dragN<=0){dragN=0;$("drop").classList.remove("on")}});
 window.addEventListener("drop",e=>{if(!hasFiles(e))return;e.preventDefault();dropOff();
@@ -398,7 +466,32 @@ window.addEventListener("drop",e=>{if(!hasFiles(e))return;e.preventDefault();dro
   uploadFiles([...e.dataTransfer.files].filter(f=>f.size>0||OKEXT.test(f.name)))});
 
 /* ---------- rozmowa ---------- */
-let CONV={id:null,title:"",items:[]};
+let CONV={id:null,title:"",items:[],docs:[]};
+let BRIEF_TIP=false;try{BRIEF_TIP=!!localStorage.getItem("sejf-briefcase-tip")}catch(e){}
+function announceBriefcase(msg){const el=$("brief-live");if(!el)return;el.textContent="";requestAnimationFrame(()=>{el.textContent=msg})}
+function renderBriefcase(){const bar=$("brief"),list=$("brief-list");if(!bar||!list)return;
+  if(!CONV.docs.length){bar.hidden=true;list.innerHTML="";updScope();return}
+  bar.hidden=false;
+  list.innerHTML=CONV.docs.map(id=>{const doc=DOCS.find(d=>d.id===id);const nm=nice(doc?doc.name:id.split("/").pop());
+    return '<button class="bchip" type="button" data-brm="'+esc(id)+'" title="'+esc(id)+'" aria-label="Usuń z teczki: '+esc(nm)+'"><span class="bchip-n">'+esc(nm)+'</span><span class="bchip-x" aria-hidden="true">×</span></button>'}).join("");
+  list.querySelectorAll("[data-brm]").forEach((b,idx)=>b.onclick=()=>removeFromBriefcase(b.dataset.brm,idx));
+  updScope()}
+function addToBriefcase(ids){const valid=(ids||[]).filter(id=>DOCS.some(d=>d.id===id));const added=[];
+  for(const id of valid)if(!CONV.docs.includes(id)){CONV.docs.push(id);added.push(id)}
+  if(!added.length){if(valid.length)announceBriefcase("Dokumenty są już w teczce rozmowy.");return}
+  renderBriefcase();if(CONV.items.length)saveConv();
+  announceBriefcase("Dodano do teczki: "+pl(added.length,"dokument","dokumenty","dokumentów")+". Razem w teczce: "+CONV.docs.length+".");
+  if(!BRIEF_TIP){BRIEF_TIP=true;try{localStorage.setItem("sejf-briefcase-tip","1")}catch(e){}
+    toast("teczka rozmowy: pytania i narzędzia studia używają teraz dokumentów z teczki")}}
+function removeFromBriefcase(id,idx){const hadFocus=document.activeElement&&document.activeElement.closest("#brief-list");
+  const next=CONV.docs.filter(x=>x!==id);if(next.length===CONV.docs.length)return;
+  const doc=DOCS.find(d=>d.id===id);CONV.docs=next;renderBriefcase();if(CONV.items.length)saveConv();
+  announceBriefcase("Usunięto z teczki: "+(doc?nice(doc.name):id)+".");
+  if(hadFocus){const chips=$("brief-list").querySelectorAll(".bchip");if(chips.length)chips[Math.min(idx||0,chips.length-1)].focus();else $("q").focus()}}
+function clearBriefcase(){if(!CONV.docs.length)return;const hadFocus=document.activeElement===$("brief-clr");
+  CONV.docs=[];renderBriefcase();if(CONV.items.length)saveConv();
+  announceBriefcase("Wyczyszczono teczkę rozmowy.");if(hadFocus)$("q").focus()}
+$("brief-clr").onclick=clearBriefcase;
 const EX_LOCAL=["Kiedy popyt jest elastyczny?","Do której godziny muszę zgłosić przełożonemu, że jestem chory?","Ile dni urlopu przysługuje po 12 latach pracy?","Jak długo przechowuje się księgi rachunkowe?"];
 const EX_OWN=["Jakie terminy i kwoty wynikają z tych dokumentów?","Jakie obowiązki opisują dokumenty?","Co jest najważniejsze w tych materiałach?"];
 const EX_FIRMA=["Do której godziny muszę zgłosić przełożonemu, że jestem chory?","Kiedy popyt jest elastyczny?","Wysłałem maila z danymi klienta do złej osoby. Co mam zrobić?","W jakim terminie muszę rozliczyć delegację?","Jaki jest budżet firmy na imprezę świąteczną?"];
@@ -411,12 +504,14 @@ function addMsg(html){$("msgs").querySelector(".hello")?.remove();const d=docume
 function qHtml(text,sub){return '<div class="q">'+esc(text)+(sub?' <small>· '+esc(sub)+'</small>':'')+'</div>'}
 function renderItem(it){if(it.t==="q")addMsg(qHtml(it.text,it.sub));else if(it.t==="a"){const w=addMsg(renderAnswer(it.a));bind(w,it.a)}else addMsg('<div class="err">'+esc(it.text)+'</div>')}
 async function saveConv(){if(!CONV.items.length)return;CONV.title=CONV.title||(CONV.items.find(x=>x.t==="q")||{}).text||"rozmowa";
-  try{const d=await STORE.save("rozmowy",{id:CONV.id,title:CONV.title.slice(0,80),count:CONV.items.filter(x=>x.t==="q").length,data:{items:CONV.items}});CONV.id=d.id;$("ctitle").textContent=CONV.title;loadConvs()}
+  try{const d=await STORE.save("rozmowy",{id:CONV.id,title:CONV.title.slice(0,80),count:CONV.items.filter(x=>x.t==="q").length,data:{items:CONV.items,docs:CONV.docs}});CONV.id=d.id;$("ctitle").textContent=CONV.title;loadConvs()}
   catch(e){toast("Nie zapisano rozmowy: "+e.message,true)}}
-function newConv(){if(busy)return;CONV={id:null,title:"",items:[]};$("ctitle").textContent="nowa rozmowa";hello();loadConvs();$("q").focus()}
+function newConv(){if(busy)return;CONV={id:null,title:"",items:[],docs:[]};$("ctitle").textContent="nowa rozmowa";renderBriefcase();hello();loadConvs();$("q").focus()}
 let CONVREQ=0;
 async function openConv(id){if(busy)return;const my=++CONVREQ;let d=null;try{d=await STORE.get("rozmowy",id)}catch(e){}if(my!==CONVREQ)return;if(!d){toast("Nie udało się otworzyć rozmowy.",true);return}
-  CONV={id:d.id,title:d.title,items:(d.data&&d.data.items)||[]};$("ctitle").textContent=d.title;$("msgs").innerHTML="";CONV.items.forEach(renderItem);if(!CONV.items.length)hello();loadConvs()}
+  const rawDocs=Array.isArray(d.data&&d.data.docs)?[...new Set(d.data.docs.filter(x=>typeof x==="string"))]:[];
+  CONV={id:d.id,title:d.title,items:(d.data&&d.data.items)||[],docs:DOCS_LOADED?rawDocs.filter(x=>DOCS.some(y=>y.id===x)):rawDocs};
+  $("ctitle").textContent=d.title;$("msgs").innerHTML="";CONV.items.forEach(renderItem);if(!CONV.items.length)hello();renderBriefcase();loadConvs()}
 async function loadConvs(){let a=[];try{a=await STORE.list("rozmowy")}catch(e){}
   if(!a.length){$("convs").innerHTML='<div class="empty-src">Tu pojawią się Twoje rozmowy. Zapisują się automatycznie '+(HEALTH.store?"w folderze danych programu, na tym komputerze.":"w tej przeglądarce.")+'</div>';return}
   let h="",last="";for(const c of a){const day=new Date(c.updated*1000).toDateString()===new Date().toDateString()?"dziś":new Date(c.updated*1000).toLocaleDateString("pl-PL",{day:"numeric",month:"long"});
@@ -427,7 +522,7 @@ async function loadConvs(){let a=[];try{a=await STORE.list("rozmowy")}catch(e){}
   document.querySelectorAll("[data-dc]").forEach(b=>b.onclick=async()=>{if(!confirm("Usunąć tę rozmowę? Tego nie da się cofnąć."))return;
     try{await STORE.del("rozmowy",b.dataset.dc)}catch(e){toast("Nie udało się usunąć rozmowy.",true);return}if(CONV.id===b.dataset.dc)newConv();else loadConvs()})}
 function setBusy(v){busy=v;updScope();document.querySelectorAll(".tool").forEach(b=>b.disabled=v)}
-async function ask(){const q=$("q").value.trim();if(!q||busy)return;const ids=selectedIds();if(ids&&!ids.length){toast("Zaznacz co najmniej jedno źródło.",true);return}
+async function ask(){const q=$("q").value.trim();if(!q||busy)return;const ids=workIds();if(ids&&!ids.length){toast("Zaznacz co najmniej jedno źródło.",true);return}
   setBusy(true);$("q").value="";autoGrow();const sub=ids?pl(ids.length,"źródło","źródła","źródeł"):"";addMsg(qHtml(q,sub));CONV.items.push({t:"q",text:q,sub});
   const w=addMsg('<div class="wait"><span class="spin"></span><span>Szukam w dokumentach… <b class="t">0</b> s</span></div>');const t0=Date.now();
   const tick=setInterval(()=>{const el=w.querySelector(".t");if(el)el.textContent=Math.round((Date.now()-t0)/1000)},500);
@@ -495,7 +590,7 @@ $("rback").onclick=closeResult;
 $("expall").onclick=async()=>{const btn=$("expall");if(btn.disabled)return;btn.disabled=true;try{const a=await STORE.list("studio");let md="# Studio Linda Sejf\n";for(const r of a){const d=await STORE.get("studio",r.id);if(d)md+="\n\n## "+d.title+"\n\n"+asText(d.data||{})}
   if(HEALTH.settings){try{const r=await post("/api/export",{markdown:md});toast("Zapisano wszystkie wyniki: "+r.path.split(/[\\/]/).pop());if(API())API().open_folder("notes")}catch(e){toast(e.message,true)}}
   else{try{await navigator.clipboard.writeText(md);toast("Skopiowano wszystkie wyniki.")}catch(e){toast("Nie udało się skopiować.",true)}}}finally{btn.disabled=false}};
-async function runTool(tool,topic,opts){opts=opts||{};const ids=selectedIds();if(ids&&!ids.length){toast("Zaznacz co najmniej jedno źródło.",true);return}if(busy)return;
+async function runTool(tool,topic,opts){opts=opts||{};const ids=workIds();if(ids&&!ids.length){toast("Zaznacz co najmniej jedno źródło.",true);return}if(busy)return;
   setBusy(true);const lab=TOOLS[tool][0]+(topic?": "+topic:"")+(tool==="quiz"?" · "+({short:5,standard:8,long:12}[opts.length||"standard"])+" pytań":opts.length&&opts.length!=="standard"?" · "+({short:"krótko",long:"szczegółowo"}[opts.length]):"")+(opts.form==="points"?" · w punktach":"");
   const docs=ids?ids.map(i=>nice((DOCS.find(d=>d.id===i)||{name:i}).name)):[];const title=lab+(docs.length===1?" — "+docs[0]:docs.length?" — "+pl(docs.length,"dokument","dokumenty","dokumentów"):"");
   PENDING={tool,label:title};closeResult();loadResults();const t0=Date.now();const tick=setInterval(()=>{const el=$("pt");if(el)el.textContent=Math.round((Date.now()-t0)/1000)},500);
@@ -504,8 +599,9 @@ async function runTool(tool,topic,opts){opts=opts||{};const ids=selectedIds();if
   catch(e){PENDING=null;loadResults();toast(e.message||String(e),true)}
   finally{clearInterval(tick);setBusy(false)}}
 function seg(name,items,cur){return '<div class="olab">'+name+'</div><div class="seg" data-seg="'+name+'">'+items.map(([v,l])=>'<button data-v="'+v+'"'+(v===cur?' class="on"':'')+'>'+l+'</button>').join("")+'</div>'}
-function toolDialog(tool){const o=Object.assign({length:"standard",form:"prose"},TOPT[tool]||{});const need=tool==="memo";const ids=selectedIds();
-  let h='<p style="color:var(--mut);margin:0 0 12px">'+TOOL_HELP[tool]+'</p><p style="color:var(--dim);font-size:12.5px;margin:-6px 0 14px">Na: '+(ids===null?"wszystkich dokumentach ("+DOCS.length+") — zaznacz po lewej, żeby zawęzić":pl(ids.length,"zaznaczonym dokumencie","zaznaczonych dokumentach","zaznaczonych dokumentach"))+'</p>';
+function toolDialog(tool){const o=Object.assign({length:"standard",form:"prose"},TOPT[tool]||{});const need=tool==="memo";const ids=workIds();
+  const scopeTxt=CONV.docs.length?"w teczce: "+pl(ids.length,"dokument","dokumenty","dokumentów")+" — wyczyść teczkę, żeby użyć zaznaczenia po lewej":ids===null?"wszystkich dokumentach ("+DOCS.length+") — zaznacz po lewej, żeby zawęzić":pl(ids.length,"zaznaczonym dokumencie","zaznaczonych dokumentach","zaznaczonych dokumentach");
+  let h='<p style="color:var(--mut);margin:0 0 12px">'+TOOL_HELP[tool]+'</p><p style="color:var(--dim);font-size:12.5px;margin:-6px 0 14px">Na: '+scopeTxt+'</p>';
   if(tool==="summary"||tool==="simple"||tool==="quiz")h+=seg("długość",tool==="quiz"?[["short","5 pytań"],["standard","8 pytań"],["long","12 pytań"]]:[["short","krótko"],["standard","standardowo"],["long","szczegółowo"]],o.length);
   if(tool==="summary")h+=seg("forma",[["prose","akapit"],["points","punkty"]],o.form);
   h+='<div class="olab">temat'+(need?'':' (opcjonalnie — przy długich dokumentach Sejf weźmie pasujące fragmenty)')+'</div><div class="path"><input id="mtopic" placeholder="'+(need?'np. zasady pracy zdalnej':'np. elastyczność popytu albo urlop wypoczynkowy')+'" aria-label="Temat"><button class="btn pri" id="mgo">utwórz</button></div>';
