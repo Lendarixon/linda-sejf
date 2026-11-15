@@ -23,12 +23,20 @@ Strona projektu: https://lindasejf.denmarkeast.cloudapp.azure.com/projekt/ · de
 3. Uruchom **Linda Sejf** z menu Start. Za pierwszym razem pobiera modele z Hugging Face (ok. 8,2 GB, przypięte wersje,
    sprawdzane sumy SHA-256) i buduje indeks dokumentów (kilka minut). Potem otwiera się okno programu; zamknięcie okna zatrzymuje aplikację.
 
-Program otwiera się we własnym oknie (WebView2 wbudowany w Windows 10/11; bez niego — w przeglądarce).
-Po lewej **źródła** (dokumenty z folderu; można zaznaczyć, w których szukać, dodać plik przyciskiem „+ dodaj plik”
-albo przeciągnąć go myszą, „odśwież” wczytuje nowe pliki), na środku rozmowa („kopiuj odpowiedź ze źródłami”,
-„nowa rozmowa”), po prawej podgląd dokumentu z podświetlonym cytowanym fragmentem.
-**Ustawienia**: folder dokumentów (okno wyboru folderu), tryb zwykły / ostrożny, karta graficzna (automatycznie / tylko procesor), wątki.
+Program otwiera się we własnym oknie (WebView2 wbudowany w Windows 10/11; bez niego — w przeglądarce). Układ jak w NotebookLM,
+tylko zamiast Dysku Google jest **katalog na dysku**:
+- **po lewej — źródła**: drzewo katalogu z podfolderami, zaznaczanie plików i całych folderów (w nich Sejf szuka),
+  „dodaj pliki” albo **przeciągnięcie plików na okno** (kilka naraz). Dodawanie idzie w tle, z paskiem postępu, czasem
+  do końca i przyciskiem anulowania — w tym czasie można zadawać pytania (od 1.5.0; wcześniej duży plik blokował program).
+  Kliknięcie dokumentu otwiera jego podgląd w tym samym panelu, z podświetlonym fragmentem.
+- **wyszukiwanie w źródłach**: wpisywanie filtruje nazwy, Enter szuka w treści tym samym wyszukiwaczem co dla modelu
+  (e5 + BM25 + reranker). Składnia: `„dokładna fraza”`, `-słowo` (wyklucz), kody i numery (`art. 22`, `BR105`) muszą wystąpić
+  w całości. Wyniki z podświetlonymi słowami, kliknięcie otwiera miejsce w dokumencie.
+- **zakładka „rozmowy”**: historia rozmów zapisywana automatycznie w `%LOCALAPPDATA%\LindaSejf\rozmowy` (pliki JSON, tylko na tym komputerze).
+- **na środku — rozmowa**, **po prawej — studio** z wynikami zapisanymi w `%LOCALAPPDATA%\LindaSejf\studio`. Oba panele boczne można zwinąć.
+**Ustawienia**: katalog dokumentów (okno wyboru folderu), tryb zwykły / ostrożny, karta graficzna (automatycznie / tylko procesor), wątki.
 Szybkość (te same 3 pytania): karta graficzna Radeon RX 9070 XT ok. 4,5 s na odpowiedź (model ok. 1 s, reszta to wyszukiwanie na CPU); procesor desktopa 9–14 s; laptop Ryzen 7 5825U bez karty graficznej ok. 20–25 s.
+Dodawanie pliku: ok. 40 fragmentów na sekundę na CPU (plik tekstowy 3,5 MB = 7 400 fragmentów, ok. 3 min).
 **Studio** (jak w NotebookLM, na zaznaczonych dokumentach; przy każdym narzędziu można wpisać temat):
 - **streszczenie** — krótko (3–4 zdania), standardowo (5–8) albo szczegółowo (10–14); akapit albo punkty;
 - **pytania sprawdzające** — fiszki do nauki: pytanie, odpowiedź po kliknięciu; zapis do CSV (import w Anki albo Quizlet);
@@ -37,7 +45,7 @@ Szybkość (te same 3 pytania): karta graficzna Radeon RX 9070 XT ok. 4,5 s na o
 - **terminy, kwoty i obowiązki** — każda pozycja jako pełne zdanie z odwołaniem;
 - **tezy i argumenty** — tezy, argumenty i ograniczenia tekstu, bez oceny od modelu;
 - **notatka na temat** — tylko ustalenia z dokumentów, bez własnych zaleceń modelu;
-- **notatnik** — zapisane odpowiedzi i wyniki, kopiowanie ze źródłami, eksport do `.md` w `%LOCALAPPDATA%\LindaSejf\notatki`.
+- **wyniki** — każdy wynik i przypięta odpowiedź („do studia”) zostają na liście; kopiowanie ze źródłami, eksport do `.md` w `%LOCALAPPDATA%\LindaSejf\notatki`.
 
 Krótkie dokumenty idą do modelu w całości (do 24 fragmentów); dłuższe (do ok. 140 fragmentów, np. skrypt albo krótka ustawa)
 — w częściach, a wynik każdej części ma odwołania do jej fragmentów; z bardzo długich Sejf bierze 8 fragmentów pasujących

@@ -124,14 +124,22 @@ class Embedder:
     def __init__(self, d: Path, threads: int = 4):
         self.m = _Onnx(d, threads, 512, False)
 
-    def __call__(self, texts, batch: int = 32):
-        out = []
-        for i in range(0, len(texts), batch):
-            h, mask = self.m.run(texts[i:i + batch])
+    def __call__(self, texts, batch: int = 32, progress=None):
+        """Wektory tekstów. Teksty liczone w kolejności długości (mniej dopełniania w partii = szybciej na CPU),
+        wynik w kolejności wejścia. progress(gotowe, wszystkie) po każdej partii; wyjątek z progress przerywa liczenie."""
+        if not len(texts):
+            return np.zeros((0, 384), np.float32)
+        order = sorted(range(len(texts)), key=lambda i: len(texts[i]))
+        out = np.zeros((len(texts), 384), np.float32)
+        for i in range(0, len(order), batch):
+            idx = order[i:i + batch]
+            h, mask = self.m.run([texts[j] for j in idx])
             mask = mask[..., None].astype(np.float32)
             v = (h * mask).sum(1) / np.clip(mask.sum(1), 1e-9, None)
-            out.append(v / np.linalg.norm(v, axis=1, keepdims=True))
-        return np.vstack(out) if out else np.zeros((0, 384), np.float32)
+            out[idx] = v / np.linalg.norm(v, axis=1, keepdims=True)
+            if progress:
+                progress(min(i + batch, len(order)), len(order))
+        return out
 
 
 class Reranker:
@@ -168,7 +176,7 @@ class Index:
         exts = TEXT_EXT | {".pdf", ".docx"}
         return sorted(p for p in self.folder.rglob("*") if p.is_file() and p.suffix.lower() in exts and not p.name.startswith(("~$", ".")))
 
-    def _file_part(self, p: Path):
+    def _file_part(self, p: Path, progress=None):
         """Fragmenty i wektory jednego pliku; pamięć podręczna per plik (ścieżka + rozmiar + data zmiany)."""
         st = p.stat()
         key = hashlib.sha256(f"{p}|{st.st_size}|{st.st_mtime_ns}".encode()).hexdigest()[:20]
@@ -180,7 +188,7 @@ class Index:
         for c in chunks(read_text(p)):
             c["file"] = str(p)
             meta.append(c)
-        vec = self.emb(["passage: " + p.stem + "\n" + m["text"] for m in meta]).astype(np.float32) if meta \
+        vec = self.emb(["passage: " + p.stem + "\n" + m["text"] for m in meta], progress=progress).astype(np.float32) if meta \
             else np.zeros((0, 384), np.float32)
         cache.parent.mkdir(parents=True, exist_ok=True)
         np.savez_compressed(cache, v=vec, meta=np.array(json.dumps(meta, ensure_ascii=False)))
@@ -214,10 +222,16 @@ class Index:
         """Zmiana folderu dokumentów albo odświeżenie (nowe, zmienione i usunięte pliki)."""
         self._build(progress, folder)
 
+    def prepare_file(self, p, progress=None):
+        """Fragmenty i wektory nowego pliku — bez zmiany indeksu (można liczyć w tle, bez blokady)."""
+        return self._file_part(Path(p), progress)
+
     def add_file(self, p) -> int:
         """Dodaje nowy plik do działającego indeksu (bez przebudowy całości). Zwraca liczbę fragmentów."""
-        p = Path(p)
-        m, v = self._file_part(p)
+        return self.commit_file(*self.prepare_file(p))
+
+    def commit_file(self, m, v) -> int:
+        """Dołącza policzone fragmenty do indeksu (szybkie; wołać pod blokadą aplikacji)."""
         start = len(self.meta)
         self.meta += m
         self.vec = np.vstack([self.vec, v]) if len(v) else self.vec

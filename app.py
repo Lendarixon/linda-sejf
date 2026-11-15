@@ -17,15 +17,17 @@ import time
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import unquote
+from urllib.parse import parse_qs, unquote, urlparse
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from sejf import Sejf, tools, verifier_onnx, webapi  # noqa: E402
 from sejf.core import verify_audit_chain  # noqa: E402
 from sejf.retriever_simple import Index, make_retriever  # noqa: E402
+from sejf.store import Store  # noqa: E402
+from sejf.uploads import UploadQueue  # noqa: E402
 
-VERSION = "1.4.0"
+VERSION = "1.5.0"
 DATA = Path(os.environ.get("SEJF_DATA", Path(os.environ.get("LOCALAPPDATA", Path.home())) / "LindaSejf"))
 DATA.mkdir(parents=True, exist_ok=True)
 CFG_P = DATA / "config.json"
@@ -88,6 +90,8 @@ class State:
         self.job = {"busy": False, "text": "", "done": 0, "total": 0}
         self.lock = threading.Lock()   # jedna generacja / jedna przebudowa indeksu naraz
         self.index = self.sejf = self.llama = None
+        self.store = Store(DATA)
+        self.uploads = None
         self.vcfg = {}
         self.gpu = cfg.get("gpu") if cfg.get("gpu") in ("auto", "cpu") else "auto"
         self.device = "procesor"
@@ -172,6 +176,7 @@ def start(status=log):
         raise RuntimeError(f"Model nie odpowiada po 10 minutach — szczegóły w {DATA / 'llama.log'}")
     status("Wczytuję weryfikator zdań…")
     vfn, vthr, S.vcfg = verifier_onnx.load(MODELS / "verifier", threads=S.threads)
+    S.uploads = UploadQueue(lambda: S.index, S.lock, busy=lambda: S.job["busy"], log=log)
     S.sejf = Sejf(make_retriever(S.index), generate, vfn, threshold=vthr, mode="flag", k=5,
                   min_rerank_score=S.min_rerank or None, audit_path=AUDIT,
                   model_info={"generator": GGUF.name, "verifier": S.vcfg.get("name")})
@@ -272,7 +277,7 @@ class H(BaseHTTPRequestHandler):
         if self.path == "/api/health":
             return self._send(200, {"ok": True, "model": GGUF.name, "verifier": S.vcfg.get("name"), "documents": str(S.docs),
                                     "chunks": len(S.index.meta), "min_rerank": S.min_rerank, "local": True, "upload": True,
-                                    "settings": True, "version": VERSION})
+                                    "settings": True, "store": True, "search": True, "version": VERSION})
         if self.path == "/api/docs":
             return self._send(200, webapi.docs_list(S.index))
         if self.path.startswith("/api/doc?"):
@@ -282,6 +287,18 @@ class H(BaseHTTPRequestHandler):
             return self._send(200, settings_dict())
         if self.path == "/api/audit":
             return self._send(200, audit_view())
+        if self.path == "/api/uploads":
+            return self._send(200, {"jobs": S.uploads.list() if S.uploads else []})
+        if self.path.startswith("/api/store?"):
+            q = parse_qs(urlparse(self.path).query)
+            c, item = (q.get("c") or [""])[0], (q.get("id") or [""])[0]
+            try:
+                if item:
+                    d = S.store.get(c, item)
+                    return self._send(200, d) if d else self._send(404, {"error": "not-found"})
+                return self._send(200, {"items": S.store.list(c)})
+            except ValueError as e:
+                return self._send(400, {"error": str(e)})
         return self._send(404, {"error": "not-found"})
 
     def do_POST(self):
@@ -298,6 +315,19 @@ class H(BaseHTTPRequestHandler):
                 return self._tool()
             if self.path == "/api/export":
                 return self._export()
+            if self.path == "/api/search":
+                return self._search()
+            if self.path == "/api/uploads/cancel":
+                body = self._json()
+                return self._send(200, {"ok": bool(S.uploads and S.uploads.cancel(int(body.get("id", 0))))})
+            if self.path in ("/api/store", "/api/store/delete"):
+                body = self._json(limit=4_500_000)
+                try:
+                    if self.path == "/api/store":
+                        return self._send(200, S.store.save(str(body.get("c", "")), body))
+                    return self._send(200, {"ok": S.store.delete(str(body.get("c", "")), str(body.get("id", "")))})
+                except ValueError as e:
+                    return self._send(400, {"error": str(e)})
             if self.path == "/api/reindex":
                 if S.job["busy"]:
                     return self._send(409, {"error": "Indeksowanie już trwa."})
@@ -326,6 +356,22 @@ class H(BaseHTTPRequestHandler):
         d = a.to_dict()
         d["seconds"] = round(dt, 1)
         log("pytanie:", a.status, round(dt, 1), "s")
+        return self._send(200, d)
+
+    def _search(self):
+        body = self._json()
+        q = str(body.get("q", "")).strip()
+        scope = body.get("documents") or None
+        if not q or len(q) > 300:
+            return self._send(400, {"error": "Wpisz od 1 do 300 znaków."})
+        with S.lock:
+            t0 = time.time()
+            webapi.set_scope(S.index, scope if isinstance(scope, list) else None)
+            try:
+                d = webapi.search_fragments(S.index, q)
+            finally:
+                webapi.set_scope(S.index, None)
+        d["seconds"] = round(time.time() - t0, 2)
         return self._send(200, d)
 
     def _tool(self):
@@ -396,8 +442,6 @@ class H(BaseHTTPRequestHandler):
         if not name or n <= 0 or n > 50 * 1024 * 1024:
             return self._send(400, {"error": "Dozwolone pliki .txt, .md, .pdf, .docx do 50 MB."})
         data = self.rfile.read(n)
-        if S.job["busy"]:
-            return self._send(409, {"error": "Trwa indeksowanie — dodaj plik za chwilę."})
         with S.lock:
             docs = S.docs.resolve()
             dst = (docs / name).resolve()
@@ -406,15 +450,9 @@ class H(BaseHTTPRequestHandler):
             if dst.exists():
                 return self._send(409, {"error": f"Plik {name} już jest w folderze dokumentów."})
             dst.write_bytes(data)
-            try:
-                added = S.index.add_file(dst)
-            except Exception:
-                dst.unlink(missing_ok=True)
-                raise
-        log("dodano plik:", name, added, "fragmentów")
-        if not added:
-            return self._send(200, {"ok": True, "chunks": 0, "warning": f"Dodano {name}, ale nie udało się odczytać tekstu (skan bez OCR?)."})
-        return self._send(200, {"ok": True, "chunks": added})
+        job = S.uploads.submit(dst, name)
+        log("w kolejce:", name, round(n / 1e6, 2), "MB")
+        return self._send(202, {"ok": True, "job": job})
 
 
 if __name__ == "__main__":
