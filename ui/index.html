@@ -54,7 +54,7 @@ input[type=checkbox]{accent-color:var(--acc);width:15px;height:15px;margin:0;fle
 .file{padding-left:52px}.file.root{padding-left:30px}.file button.n{flex:1;min-width:0;text-align:left;padding:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:0}
 .file button.n:hover{color:var(--link)}
 .badge{font-size:9.5px;font-weight:700;letter-spacing:.02em;width:30px;text-align:center;padding:2px 0;border-radius:4px;flex:none;color:#fff;text-transform:uppercase}
-.b-pdf{background:#b8433f}.b-docx{background:#2b5797}.b-md{background:#4a5162}.b-txt{background:#3a404d}
+.b-pdf{background:#b8433f}.b-docx{background:#2b5797}.b-odt{background:#2a7f62}.b-rtf{background:#6d597a}.b-html,.b-htm{background:#c26a2d}.b-epub{background:#7b4f9d}.b-pptx{background:#b5512e}.b-xlsx{background:#257a4b}.b-md{background:#4a5162}.b-txt{background:#3a404d}
 .cnt{color:var(--dim);font-size:11.5px;flex:none}
 .file .tobrief,.fold .tobrief{opacity:0;width:0;padding:2px 0;overflow:hidden;color:var(--dim);flex:none;display:inline-flex;align-items:center;justify-content:center}
 .file:hover .tobrief,.file:focus-within .tobrief,.fold:hover .tobrief,.fold:focus-within .tobrief{opacity:1;width:24px}
@@ -253,7 +253,7 @@ select.btn{appearance:auto;border-radius:var(--r2)}
         <div id="srclist" style="display:flex;flex-direction:column;min-height:0;flex:1">
           <div class="acts"><button class="btn pri grow" id="add" hidden><svg class="ico"><use href="#i-plus"/></svg>dodaj pliki</button>
             <button class="btn grow" id="pickdir" hidden title="Wskaż katalog z dokumentami"><svg class="ico"><use href="#i-folder"/></svg>katalog…</button></div>
-          <input type="file" id="file" accept=".txt,.md,.pdf,.docx" multiple hidden>
+          <input type="file" id="file" accept=".txt,.md,.pdf,.docx,.odt,.rtf,.html,.htm,.epub,.pptx,.xlsx,.csv,.tsv" multiple hidden>
           <div class="search"><svg class="ico"><use href="#i-search"/></svg><input id="sq" placeholder="szukaj w źródłach" aria-label="Szukaj w źródłach" autocomplete="off"><button class="x" id="sqx" hidden aria-label="Wyczyść">×</button></div>
           <div class="hint" id="sqhint">Enter — szukaj w treści · „fraza” · -wyklucz</div>
           <div id="ups"></div>
@@ -312,7 +312,7 @@ select.btn{appearance:auto;border-radius:var(--r2)}
 </div>
 <div class="ov" id="ov" role="dialog" aria-modal="true" aria-labelledby="ovt"><div class="ovp">
   <div class="ovh"><h2 id="ovt" tabindex="-1"></h2><button class="ib" id="ovx" aria-label="Zamknij"><svg class="ico"><use href="#i-x"/></svg></button></div><div id="ovb"></div></div></div>
-<div class="drop" id="drop"><div><b>upuść pliki tutaj</b><span id="dropt">.txt, .md, .pdf, .docx — trafią do katalogu dokumentów i do wyszukiwania</span></div></div>
+<div class="drop" id="drop"><div><b>upuść pliki tutaj</b><span id="dropt">dokumenty: .pdf, .docx, .odt, .txt, .md, .rtf, .html, .epub, .pptx, .xlsx, .csv — trafią do katalogu dokumentów i do wyszukiwania</span></div></div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <script>
 const $=id=>document.getElementById(id);
@@ -384,8 +384,8 @@ function renderDocs(){const docsEl=$("docs"),hadTree=!!docsEl.querySelector(".se
     if(k){const on=items.filter(d=>isOn(d.id)).length;const shut=SHUT.has(k);
       h+='<div class="fold'+(shut?" shut":"")+'" draggable="true" data-f="'+esc(k)+'"><svg class="ico chev"><use href="#i-chev"/></svg><input type="checkbox" data-fc="'+esc(k)+'"'+(on===items.length?" checked":"")+(on&&on<items.length?" data-ind=1":"")+' aria-label="Zaznacz folder '+esc(k)+'"><button class="fn" draggable="true" aria-expanded="'+!shut+'" title="'+esc(k)+'">'+ICO("folder")+'<span>'+esc(FOLD_NAMES[k]||k)+'</span></button><button class="tobrief" type="button" data-addf="'+esc(k)+'" title="do teczki rozmowy" aria-label="Dodaj folder do teczki rozmowy: '+esc(FOLD_NAMES[k]||k)+'">'+ICO("plus")+'</button><span class="cnt" title="plików w folderze">'+items.length+'</span></div>'}
     if(k&&SHUT.has(k))continue;
-    for(const d of items)h+='<div class="file'+(k?'':' root')+'" draggable="true" data-doc="'+esc(d.id)+'"><input type="checkbox" data-id="'+esc(d.id)+'"'+(isOn(d.id)?" checked":"")+' aria-label="Użyj: '+esc(d.name)+'"><span class="badge b-'+(["pdf","docx","md"].includes(ext(d.id))?ext(d.id):"txt")+'">'+esc(ext(d.id))+'</span><button class="n" draggable="true" data-open="'+esc(d.id)+'" title="'+esc(d.name)+'">'+esc(nice(d.name))+'</button><button class="tobrief" type="button" data-addd="'+esc(d.id)+'" title="do teczki rozmowy" aria-label="Dodaj do teczki rozmowy: '+esc(nice(d.name))+'">'+ICO("plus")+'</button><span class="bdot" title="w teczce rozmowy" aria-label="w teczce rozmowy"></span><span class="cnt" title="liczba fragmentów w indeksie">'+d.chunks+'</span></div>'}
-  if(!DOCS.length)h='<div class="empty-src">Katalog jest pusty. '+(HEALTH.upload?'Przeciągnij tu pliki .txt, .md, .pdf albo .docx, kliknij „dodaj pliki” albo wskaż inny katalog.':'Brak dokumentów.')+'</div>';
+    for(const d of items)h+='<div class="file'+(k?'':' root')+'" draggable="true" data-doc="'+esc(d.id)+'"><input type="checkbox" data-id="'+esc(d.id)+'"'+(isOn(d.id)?" checked":"")+' aria-label="Użyj: '+esc(d.name)+'"><span class="badge b-'+(["pdf","docx","odt","rtf","html","htm","epub","pptx","xlsx","md"].includes(ext(d.id))?ext(d.id):"txt")+'">'+esc(ext(d.id))+'</span><button class="n" draggable="true" data-open="'+esc(d.id)+'" title="'+esc(d.name)+'">'+esc(nice(d.name))+'</button><button class="tobrief" type="button" data-addd="'+esc(d.id)+'" title="do teczki rozmowy" aria-label="Dodaj do teczki rozmowy: '+esc(nice(d.name))+'">'+ICO("plus")+'</button><span class="bdot" title="w teczce rozmowy" aria-label="w teczce rozmowy"></span><span class="cnt" title="liczba fragmentów w indeksie">'+d.chunks+'</span></div>'}
+  if(!DOCS.length)h='<div class="empty-src">Katalog jest pusty. '+(HEALTH.upload?'Przeciągnij tu dokumenty (.pdf, .docx, .odt, .txt, .md, .rtf, .html, .epub, .pptx, .xlsx, .csv), kliknij „dodaj pliki” albo wskaż inny katalog.':'Brak dokumentów.')+'</div>';
   docsEl.innerHTML=h;if(hadTree)docsEl.scrollTop=prevTop;
   document.querySelectorAll("[data-ind]").forEach(x=>x.indeterminate=true);
   const bclr=$("docs-bclr");if(bclr)bclr.onclick=clearBriefcase;
@@ -443,9 +443,9 @@ $("sq").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();se
 $("sqx").onclick=clearSearch;
 
 /* ---------- dodawanie plików: przycisk, przeciąganie na całe okno, kolejka z postępem ---------- */
-const OKEXT=/\.(txt|md|pdf|docx)$/i;
+const OKEXT=/\.(txt|md|pdf|docx|odt|rtf|html?|epub|pptx|xlsx|csv|tsv)$/i;
 async function uploadFiles(files){if(!HEALTH.upload){toast("W demo nie można dodawać plików — zainstaluj program, żeby pracować na własnych dokumentach.",true);return}
-  for(const f of files){if(!OKEXT.test(f.name)){toast("Pominięto "+f.name+" — obsługiwane są .txt, .md, .pdf i .docx.",true);continue}
+  for(const f of files){if(!OKEXT.test(f.name)){const old=/\.(doc|odp|ods|xls|ppt)$/i.test(f.name);toast("Pominięto "+f.name+" — "+(old?"zapisz jako .docx albo .odt. ":"")+"dokumenty: .pdf, .docx, .odt, .txt, .md, .rtf, .html, .epub, .pptx, .xlsx, .csv.",true);continue}
     if(f.size>50*1024*1024){toast(f.name+": plik większy niż 50 MB.",true);continue}
     try{const r=await fetch("/api/upload",{method:"POST",headers:{"X-Filename":encodeURIComponent(f.name),"Content-Type":"application/octet-stream"},body:f});
       let d={};try{d=await r.json()}catch(e){}if(!r.ok)throw new Error(d.error||r.status);
@@ -500,7 +500,7 @@ for(const pane of [document.querySelector(".mid"),document.querySelector(".right
     try{const ids=JSON.parse(e.dataTransfer.getData(DOC_MIME)||"[]");if(Array.isArray(ids))addToBriefcase(ids)}catch(err){}})}
 function dropOff(){dragN=0;$("drop").classList.remove("on")}
 window.addEventListener("dragenter",e=>{if(!hasFiles(e))return;e.preventDefault();if(!HEALTH.upload)return;dragN++;
-  $("dropt").textContent=".txt, .md, .pdf, .docx — trafią do: "+(HEALTH.documents||"katalogu dokumentów");$("drop").classList.add("on")});
+  $("dropt").textContent="dokumenty: .pdf, .docx, .odt, .txt, .md, .rtf, .html, .epub, .pptx, .xlsx, .csv — trafią do: "+(HEALTH.documents||"katalogu dokumentów");$("drop").classList.add("on")});
 window.addEventListener("blur",()=>{dropOff();docDragOff()});document.addEventListener("keydown",e=>{if(e.key==="Escape"){dropOff();docDragOff()}});
 window.addEventListener("dragover",e=>{if(hasFiles(e)){e.preventDefault();e.dataTransfer.dropEffect=HEALTH.upload?"copy":"none"}});
 window.addEventListener("dragleave",e=>{if(!hasFiles(e))return;if(--dragN<=0){dragN=0;$("drop").classList.remove("on")}});
@@ -699,7 +699,7 @@ $("refb").onclick=async()=>{try{await post("/api/reindex");$("foot").textContent
 async function showSettings(){let s;try{const r=await fetch("/api/settings");s=await r.json();if(!r.ok)throw new Error(s.error)}catch(e){openOv("ustawienia",'<div class="err">Nie udało się wczytać ustawień: '+esc(e.message||e)+'</div>');return}const nat=!!API();
   const thr=[...new Set([2,4,6,8,12,16,s.threads].filter(x=>x<=Math.max(s.cpu||8,s.threads)))].sort((a,b)=>a-b);
   openOv("ustawienia",
-  '<div class="set"><h3>Katalog dokumentów</h3><p>Sejf przeszukuje ten katalog razem z podkatalogami (.txt, .md, .pdf, .docx). Pliki nie są nigdzie wysyłane.</p>'+
+  '<div class="set"><h3>Katalog dokumentów</h3><p>Sejf przeszukuje ten katalog razem z podkatalogami (dokumenty: .pdf, .docx, .odt, .txt, .md, .rtf, .html, .epub, .pptx, .xlsx, .csv). Pliki nie są nigdzie wysyłane.</p>'+
   '<div class="path"><code id="curdir">'+esc(s.documents)+'</code>'+(nat?'<button class="btn" id="pick2">zmień…</button><button class="btn" id="opendir2">otwórz</button>':'<input id="dirin" placeholder="np. C:\\Dokumenty\\Studia" aria-label="Nowy katalog dokumentów"><button class="btn" id="setdir">zmień</button>')+
   '<button class="btn" id="reidx">odśwież</button></div><div class="job" id="job">'+esc(s.job.text||"")+'</div></div>'+
   '<div class="set"><h3>Tryb odpowiedzi</h3><p>Jak chętnie Sejf odpowiada, gdy dopasowanie fragmentu do pytania jest słabe. Liczby z testu na 124 pytaniach z praktyki i 31 pytaniach-pułapkach.</p><div class="modes">'+

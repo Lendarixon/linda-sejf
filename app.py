@@ -27,7 +27,7 @@ from sejf.retriever_simple import Index, make_retriever  # noqa: E402
 from sejf.store import Store  # noqa: E402
 from sejf.uploads import UploadQueue  # noqa: E402
 
-VERSION = "1.5.1"
+VERSION = "1.5.2"
 DATA = Path(os.environ.get("SEJF_DATA", Path(os.environ.get("LOCALAPPDATA", Path.home())) / "LindaSejf"))
 DATA.mkdir(parents=True, exist_ok=True)
 CFG_P = DATA / "config.json"
@@ -446,7 +446,7 @@ class H(BaseHTTPRequestHandler):
         name = webapi.safe_upload_name(unquote(self.headers.get("X-Filename", "")))
         n = int(self.headers.get("Content-Length", "0") or 0)
         if not name or n <= 0 or n > 50 * 1024 * 1024:
-            return self._send(400, {"error": "Dozwolone pliki .txt, .md, .pdf, .docx do 50 MB."})
+            return self._send(400, {"error": "Dozwolone dokumenty: .pdf, .docx, .odt, .txt, .md, .rtf, .html, .htm, .epub, .pptx, .xlsx, .csv, .tsv (do 50 MB; .doc/.odp/.ods zapisz jako .docx albo .odt)."})
         data = self.rfile.read(n)
         with S.lock:
             docs = S.docs.resolve()

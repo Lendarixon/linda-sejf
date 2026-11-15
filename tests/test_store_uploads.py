@@ -35,19 +35,41 @@ def test_store_rejects_unknown_collection_and_huge_items(tmp_path):
 
 
 class FakeIndex:
+    """Atrapa indeksu z API 1.5.1: tekst od razu (BM25), wektory w tle partiami."""
     def __init__(self, n=50, slow=0.0):
-        self.meta, self.n, self.slow = [], n, slow
+        self.meta, self.has_vec, self.n, self.slow, self.gen = [], [], n, slow, 0
 
-    def prepare_file(self, p, progress=None):
-        for i in range(0, self.n, 10):
+    def prepare_text(self, p):
+        return [{"file": str(p), "text": f"t{i}"} for i in range(self.n)]
+
+    def commit_text(self, m):
+        start = len(self.meta)
+        self.meta += m
+        self.has_vec += [False] * len(m)
+        return start, len(m)
+
+    def embed_meta(self, p, meta, progress=None):
+        for i in range(0, len(meta), 10):
             time.sleep(self.slow)
             if progress:
-                progress(min(i + 10, self.n), self.n)
-        return [{"file": str(p), "text": f"t{i}"} for i in range(self.n)], np.zeros((self.n, 384), np.float32)
+                progress(min(i + 10, len(meta)), len(meta))
+        return np.zeros((len(meta), 384), np.float32)
 
-    def commit_file(self, m, v):
-        self.meta += m
-        return len(m)
+    def fill_vectors(self, start, v, gen):
+        if gen != self.gen:
+            return False
+        for i in range(start, start + len(v)):
+            self.has_vec[i] = True
+        return True
+
+    def save_cache(self, p, meta, v):
+        pass
+
+    def remove_file(self, p):
+        keep = [i for i, m in enumerate(self.meta) if m["file"] != str(p)]
+        self.meta = [self.meta[i] for i in keep]
+        self.has_vec = [self.has_vec[i] for i in keep]
+        self.gen += 1
 
 
 def wait(q, state, timeout=5):
@@ -67,7 +89,7 @@ def test_upload_queue_indexes_in_background_and_reports_progress(tmp_path):
     q.submit(p, "a.txt")
     assert wait(q, "done")
     j = q.list()[0]
-    assert j["chunks"] == 50 and j["done"] == j["total"] == 50 and len(idx.meta) == 50
+    assert j["chunks"] == 50 and j["done"] == j["total"] == 50 and len(idx.meta) == 50 and all(idx.has_vec)
 
 
 def test_upload_queue_cancel_removes_file_and_does_not_touch_index(tmp_path):
@@ -90,7 +112,7 @@ def test_upload_queue_does_not_hold_lock_while_embedding(tmp_path):
     q = UploadQueue(lambda: FakeIndex(300, slow=0.05), lock, log=lambda *a: None)
     q.submit(p, "big.txt")
     time.sleep(0.2)
-    assert q.list()[0]["state"] == "indexing"
+    assert q.list()[0]["state"] in ("indexing", "searchable")
     assert lock.acquire(timeout=0.2)
     lock.release()
 
@@ -100,6 +122,7 @@ def test_upload_queue_skips_duplicate_when_reindex_already_added_it(tmp_path):
     p.write_text("x")
     idx = FakeIndex(5)
     idx.meta = [{"file": str(p), "text": "już jest"}]
+    idx.has_vec = [True]
     q = UploadQueue(lambda: idx, threading.Lock(), log=lambda *a: None)
     q.submit(p, "a.txt")
     assert wait(q, "done")

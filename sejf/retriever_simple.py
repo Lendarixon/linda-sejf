@@ -5,7 +5,7 @@ potem polski reranker (sdadas/polish-reranker-base-ranknet, ONNX, sigmoid) oceni
 Ocena rerankera trafia do bramki odmowy Sejfu (min_rerank_score, domyślnie 0,9).
 
 Indeks jest zapisywany w <state>/index_<hash>.npz/.json i odbudowywany, gdy pliki się zmienią.
-Obsługiwane pliki: .txt, .md (UTF-8); .pdf i .docx, jeśli zainstalowano pypdf / python-docx.
+Obsługiwane pliki: .txt, .md, .odt, .rtf, .html/.htm, .epub, .pptx, .xlsx oraz .pdf i .docx (pypdf / python-docx).
 """
 from __future__ import annotations
 
@@ -18,30 +18,15 @@ from pathlib import Path
 import numpy as np
 
 from .core import Source
+from .extract import SUPPORTED_EXT, TEXT_EXT, read_text as _extract_text
 from .labels import legal_label, superscripts
 
-TEXT_EXT = {".txt", ".md"}
 _MIN_CHUNK = 150
 
 
 # ------------------------------------------------------------------ pliki i fragmenty
 def read_text(p: Path) -> str:
-    s = p.suffix.lower()
-    if s in TEXT_EXT:
-        return p.read_text(encoding="utf-8", errors="replace")
-    if s == ".pdf":
-        try:
-            from pypdf import PdfReader
-        except ImportError:
-            return ""
-        return "\n".join((pg.extract_text() or "") for pg in PdfReader(str(p)).pages)
-    if s == ".docx":
-        try:
-            import docx
-        except ImportError:
-            return ""
-        return "\n".join(par.text for par in docx.Document(str(p)).paragraphs)
-    return ""
+    return _extract_text(p)
 
 
 def _chunks_raw(text: str):
@@ -175,8 +160,7 @@ class Index:
         self._build(progress)
 
     def _files(self):
-        exts = TEXT_EXT | {".pdf", ".docx"}
-        return sorted(p for p in self.folder.rglob("*") if p.is_file() and p.suffix.lower() in exts and not p.name.startswith(("~$", ".")))
+        return sorted(p for p in self.folder.rglob("*") if p.is_file() and p.suffix.lower() in SUPPORTED_EXT and not p.name.startswith(("~$", ".")))
 
     def _cache_path(self, p: Path) -> Path:
         st = p.stat()
@@ -230,8 +214,7 @@ class Index:
         """Buduje indeks folderu (pliki z pamięci podręcznej wczytywane od razu, nowe — tylko tekstowo do policzenia w tle).
         Gotowy indeks (razem z folderem) podmieniany jest naraz, więc w trakcie przebudowy działa stary."""
         folder = Path(folder) if folder is not None else self.folder
-        exts = TEXT_EXT | {".pdf", ".docx"}
-        files = sorted(p for p in folder.rglob("*") if p.is_file() and p.suffix.lower() in exts
+        files = sorted(p for p in folder.rglob("*") if p.is_file() and p.suffix.lower() in SUPPORTED_EXT
                        and not p.name.startswith(("~$", ".")))
         meta, vecs, masks, pending = [], [], [], []
         for k, p in enumerate(files, 1):

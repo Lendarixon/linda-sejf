@@ -40,7 +40,7 @@ Dodawanie pliku (od 1.5.1): po kilku sekundach plik jest w drzewie i można o ni
 działa od razu, a wektory e5 (wyszukiwanie po znaczeniu) liczą się w tle, ok. 40 fragmentów na sekundę na CPU (plik 3,6 MB =
 6 600 fragmentów: przeszukiwalny po 4 s, wektory gotowe po ok. 3 min). Tak samo przy starcie programu z nowymi plikami w katalogu.
 **Teczka rozmowy**: dokument albo cały folder można przeciągnąć z lewego panelu do rozmowy lub do studia (albo kliknąć „+” przy
-pliku) — pytania i narzędzia studia działają wtedy tylko na dokumentach z teczki; teczka zapisuje się razem z rozmową.
+pliku) — pytania działają wtedy tylko na dokumentach z teczki, a studio — zależnie od przełącznika „jak rozmowa / wszystkie” nad narzędziami; teczka zapisuje się razem z rozmową.
 **Studio** (jak w NotebookLM, na zaznaczonych dokumentach; przy każdym narzędziu można wpisać temat):
 - **streszczenie** — krótko (3–4 zdania), standardowo (5–8) albo szczegółowo (10–14); akapit albo punkty;
 - **pytania sprawdzające** — fiszki do nauki: pytanie, odpowiedź po kliknięciu; zapis do CSV (import w Anki albo Quizlet);
@@ -65,7 +65,7 @@ weryfikator częściej uznaje za niepotwierdzone, choć według oceny są popraw
 
 **Dziennik audytu**: ostatnie pytania (z zamaskowanymi PESEL/NIP/REGON/IBAN) i sprawdzenie łańcucha SHA-256.
 Na start w folderze dokumentów są trzy fikcyjne dokumenty firmy „Przykład sp. z o.o.” i 11 polskich ustaw.
-Obsługiwane pliki: `.txt`, `.md`, `.pdf` (z warstwą tekstu), `.docx`. Wymagania: 16 GB RAM, ok. 9 GB na dysku.
+Obsługiwane pliki: `.pdf` (z warstwą tekstu), `.docx` (także tabele), `.odt`, `.rtf`, `.txt`, `.md`, `.csv`, `.tsv` (UTF-8, UTF-16 albo stare polskie cp1250), `.html`, `.epub`, `.pptx`, `.xlsx`. Stare `.doc`/`.xls`/`.ppt` trzeba zapisać jako nowy format. Wymagania: 16 GB RAM, ok. 9 GB na dysku.
 Ustawienia zapisują się w `%LOCALAPPDATA%\LindaSejf\config.json` (także `gguf`, `min_rerank`, `passages` do ręcznej edycji).
 
 ## Uruchomienie ze źródeł (Windows / Linux)

@@ -5,10 +5,11 @@ import re
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
+from .extract import SUPPORTED_EXT
 from .retriever_simple import Index, read_text
 
 MAX_DOC_CHARS = 2_000_000
-UPLOAD_EXT = {".txt", ".md", ".pdf", ".docx"}
+UPLOAD_EXT = SUPPORTED_EXT
 
 
 def docs_list(index: Index):
